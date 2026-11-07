@@ -6,6 +6,7 @@ An ant colony simulation that runs in your browser. Colonies lay scent trails, g
 
 ## What you can do
 
+- Start on a random world, load a map from an image, or paint your own map with brushes for temperature, moisture and rarity
 - Watch trails form between nests and food, and draw walls to see the ants find a new way
 - Follow a single ant, or open a nest to see its genes, its ants and its history
 - Speed up time with hyperspeed and watch colonies spread, split into new colours and go to war

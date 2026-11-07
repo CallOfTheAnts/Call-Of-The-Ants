@@ -236,7 +236,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
 .confirm-card h3{margin:0;font-size:1.15rem}.confirm-card p{margin:0;font-size:.92rem;line-height:1.5;color:#e6dccd}
 .cf-skip{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--muted);cursor:pointer}
 .cf-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}.cf-btns button{padding:9px 16px;border-radius:8px;font-weight:600}
-.tabs{display:grid!important;grid-template-columns:repeat(4,1fr);gap:0 2px}.tabs button{text-align:center;padding-left:4px!important;padding-right:4px!important}
+.wc-card{max-width:560px}.wc-opts{display:grid;gap:10px}.wc-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px 16px;border-radius:12px;background:#231b15;border:1px solid #3a2f26;cursor:pointer}.wc-opt:hover,.wc-opt:focus-visible{border-color:var(--amber);background:#2a2019}.wc-opt b{font-size:1rem}.wc-opt span{font-size:.86rem;line-height:1.45;color:#cdbfae}.wc-msg{min-height:1em;font-size:.88rem;color:var(--amber)!important}.cf-btns[hidden]{display:none}.painter{position:fixed;left:12px;top:56px;bottom:12px;z-index:60;width:300px;max-width:calc(100vw - 24px);overflow:auto;background:#1b1511;border:1px solid #3a2f26;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 36px rgba(0,0,0,.45)}.painter[hidden]{display:none}.painter h3{margin:0;font-size:1.1rem}.painter .hint{margin:0;font-size:.82rem;line-height:1.45;color:#bfb2a2}.painter .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.painter .seg button{padding:8px 4px;border-radius:8px;font-size:.84rem}.painter .seg button[aria-pressed="true"],#ptMove[aria-pressed="true"]{background:var(--amber);color:#17120e;border-color:var(--amber)}.painter .btns{display:flex;gap:6px;flex-wrap:wrap}.painter .btns button{flex:1;padding:8px 6px;border-radius:8px;font-size:.84rem}.pbar{height:8px;border-radius:4px;margin-top:4px}.brush-ring{position:absolute;pointer-events:none;border:2px solid rgba(255,214,120,.85);border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.5);z-index:5}.brush-ring[hidden]{display:none}body.painting #statsBtn,body.painting #gear{display:none}@media (max-width:700px){.painter{top:auto;bottom:8px;left:8px;right:8px;width:auto;max-height:46vh}}.tabs{display:grid!important;grid-template-columns:repeat(4,1fr);gap:0 2px}.tabs button{text-align:center;padding-left:4px!important;padding-right:4px!important}
 #sideEmpty.ov{margin:0;max-width:none;text-align:left;flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:4px;padding:12px 14px;line-height:1.4}
 #sideEmpty.ov[hidden]{display:none}
 .ov-top{display:flex;flex-direction:column;gap:8px}
@@ -3811,13 +3811,13 @@ function heightAt(t, h, w, x, y) {
   return Math.max(0, Math.min(1, z));
 }
 // sort every tile into a biome, and set walls (rock = 2, water = 3), ground roughness and shading
-function classify(keepGround) {
-  const nearM = new Uint8Array(N), nr = TERRAIN.nestClear;
-  for (const c of colonies) for (let dy = -nr; dy <= nr; dy++) for (let dx = -nr; dx <= nr; dx++) { const x = c.x + dx, y = c.y + dy; if (x >= 0 && y >= 0 && x < W && y < H && dx * dx + dy * dy < nr * nr) nearM[y * W + x] = 1; }
-  const near = (x, y) => nearM[y * W + x] === 1;
+function classify(keepGround, rx0 = 0, ry0 = 0, rx1 = W - 1, ry1 = H - 1) {
+  const nearM = colonies.length ? new Uint8Array(N) : null, nr = TERRAIN.nestClear;
+  if (nearM) for (const c of colonies) for (let dy = -nr; dy <= nr; dy++) for (let dx = -nr; dx <= nr; dx++) { const x = c.x + dx, y = c.y + dy; if (x >= 0 && y >= 0 && x < W && y < H && dx * dx + dy * dy < nr * nr) nearM[y * W + x] = 1; }
+  const near = (x, y) => nearM !== null && nearM[y * W + x] === 1;
   const wj = TERRAIN.weird;
-  for (let i = 0; i < N; i++) {
-    const x = i % W, y = (i / W) | 0, j = (hash2(x, y, 5) - 0.5) * 0.05; // a little jitter makes biome borders ragged
+  for (let yy = ry0; yy <= ry1; yy++) for (let xx = rx0; xx <= rx1; xx++) {
+    const i = yy * W + xx, x = xx, y = yy, j = (hash2(x, y, 5) - 0.5) * 0.05; // a little jitter makes biome borders ragged
     let t = clT[i] / 255, h = clH[i] / 255; const w = clW[i] / 255;
     const z = heightAt(t, h, w, x, y); height[i] = z;
     t = Math.max(0, t - Math.max(0, z - 0.6) * 0.8);     // cooler on the heights
@@ -3845,7 +3845,7 @@ function classify(keepGround) {
     if (!keepGround) terr[i] = baseR[i];
   }
   // light from the top left, for a sense of hills and valleys
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+  for (let y = ry0; y <= Math.min(H - 1, ry1 + 1); y++) for (let x = rx0; x <= Math.min(W - 1, rx1 + 1); x++) {
     const i = y * W + x, a = height[i - (x > 0 ? 1 : 0) - (y > 0 ? W : 0)], b2 = height[i];
     shade[i] = wall[i] === 3 || wall[i - (x > 0 ? 1 : 0) - (y > 0 ? W : 0)] === 3 ? 128 : Math.max(0, Math.min(255, Math.round(128 + (b2 - a) * 1800)));
   }
@@ -6022,7 +6022,7 @@ function colonyUpdate() {
   for (const bst of beasts) {
     const dm = beastWords[bst.slot * 2]; bst.hp -= ((dm - beastDmgSeen[bst.slot]) >>> 0) / 100; beastDmgSeen[bst.slot] = dm;
   }
-  if (!colonies.length) wildQueens();
+  if (!colonies.length && !worldWaiting) wildQueens();
 }
 function wildQueens() {
   const pick = () => [150 + ((rnd() * (W - 300)) | 0), 150 + ((rnd() * (H - 300)) | 0)];
@@ -6080,8 +6080,9 @@ function writeParams(nSpawn, nDrop, vis, pick) {
   device.queue.writeBuffer(bufs.params, 0, b);
 }
 
-function setup(newCap) {
-  cap = newCap;
+let worldWaiting = false; // a map without ants yet (being chosen or painted): no queens fly in
+function setup(newCap, opt = {}) {
+  cap = newCap; worldWaiting = !!opt.empty;
   for (const k of ['ants', 'posA', 'posB']) if (bufs[k]) bufs[k].destroy();
   bufs.ants = mk(cap * 96, STO);
   bufs.posA = mk(cap * 16, STO);
@@ -6090,19 +6091,29 @@ function setup(newCap) {
   usedNestNames = new Set();
   simStep = 0; cur = 0; colonies = []; deadColonies = []; slotFreed = new Array(MAXCOL); readApplied = readSeq; plants = []; drops = []; spawns = []; kills.fill(0); beasts = []; families = new Map(); famCounter = 0; lastSend = 0; lastSiege = 0; foundSeen = 0; beastDmgSeen.fill(0); beastWords.fill(0); foundRing.fill(0);
   counts.fill(0); lastCtr.fill(0); freeAnts = cap;
-  terrSeed = (Math.random() * 1e6) | 0;
   homeSpots = [];
-  buildHeight(terrSeed);
+  if (opt.climate === 'flat') { clT.fill(128); clH.fill(128); clW.fill(128); }
+  else if (opt.climate !== 'keep') { terrSeed = (Math.random() * 1e6) | 0; buildHeight(terrSeed); }
+  if (opt.climate === 'flat' || opt.climate === 'keep') for (let i = 0; i < N; i++) height[i] = heightAt(clT[i] / 255, clH[i] / 255, clW[i] / 255, i % W, (i / W) | 0);
+  if (opt.empty) placeNoStarts(); else placeStarts(opt.climate !== 'keep');
+  const tiles = new Uint32Array(N); for (let i = 0; i < N; i++) tiles[i] = packTile(i);
+  setupBuffers(tiles, !opt.empty);
+}
+// a world without ants yet (the map painter): just the ground
+function placeNoStarts() { carveRock(); }
+// the starting colonies, each in its own home meadow on random worlds
+function placeStarts(homes) {
   const inset = P.inset;
   // starting colonies: the corners first, then spots spread around the middle, each in its own home meadow
   const spots = [[inset, inset], [W - inset, inset], [inset, H - inset], [W - inset, H - inset], [W / 2, inset], [W / 2, H - inset], [inset, H / 2], [W - inset, H / 2]];
   const starts = [];
   for (let k = 0; k < Math.min(P.startColours, spots.length); k++) starts.push(flatSpot(spots[k][0], spots[k][1]));
-  homeSpots = starts.map(s => [s[0], s[1]]); if (TERRAIN.on !== false) paintHomes(homeSpots);
+  homeSpots = starts.map(s => [s[0], s[1]]); if (homes && TERRAIN.on !== false) paintHomes(homeSpots);
   for (const [x, y] of starts) { const c = newColony(x, y); if (c) { c.skills = randomSkills(); mutate(c, P.mutStrength, 'Founded'); } } // each starting colour leans toward its own foods
   carveRock();
   for (const c of colonies) c.temp = tEff[c.y * W + c.x] / 255; // each starting nest likes the temperature of the ground it starts on
-  const tiles = new Uint32Array(N); for (let i = 0; i < N; i++) tiles[i] = packTile(i);
+}
+function setupBuffers(tiles, withPlants) {
   uploadClimate();
   device.queue.writeBuffer(bufs.tiles, 0, tiles);
   device.queue.writeBuffer(bufs.occ, 0, new Uint32Array(N));
@@ -6129,7 +6140,7 @@ function setup(newCap) {
     { binding: 2, resource: { buffer: bufs.tsum } }, { binding: 3, resource: { buffer: p } },
     { binding: 4, resource: { buffer: bufs.ants } }, { binding: 5, resource: { buffer: bufs.food } }, { binding: 6, resource: { buffer: bufs.climate } }, { binding: 7, resource: { buffer: bufs.base } }, { binding: 8, resource: { buffer: bufs.look } }] });
   drawBG = [dbg(bufs.posA), dbg(bufs.posB)];
-  for (let k = 0; k < plantTarget(); k++) spawnPlant();
+  if (withPlants) for (let k = 0; k < plantTarget(); k++) spawnPlant();
   writeNests();
 }
 
@@ -6419,7 +6430,7 @@ knob('maxAnts', () => {}, v => capFromSlider(v).toLocaleString());
 // a new ant limit starts a new world: ask first (unless the player chose not to be asked again)
 let antCapVal = +$('maxAnts').value;
 $('maxAnts').addEventListener('change', () => confirmReset(
-  () => { antCapVal = +$('maxAnts').value; doReset(); },
+  () => { antCapVal = +$('maxAnts').value; blankWorld(); showWorldChooser(false); },
   () => { $('maxAnts').value = antCapVal; $('maxAnts').dispatchEvent(new Event('input')); }));
 knob('turnMax', v => { P.turnMax = v * Math.PI / 180; }, v => v + '° per step');
 knob('wobble', v => { P.wobble = v; }, v => v.toFixed(2));
@@ -6620,7 +6631,8 @@ async function importTerrain(file) {
     let kept = 0; for (let i = 0; i < N; i++) if (alpha[i] < 255 && !wall[i]) { terr[i] = alpha[i]; kept++; } // alpha 255 means "untouched": the biome's own ground
     uploadTiles(); uploadClimate();
     $('cMsg').textContent = `Loaded a ${w} × ${h} terrain map${kept ? ', with the dug ground it was saved with' : ''}.`;
-  } catch (e) { $('cMsg').textContent = `Could not read that image (${e.message || e}).`; }
+    return { w, h };
+  } catch (e) { $('cMsg').textContent = `Could not read that image (${e.message || e}).`; return null; }
 }
 $('cExport').addEventListener('click', exportTerrain);
 $('cImport').addEventListener('click', () => $('cFile').click());
@@ -6664,23 +6676,185 @@ document.querySelectorAll('[data-tip]').forEach(el => {
 
 // play, reset
 $('play').addEventListener('click', () => { running = !running; $('play').textContent = running ? 'Pause' : 'Play'; });
-function doReset(capOverride) {
+function doReset(capOverride, climate) {
   if (testMap && !testMap.done) finishTests(true);
   testMap = null;
   closeSheet(); stopFollow(); setHyper(false);
   EVENTS.length = 0; eventsDirty = true;
-  setup(capOverride || capFromSlider(+$('maxAnts').value));
+  setup(capOverride || capFromSlider(+$('maxAnts').value), climate ? { climate } : {});
   view.goal = null; view.anchor = null; view.cx = W / 2; view.cy = H / 2; view.zoom = view.tz = fitZoom();
   updatePanel();
 }
-$('reset').addEventListener('click', () => doReset());
+$('reset').addEventListener('click', () => showWorldChooser(true));
+
+// ---------- choosing a world: random, from an image, or painted by hand ----------
+const chooser = document.createElement('div'); chooser.className = 'confirm'; chooser.hidden = true;
+chooser.innerHTML = `<div class="confirm-card wc-card" role="dialog" aria-modal="true" aria-labelledby="wcT">
+  <h3 id="wcT">Choose your world</h3>
+  <div class="wc-opts">
+    <button id="wcRandom" class="wc-opt"><b>Random world</b><span>A fresh map with its own climates, lakes and mountains.</span></button>
+    <button id="wcImage" class="wc-opt"><b>Load from image</b><span>Use a map image: red is temperature, green is moisture, blue is rarity. Saved terrain maps work too.</span></button>
+    <button id="wcPaint" class="wc-opt"><b>Paint your own map</b><span>Paint warm and cold, dry and wet, common and rare ground, and watch the land form as you go.</span></button>
+  </div>
+  <p class="wc-msg" id="wcMsg" aria-live="polite"></p>
+  <div class="cf-btns"><button id="wcCancel">Keep my current world</button></div>
+  <input type="file" id="wcFile" accept="image/*" hidden>
+</div>`;
+document.body.appendChild(chooser);
+let editing = false;
+function blankWorld(climate) {
+  closeSheet(); stopFollow(); setHyper(false);
+  EVENTS.length = 0; eventsDirty = true;
+  setup(capFromSlider(+$('maxAnts').value), { empty: true, climate });
+  view.goal = null; view.anchor = null; view.cx = W / 2; view.cy = H / 2; view.zoom = view.tz = fitZoom();
+  updatePanel();
+}
+function setRunning(on) { running = on; $('play').textContent = on ? 'Pause' : 'Play'; }
+function showWorldChooser(canCancel) {
+  if (tut) return;
+  setHyper(false); setRunning(false); toggleDrawer(false);
+  $('wcCancel').parentElement.hidden = !canCancel || !colonies.length;
+  $('wcMsg').textContent = ''; chooser.hidden = false; $('wcRandom').focus();
+}
+function closeChooser() { chooser.hidden = true; }
+$('wcCancel').addEventListener('click', () => { closeChooser(); setRunning(true); });
+$('wcRandom').addEventListener('click', () => { closeChooser(); doReset(); setRunning(true); });
+$('wcPaint').addEventListener('click', () => { closeChooser(); blankWorld('flat'); openPainter('Start painting. Everything is mild meadow for now.'); });
+$('wcImage').addEventListener('click', () => $('wcFile').click());
+$('wcFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  $('wcMsg').textContent = 'Reading the image…';
+  blankWorld('flat');
+  const ok = await importTerrain(f);
+  if (!ok) { $('wcMsg').textContent = 'That image could not be read. Try a PNG or JPG file.'; return; }
+  closeChooser(); openPainter(`Loaded your ${ok.w} × ${ok.h} image. Touch it up with the brushes if you like, then save.`);
+});
+
+// the map painter: brushes for temperature, moisture and rarity; the land is worked out again under the brush as you paint
+const painter = document.createElement('div'); painter.className = 'painter'; painter.id = 'painter'; painter.hidden = true;
+painter.innerHTML = `<h3>Paint your world</h3>
+  <p class="hint" id="ptMsg"></p>
+  <div class="seg" role="group" aria-label="Brush">
+    <button data-b="t" aria-pressed="true">Temperature</button><button data-b="h" aria-pressed="false">Moisture</button><button data-b="w" aria-pressed="false">Rarity</button>
+  </div>
+  <div class="ctl"><div class="row"><label for="ptVal" id="ptValL">Paint</label><output id="ptValV"></output></div>
+    <input type="range" id="ptVal" min="0" max="255" step="1" value="200"><div class="pbar" id="ptBar"></div></div>
+  <p class="hint" id="ptAbout"></p>
+  <div class="ctl"><div class="row"><label for="ptSize">Brush size</label><output id="ptSizeV"></output></div><input type="range" id="ptSize" min="10" max="320" step="5" value="120"></div>
+  <div class="ctl"><div class="row"><label for="ptStr">Strength</label><output id="ptStrV"></output></div><input type="range" id="ptStr" min="0.05" max="1" step="0.05" value="0.35"></div>
+  <div class="btns"><button id="ptMove" aria-pressed="false">Move the map</button><button id="ptUndo" disabled>Undo</button></div>
+  <div class="btns"><button id="ptFlat">Start over: meadow</button><button id="ptRand">Start over: random</button></div>
+  <p class="hint">Hover the map to see what grows where. Drag with two fingers, the right mouse button or "Move the map" to look around; scroll or pinch to zoom.</p>
+  <div class="cf-btns"><button id="ptCancel">Back</button><button id="ptSave" class="primary">Save and start</button></div>`;
+document.body.appendChild(painter);
+const ring = document.createElement('div'); ring.className = 'brush-ring'; ring.hidden = true; cv.parentElement.appendChild(ring);
+const ED = { b: 't', val: { t: 200, h: 200, w: 245 }, size: 120, str: 0.35, move: false, undo: [], stroke: null, dirty: null };
+const brushArr = () => ED.b === 't' ? clT : ED.b === 'h' ? clH : clW;
+function brushWords(b, v) {
+  const f = v / 255;
+  if (b === 't') return [`${Math.round(f * 50 - 10)}°C`, 'Cold ground turns to tundra, snow and taiga, hot ground to desert, savanna and jungle. Mountain tops are always a little colder.'];
+  if (b === 'h') return [f > 0.9 ? `${Math.round(f * 100)}% · water` : f > 0.86 ? `${Math.round(f * 100)}% · beach` : `${Math.round(f * 100)}%`, 'Dry ground gives steppe and desert, wet ground swamp and jungle. Above 90% it becomes water (ice when it is cold).'];
+  const r = ridge(f), rare = Math.abs(f - 0.5) > 0.44 - 0.1 * TERRAIN.weird;
+  return [rare ? 'rare biomes' : r > 0.55 ? 'mountains' : r > 0.3 ? 'hills' : 'common', 'Rarity in the middle is ordinary land. Part way out mountain ranges rise, and at the very ends the special biomes grow: flower fields, mushroom groves, badlands, giant groves, ice spikes and bogs.'];
+}
+const BAR = {
+  t: 'linear-gradient(90deg,#4a7bd1,#9ec7e8,#b9c98a,#e2b65a,#d9663b)',
+  h: 'linear-gradient(90deg,#d9c38a,#9fbf6a,#4f8f5a,#3d7a6e 86%,#e5d6a3 86%,#e5d6a3 90%,#2f5f9e 90%)',
+  w: 'linear-gradient(90deg,#c46bd6 0%,#c46bd6 6%,#8a8a8a 10%,#8a8a8a 22%,#7aa35a 32%,#7aa35a 68%,#8a8a8a 78%,#8a8a8a 90%,#c46bd6 94%,#c46bd6 100%)' };
+function showBrush() {
+  painter.querySelectorAll('[data-b]').forEach(o => o.setAttribute('aria-pressed', o.dataset.b === ED.b));
+  $('ptVal').value = ED.val[ED.b]; $('ptValL').textContent = { t: 'Temperature', h: 'Moisture', w: 'Rarity' }[ED.b];
+  const [v, about] = brushWords(ED.b, ED.val[ED.b]); $('ptValV').textContent = v; $('ptAbout').textContent = about; $('ptBar').style.background = BAR[ED.b];
+  $('ptSizeV').textContent = ED.size + ' tiles'; $('ptStrV').textContent = Math.round(ED.str * 100) + '%';
+  $('ptMove').setAttribute('aria-pressed', ED.move); $('ptUndo').disabled = !ED.undo.length;
+}
+painter.querySelectorAll('[data-b]').forEach(o => o.addEventListener('click', () => { ED.b = o.dataset.b; showBrush(); }));
+$('ptVal').addEventListener('input', () => { ED.val[ED.b] = +$('ptVal').value; showBrush(); });
+$('ptSize').addEventListener('input', () => { ED.size = +$('ptSize').value; showBrush(); });
+$('ptStr').addEventListener('input', () => { ED.str = +$('ptStr').value; showBrush(); });
+$('ptMove').addEventListener('click', () => { ED.move = !ED.move; setMode(ED.move ? 'look' : 'paint'); showBrush(); });
+function openPainter(msg) {
+  editing = true; setRunning(false); toggleDrawer(false); showSide(false);
+  ED.undo = []; ED.move = false; setMode('paint'); $('ptMsg').textContent = msg || '';
+  painter.hidden = false; document.body.classList.add('painting'); showBrush();
+}
+function closePainter() { editing = false; painter.hidden = true; ring.hidden = true; document.body.classList.remove('painting'); setMode('look'); }
+// a dab of paint: pull the climate toward the brush value, strongest in the middle
+function dab(cx, cy) {
+  const arr = brushArr(), tgt = ED.val[ED.b], r = ED.size, str = ED.str;
+  const x0 = Math.max(0, Math.floor(cx - r)), x1 = Math.min(W - 1, Math.ceil(cx + r)), y0 = Math.max(0, Math.floor(cy - r)), y1 = Math.min(H - 1, Math.ceil(cy + r));
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const d2 = ((x - cx) ** 2 + (y - cy) ** 2) / (r * r); if (d2 >= 1) continue;
+    const f = str * (1 - d2) * (1 - d2), i = y * W + x, v = arr[i];
+    arr[i] = Math.round(v + (tgt - v) * f);
+  }
+  const d = ED.dirty; ED.dirty = d ? [Math.min(d[0], x0), Math.min(d[1], y0), Math.max(d[2], x1), Math.max(d[3], y1)] : [x0, y0, x1, y1];
+  const s2 = ED.stroke.rect; ED.stroke.rect = s2 ? [Math.min(s2[0], x0), Math.min(s2[1], y0), Math.max(s2[2], x1), Math.max(s2[3], y1)] : [x0, y0, x1, y1];
+}
+function strokeTo(wx, wy) {
+  const st = ED.stroke, step = Math.max(2, ED.size * 0.3);
+  const dist = Math.hypot(wx - st.x, wy - st.y); if (dist < step) return;
+  const n = Math.floor(dist / step);
+  for (let k = 1; k <= n; k++) dab(st.x + (wx - st.x) * k / n, st.y + (wy - st.y) * k / n);
+  st.x = wx; st.y = wy;
+}
+function climateRows(y0, y1) {
+  const a = new Uint32Array((y1 - y0 + 1) * W);
+  for (let i = y0 * W, j = 0; i < (y1 + 1) * W; i++, j++) a[j] = packClimate(i);
+  device.queue.writeBuffer(bufs.climate, y0 * W * 4, a);
+  device.queue.writeBuffer(bufs.base, y0 * W, baseR, y0 * W, (y1 - y0 + 1) * W);
+}
+// once per frame: work out the land again where the paint went, and send it to the graphics card
+function flushPaint() {
+  const d = ED.dirty; if (!d) return; ED.dirty = null;
+  classify(false, d[0], d[1], d[2], d[3]);
+  const ya = d[1], yb = Math.min(H - 1, d[3] + 1);
+  uploadTiles(ya, yb); climateRows(ya, yb);
+}
+function startStroke(wx, wy) {
+  if (ED.undo.length >= 4) ED.undo.shift();
+  ED.undo.push({ t: clT.slice(), h: clH.slice(), w: clW.slice(), rect: null });
+  ED.stroke = { x: wx, y: wy, rect: null }; dab(wx, wy);
+}
+function endStroke() { if (!ED.stroke) return; ED.undo[ED.undo.length - 1].rect = ED.stroke.rect; ED.stroke = null; showBrush(); }
+$('ptUndo').addEventListener('click', () => {
+  const u = ED.undo.pop(); if (!u) return;
+  clT.set(u.t); clH.set(u.h); clW.set(u.w);
+  if (u.rect) { ED.dirty = u.rect; flushPaint(); }
+  showBrush();
+});
+function restartMap(climate, msg) { blankWorld(climate); ED.undo = []; $('ptMsg').textContent = msg; showBrush(); setRunning(false); }
+$('ptFlat').addEventListener('click', () => restartMap('flat', 'A clean meadow to paint on.'));
+$('ptRand').addEventListener('click', () => restartMap(undefined, 'A random map to start from. Paint over anything you want to change.'));
+$('ptCancel').addEventListener('click', () => { closePainter(); showWorldChooser(false); });
+$('ptSave').addEventListener('click', () => {
+  confirmBox('Start on this map?', 'The ants move in and time starts. The map can not be painted any more after this.', 'Start', () => {
+    closePainter(); doReset(undefined, 'keep'); setRunning(true);
+  });
+});
+// a simple yes or no question, using the same box as the reset warning
+function confirmBox(title, text, okLabel, go) {
+  const t = $('cfT').textContent, p = resetBox.querySelector('p').textContent, ok = $('cfGo').textContent;
+  const skip = resetBox.querySelector('.cf-skip'); skip.hidden = true;
+  $('cfT').textContent = title; resetBox.querySelector('p').textContent = text; $('cfGo').textContent = okLabel;
+  const restore = () => { $('cfT').textContent = t; resetBox.querySelector('p').textContent = p; $('cfGo').textContent = ok; skip.hidden = false; };
+  if (cfDone) cfDone.cancel?.();
+  cfDone = { go: () => { restore(); go(); }, cancel: restore }; resetBox.hidden = false; $('cfGo').focus();
+}
+// the brush outline follows the pointer
+cv.addEventListener('pointermove', e => {
+  if (!editing || mode !== 'paint') { ring.hidden = true; return; }
+  const d = ED.size * 2 * view.zoom; ring.hidden = false;
+  ring.style.width = ring.style.height = d + 'px'; ring.style.left = (e.offsetX - d / 2) + 'px'; ring.style.top = (e.offsetY - d / 2) + 'px';
+});
+cv.addEventListener('pointerleave', () => { ring.hidden = true; });
 
 // ---------- tap tools ----------
 let mode = 'look';
 function setMode(m) {
   mode = m;
   for (const [id, k] of [['mLook', 'look'], ['mPlant', 'plant'], ['mNest', 'nest'], ['mWall', 'wall'], ['mErase', 'erase']]) $(id).setAttribute('aria-pressed', m === k);
-  cv.style.cursor = m === 'wall' || m === 'erase' ? 'crosshair' : '';
+  cv.style.cursor = m === 'wall' || m === 'erase' || m === 'paint' ? 'crosshair' : '';
 }
 $('mLook').addEventListener('click', () => setMode('look'));
 $('mPlant').addEventListener('click', () => setMode('plant'));
@@ -6723,6 +6897,12 @@ const pts = new Map(); let drag = null, pinch = null, tapOk = false, painting = 
 cv.addEventListener('pointerdown', e => {
   cv.setPointerCapture(e.pointerId);
   pts.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+  if (pts.size === 1 && mode === 'paint' && editing && e.button === 0) {
+    const [wx, wy] = toWorld(e.offsetX, e.offsetY);
+    startStroke(wx, wy); tapOk = false; drag = null;
+    return;
+  }
+  if (pts.size === 2 && ED.stroke) endStroke();
   if (pts.size === 1 && (mode === 'wall' || mode === 'erase')) {
     const [wx, wy] = toWorld(e.offsetX, e.offsetY);
     painting = { x: wx, y: wy }; paintLine(wx, wy, wx, wy, mode === 'wall'); tapOk = false; drag = null;
@@ -6739,6 +6919,7 @@ cv.addEventListener('pointerdown', e => {
 cv.addEventListener('pointermove', e => {
   if (!pts.has(e.pointerId)) return;
   pts.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+  if (ED.stroke && pts.size === 1) { const [wx, wy] = toWorld(e.offsetX, e.offsetY); strokeTo(wx, wy); return; }
   if (painting && pts.size === 1) {
     const [wx, wy] = toWorld(e.offsetX, e.offsetY);
     paintLine(painting.x, painting.y, wx, wy, mode === 'wall'); painting.x = wx; painting.y = wy;
@@ -6758,11 +6939,11 @@ cv.addEventListener('pointermove', e => {
 function endPointer(e) {
   const wasTap = e.type === 'pointerup' && tapOk && pts.size === 1;
   pts.delete(e.pointerId);
-  if (!pts.size) painting = null;
+  if (!pts.size) { painting = null; endStroke(); }
   if (pts.size < 2) pinch = null;
   if (pts.size === 1) { const p = [...pts.values()][0]; drag = { x: p.x, y: p.y, cx: view.cx, cy: view.cy }; }
   else if (pts.size === 0) drag = null;
-  if (wasTap) handleTap(e.offsetX, e.offsetY);
+  if (wasTap && !editing) handleTap(e.offsetX, e.offsetY);
 }
 cv.addEventListener('pointerup', endPointer);
 cv.addEventListener('pointercancel', endPointer);
@@ -7526,7 +7707,7 @@ addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input,select,textarea')) return;
   if (e.key === 'Escape' && !drawer.hidden) toggleDrawer(false);
   else if (e.key === 'f' || e.key === 'F') fullscreen();
-  else if (e.key === 'h' || e.key === 'H') setHyper(!hyper.on);
+  else if ((e.key === 'h' || e.key === 'H') && !editing && chooser.hidden) setHyper(!hyper.on);
   else if (e.key === ' ') { e.preventDefault(); $('play').click(); }
 });
 let gpuLost = '';
@@ -7976,7 +8157,7 @@ function endTutorial() {
   try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {}
   for (const sh of sheets.slice()) closeSheet(sh); showSide(false);
   $('tutLoadT').textContent = 'Building your world'; tutLoad.hidden = false;
-  setTimeout(() => { doReset(); setTimeout(() => { tutLoad.hidden = true; }, 300); }, 60);
+  setTimeout(() => { blankWorld(); setTimeout(() => { tutLoad.hidden = true; showWorldChooser(false); }, 300); }, 60);
 }
 tutPrev.addEventListener('click', () => { if (tut && tut.step > 0) tutGo(tut.step - 1); });
 tutNext.addEventListener('click', () => { if (!tut) return; if (tut.step < TUT_STEPS.length - 1) tutGo(tut.step + 1); else endTutorial(); });
@@ -8229,8 +8410,8 @@ resize();
 new ResizeObserver(resize).observe(tray);
 LS(0.82, 'Growing the world…');
 await new Promise(r => setTimeout(r, 30));
-setup(capFromSlider(+$('maxAnts').value));
-LS(0.95, 'Letting the ants out…');
+setup(capFromSlider(+$('maxAnts').value), { empty: true });
+LS(0.95, 'Almost there…');
 ready = true;
 view.cx = W / 2; view.cy = H / 2; view.zoom = view.tz = fitZoom(); clampView();
 updatePanel();
@@ -8248,6 +8429,7 @@ function frame(now) {
 function frameBody(now) {
   const dt = Math.min(0.1, Math.max(0.001, (now - last) / 1000)); last = now;
   camUpdate(dt);
+  if (editing) flushPaint();
   frameNo++;
   if (pickWanted && !pendingPick && frameNo - pickFrame > 90) { const m = pickMissed; pickWanted = null; pickMissed = null; pickFrom = Infinity; if (m) m(); } // no answer from the graphics card: give up
   // the browser can report finished work a few frames late, so allow several frames in flight; the time of skipped frames is kept so speed doesn't drop
@@ -8267,7 +8449,7 @@ function frameBody(now) {
   const pick = pendingPick; pendingPick = null;
   simFrame(steps, { zoom: view.zoom, cx: view.cx, cy: view.cy, vw, vh, dpr, trails: hyper.on ? true : showTrails, sum: hyper.on ? drawNow : frameNo % 5 === 0, trailCol, territory: hyper.on, mapView, view: target().createView(), w: cv.width, h: cv.height,
     pick: hyper.on ? null : pick, follow: hyper.on ? null : follow.idx, ants: !hyper.on });
-  if (!loaded) { loaded = true; loadDone(); let seen = false; try { seen = localStorage.getItem(TUT_KEY) === '1'; } catch (e) {} if (!seen && !/notut/.test(location.hash)) setTimeout(startTutorial, 50); } // first visit: start with the tutorial
+  if (!loaded) { loaded = true; loadDone(); let seen = false; try { seen = localStorage.getItem(TUT_KEY) === '1'; } catch (e) {} if (!seen && !/notut/.test(location.hash)) setTimeout(startTutorial, 50); else if (!/nochoose/.test(location.hash)) showWorldChooser(false); else { doReset(); setRunning(true); } } // first visit: start with the tutorial
   stepsDone += steps; frames++;
   // graphics card time for this batch: from when it could start (submitted, and the previous batch done) until it finished
   if (steps && !HAS_TS) { const t0 = performance.now(), n = steps; device.queue.onSubmittedWorkDone().then(() => { const now2 = performance.now(), ms = now2 - Math.max(t0, lastDone); lastDone = now2; gpuMs = gpuMs * 0.7 + ms * 0.3; if (n >= 8) gpuPerStep = gpuPerStep * 0.7 + ms / n * 0.3; }); }
