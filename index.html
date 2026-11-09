@@ -423,6 +423,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
           <button role="tab" data-tab="trails" aria-selected="false">Trails</button>
           <button role="tab" data-tab="colonies" aria-selected="false">Colonies</button>
           <button role="tab" data-tab="evolution" aria-selected="false">Evolution</button>
+          <button role="tab" data-tab="experimental" aria-selected="false">Experimental</button>
         </nav>
 
         <!-- ===== Play ===== -->
@@ -961,6 +962,19 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="ctl" data-tip="How much a nest gains from being a specialist. Higher makes each nest stick to its own kind of food.">
               <div class="row"><label for="skillPower">Specialist bonus</label><output id="skillPowerV">strong</output></div>
               <input type="range" id="skillPower" min="1" max="6" step="0.5" value="3.5">
+            </div>
+            </div>
+          </details>
+        </section>
+        <section class="tabpanel" id="tab-experimental" role="tabpanel" hidden>
+          <details class="sec" open>
+            <summary>Experimental features</summary>
+            <div class="sec-body">
+            <div class="hint">Wild extras, picked from your Instagram comments. They are just for fun, not balanced, and all off unless you switch them on.</div>
+            <label class="switch" for="xCasino" data-tip="Now and then a casino opens somewhere on the map. The first ant to find it runs home laying a sparkly gold trail, and ants follow it before any food trail. Every ant that walks in on the gold trail is the payment. Once 15 ants of one colour have paid, the three wheels spin: double ants, three queens, an explosion, a giant food source, a gold, silver or bronze nest, a giant beast, lucky genes, a food jackpot, or nothing at all."><span>Casino</span><input type="checkbox" id="xCasino"></label>
+            <div class="ctl" data-tip="How often a casino opens, on average. Only one is open at a time.">
+              <div class="row"><label for="casinoEvery">A casino about every</label><output id="casinoEveryV">15 min</output></div>
+              <input type="range" id="casinoEvery" min="2" max="60" step="1" value="15">
             </div>
             </div>
           </details>
@@ -3682,9 +3696,12 @@ const MAP_SIZE = (() => {
 const SMALL_DEVICE = MAP_SIZE < 3200 || (window.matchMedia && matchMedia('(pointer: coarse)').matches);
 const W = MAP_SIZE, H = MAP_SIZE, N = W * H, CS = 64, CW = W / CS, NCH = CW * CW, MINUTE = 900, MAXCOL = 1024, BATCH = 60; // MAXCOL: room for nests on the graphics card; P.maxNests is the limit in play
 const COLORS = [[255,79,216],[155,225,93],[242,238,227],[63,224,197],[167,139,250],[214,170,110],[120,170,255],[255,150,120]];
-const NAMES = ['Magenta','Lime','Bone','Teal','Violet','Tan','Sky','Coral','Amber','Rose','Mint','Plum','Rust','Cyan','Olive','Peach','Indigo','Ruby','Moss','Gold','Lilac','Copper','Jade','Sand'];
+const NAMES = ['Magenta','Lime','Bone','Teal','Violet','Tan','Sky','Coral','Amber','Rose','Mint','Plum','Rust','Cyan','Olive','Peach','Indigo','Ruby','Moss','Saffron','Lilac','Gold','Silver','Bronze'];
+// the last three colours only come from the casino, and their ants are shinier
+const CASINO_CI = [21, 22, 23], CASINO_RGB = { 21: [255, 204, 51], 22: [205, 212, 224], 23: [214, 132, 62] };
 // colour families beyond the first 8 get generated colours spread around the colour wheel
 function famRGB(i) {
+  if (CASINO_RGB[i]) return CASINO_RGB[i];
   if (i < COLORS.length) return COLORS[i];
   const h = ((i * 137.508) % 360) / 360, s = 0.62, l = 0.62;
   const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
@@ -3702,7 +3719,7 @@ function nestName() {
 }
 const P = { trailView: 3, deadFade: 0.6, scouts: 0.15, wander: 600, vision: 4, wobble: 0.35, novelty: 0.3, turnMax: 26 * Math.PI / 180, jitter: 0.18, exploreInc: 0.05, trailInc: 0.15,
   fade: 1, space: 2.2, slow: 3, nestEnter: 3.5, restMin: 20, restVar: 120, stamina: 4000, hungryAt: 0.2, starveDmg: 0.04, hp: 30,
-  dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.35, maxColours: 24, capFounderEvery: 3, firstFounder: 900, maxNests: 50, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
+  dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.35, maxColours: 24, capFounderEvery: 3, firstFounder: 900, maxNests: 50, xCasino: false, casinoEvery: 15, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
   treeChance: 0.2, treeMax: 2, treeFood: 20000, treeRadius: 10, treeScent: 140, treeDrop: 1.2,
   beastChance: 0.25, beastMax: 3, beastHp: 300, beastDmg: 4, beastBiteEvery: 6, beastFood: 400, beastSpeed: 0.35, beastReach: 2.6, beastLife: 6, dig: true, digRate: 0.15, rate: 1, eat: 0.9, birthBuffer: 2, birthCost: 1, birthBurst: 3, starveKill: 1, startAnts: 10, startFood: 80, nestMax: 150,
   foodLife: 8, graceMin: 8, shieldMin: 10, founderStock: 4, abilityAt: 1.6, mutStrength: 12, mutEvery: 200, mutLean: false, splitDrift: 120, plantMin: 1500, plantVar: 1500, plantDensity: 0.85, plantDecay: 1, plantSpawn: 1, dropDiv: 4, plantNestGap: 70,
@@ -3713,7 +3730,7 @@ const P = { trailView: 3, deadFade: 0.6, scouts: 0.15, wander: 600, vision: 4, w
 const FADE_EVERY = 32; // each trail chunk fades (and empty ones are freed) once every 32 steps, a 32nd of them per step
 const GSTRIDE = 26, CAPMAX = 500000, MAXSPAWN = 8192, MAXDROP = 16384;
 // per-colony counters: delivered, trips, starved, inside, out, carrying, kills, lost, food raided from it, killed inside it, last red step, food raided by it
-const CTR = { delivered: 0, trips: 1, starved: 2, inside: 3, out: 4, carrying: 5, kills: 6, lost: 7, raidedFrom: 8, lostInside: 9, redStep: 10, plundered: 11, sent: 12, founders: 13, escortBack: 14, received: 15, warTarget: 16, warStep: 17, leaves: 18, meat: 19, jobs: 20, groups: 32 }, CTRN = 40; // groups: food delivered per food group (seeds, greens, sweets, hunting, scavenging, nest food)
+const CTR = { delivered: 0, trips: 1, starved: 2, inside: 3, out: 4, carrying: 5, kills: 6, lost: 7, raidedFrom: 8, lostInside: 9, redStep: 10, plundered: 11, sent: 12, founders: 13, escortBack: 14, received: 15, warTarget: 16, warStep: 17, leaves: 18, meat: 19, jobs: 20, groups: 32, casino: 38 }, CTRN = 40; // groups: food delivered per food group (seeds, greens, sweets, hunting, scavenging, nest food)
 const MAXFAM = 24; // colour families; each family shares one set of trails
 // the blue way home belongs to each nest; orange (food), red and green are shared by the colour family
 const TABLE_HOME = MAXCOL * NCH, TABLE = TABLE_HOME + MAXFAM * 4 * NCH;
@@ -3907,7 +3924,7 @@ const INF: f32 = 1e9;
 const PI: f32 = 3.14159265;
 const S_EXPLORE: u32 = 0u; const S_RETURN: u32 = 1u; const S_INSIDE: u32 = 2u; const S_CARRY: u32 = 3u; const S_RECRUIT: u32 = 4u; const S_WARRIOR: u32 = 5u; const S_FOUNDER: u32 = 6u; const S_DEAD: u32 = 7u;
 // why an ant carries or recruits
-const W_PLANT: u32 = 0u; const W_CORPSE: u32 = 1u; const W_CACHE: u32 = 2u; const W_RAID: u32 = 3u; const W_STOLEN: u32 = 4u; const W_HURT: u32 = 5u; const W_NEST: u32 = 6u; const W_ALLY: u32 = 7u;
+const W_CASINO: u32 = 8u; const W_PLANT: u32 = 0u; const W_CORPSE: u32 = 1u; const W_CACHE: u32 = 2u; const W_RAID: u32 = 3u; const W_STOLEN: u32 = 4u; const W_HURT: u32 = 5u; const W_NEST: u32 = 6u; const W_ALLY: u32 = 7u;
 // food types lying on a tile (bits 24..27 of the food word): what an ant picked up is W_FOOD + type
 const W_FOOD: u32 = 16u; const F_SEED: u32 = 1u; const F_CACTUS: u32 = 2u; const F_HONEY: u32 = 3u; const F_LEAF: u32 = 4u; const F_FRUIT: u32 = 5u; const F_NECTAR: u32 = 6u; const F_INSECT: u32 = 7u; const F_FROZEN: u32 = 8u; const F_PREY: u32 = 9u;
 const FOOD_VALUE = array<u32, 10>(1u, 1u, 2u, 1u, 2u, 2u, 1u, 3u, 3u, 4u);
@@ -3953,7 +3970,7 @@ const SIM = COMMON + /* wgsl */`
 @group(0) @binding(6) var<storage, read_write> world: array<atomic<u32>>;
 // pos: x, y, pass-through zone (0 = no nest), wander distance. info: family, flags (1 lay low, 2 red active, 4 needs food, spare food << 8), food, ants inside.
 // beasts: x, y, alive. trees: x, y, scent range, alive
-struct NestInfo { pos: array<vec4f, ${MAXCOL}>, info: array<vec4u, ${MAXCOL}>, beasts: array<vec4f, 4>, trees: array<vec4f, 4>, lim: array<vec4u, ${MAXCOL}> }; // lim: x = most food allies may have taken so far, y = most food raiders may have taken so far
+struct NestInfo { pos: array<vec4f, ${MAXCOL}>, info: array<vec4u, ${MAXCOL}>, beasts: array<vec4f, 4>, trees: array<vec4f, 4>, lim: array<vec4u, ${MAXCOL}>, casino: vec4f }; // lim: x = most food allies may have taken so far, y = most food raiders may have taken so far
 @group(0) @binding(7) var<uniform> ni: NestInfo;
 @group(0) @binding(8) var<uniform> phase: vec4u;            // x: step within this frame
 @group(0) @binding(9) var<storage, read_write> food: array<atomic<u32>>;
@@ -3971,10 +3988,10 @@ fn terrAt(x: i32, y: i32) -> u32 { return (atomicLoad(&tiles[tileIndex(x, y)]) >
 fn tIdx(col: u32, t: u32, x: i32, y: i32) -> u32 {
   let chunk = u32((y >> 6) * CW + (x >> 6));
   if (t == 0u) { return TABLE_OFF + col * NCH + chunk; } // each nest's own way home (blue)
-  return TABLE_OFF + TABLE_HOME + (ni.info[col].x * 4u + t) * NCH + chunk; // shared by the colour family
+  return TABLE_OFF + TABLE_HOME + (ni.info[col].x * 4u + (t & 3u)) * NCH + chunk; // shared by the colour family (gold, type 4, uses the family's free slot 0)
 }
 // which trail type a trail memory chunk holds, and which map chunk, from its table entry
-fn ownerType(owner: u32) -> u32 { let idx = owner - 1u - TABLE_OFF; if (idx < TABLE_HOME) { return 0u; } return ((idx - TABLE_HOME) / NCH) % 4u; }
+fn ownerType(owner: u32) -> u32 { let idx = owner - 1u - TABLE_OFF; if (idx < TABLE_HOME) { return 0u; } let tt = ((idx - TABLE_HOME) / NCH) % 4u; return select(tt, 4u, tt == 0u); }
 fn ownerChunk(owner: u32) -> u32 { return (owner - 1u - TABLE_OFF) % NCH; }
 fn cIdx(x: i32, y: i32) -> u32 { return (u32(y & 63) << 6u) | u32(x & 63); }
 fn pread(col: u32, t: u32, x: i32, y: i32) -> u32 {
@@ -4440,6 +4457,8 @@ fn digAt(x: i32, y: i32) {
 fn ctr(col: u32, k: u32) -> u32 { return CTR_OFF + col * CTRN + k; }
 fn freeSlot() { let t = atomicAdd(&world[2], 1u); atomicStore(&world[AFREE_OFF + t], me); }
 // a founder that dies before settling sends its group back to the nest
+// an ant that walks into the casino on its colour's gold trail is the payment: it is gone
+fn payCasino() { releaseTile(); a.state = S_DEAD; atomicAdd(&world[ctr(a.col, 38u)], 1u); freeSlot(); }
 fn escortHome() { if (a.state == S_FOUNDER && a.carry > 0u) { atomicAdd(&world[ctr(a.col, 14u)], a.carry); } }
 fn die() {
   releaseTile();
@@ -4700,10 +4719,10 @@ fn antStep(i: u32) {
   for (var b = 0u; b < 4u; b++) {
     let be = ni.beasts[b]; if (be.z <= 0.0) { continue; }
     let d2 = (be.x - pos.x) * (be.x - pos.x) + (be.y - pos.y) * (be.y - pos.y);
-    if (d2 <= prm.beastReach * prm.beastReach) {
+    if (d2 <= prm.beastReach * prm.beastReach * be.z * be.z) {
       let tk = BEAST_OFF + b * 2u + 1u; let tok = atomicLoad(&world[tk]);
       if (tok > 0u && atomicCompareExchangeWeak(&world[tk], tok, tok - 1u).exchanged) {
-        a.hp -= biteDamage(prm.beastDmg * (0.6 + rnd() * 0.8), a.col);
+        a.hp -= biteDamage(prm.beastDmg * be.z * (0.6 + rnd() * 0.8), a.col);
         if (a.hp <= 0.0) { dieKilled(x, y); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
       }
     }
@@ -4719,9 +4738,9 @@ fn antStep(i: u32) {
     if (bb >= 0) {
       let be = ni.beasts[bb];
       if (calm(a.col) && !abil(a.col, G_COURAGE)) {
-        if (bd < 64.0) { _ = stepToward(atan2(pos.y - be.y, pos.x - be.x)); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
+        if (bd < 64.0 * be.z * be.z) { _ = stepToward(atan2(pos.y - be.y, pos.x - be.x)); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
       } else {
-        if (bd <= prm.beastReach * prm.beastReach) {
+        if (bd <= prm.beastReach * prm.beastReach * be.z * be.z) {
           atomicAdd(&world[BEAST_OFF + u32(bb) * 2u], u32(prm.dmg * gene(a.col, G_BITE) * (0.5 + rnd()) * 100.0));
           dropRed(x, y); a.fought = curStep();
         } else { _ = stepToward(atan2(be.y - pos.y, be.x - pos.x)); }
@@ -4763,6 +4782,15 @@ fn antStep(i: u32) {
     } else {
       var moved = false;
       let lowKey = calm(a.col);
+      // the casino: walk in once it's in sight. The first ant of a colour runs home laying gold; the ones that come along the gold trail pay
+      let cz = ni.casino;
+      if (cz.z > 0.0) {
+        let cdx = cz.x - pos.x; let cdy = cz.y - pos.y; let cd2 = cdx * cdx + cdy * cdy;
+        if (cd2 <= 4.0) {
+          if (pget(a.col, 4u, x, y) > 0.03) { payCasino(); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
+          a.state = S_CARRY; a.carry = 0u; a.why = W_CASINO; a.since = 0u; a.dFood = 0.0; a.tAge = 0u; pos.z = wrapAng(pos.z + PI); moved = true;
+        } else if (cd2 < f32(R * R * 9)) { moveToward(cz.x + 0.5, cz.y + 0.5); moved = true; }
+      }
       // another colony's nest close by
       var sight = R + 2; if (abil(a.col, G_VIEW)) { sight = R * 3; } // Scouts
       let nn = otherNestNear(x, y, sight, false);
@@ -4811,12 +4839,15 @@ fn antStep(i: u32) {
       a.flags &= ~2u;
       // scouts: a share of the ants never follow food trails, so new food keeps being found while others work a known trail
       let scout = f32((me * 2654435761u) >> 24u) / 256.0 < prm.scouts;
-      if (!moved && !scout && a.ignore == 0u && a.unstuck == 0u) {
+      // the casino's gold trail beats the orange one (and even scouts can't resist it)
+      var tf = 1u;
+      if (cz.z > 0.0 && (pget(a.col, 4u, x, y) > 0.0 || pget(a.col, 4u, x + 3, y) > 0.0 || pget(a.col, 4u, x - 3, y) > 0.0 || pget(a.col, 4u, x, y + 3) > 0.0 || pget(a.col, 4u, x, y - 3) > 0.0)) { tf = 4u; }
+      if (!moved && (!scout || tf == 4u) && a.ignore == 0u && a.unstuck == 0u) {
         // the orange trail is noticed from 4x vision; follow it toward the food
-        let r = followTrail(1u, x, y, i32(f32(PR) * prm.trailView));
+        let r = followTrail(tf, x, y, i32(f32(PR) * prm.trailView));
         if (r == 1u) { moved = true; a.flags |= 2u; }
-        else if (r == 2u) { a.ignore = 120u; if (prm.clearR > 0u) { clearTrail(a.col, 1u, x, y, i32(prm.clearR)); } } // food gone: optionally scrub the dead end
-        else if (seekTrail(1u, x, y, R * 4, 6u)) { moved = true; a.flags |= 2u; }
+        else if (r == 2u) { a.ignore = 120u; if (prm.clearR > 0u) { clearTrail(a.col, tf, x, y, i32(prm.clearR)); } } // food gone: optionally scrub the dead end
+        else if (seekTrail(tf, x, y, R * 4, 6u)) { moved = true; a.flags |= 2u; }
         if (!moved && needsFood(a.col)) { // the green trail to an ally's spare food only matters while the own nest is short
           let rg = followTrail(3u, x, y, i32(f32(PR) * prm.trailView));
           if (rg == 1u || (rg == 0u && seekTrail(3u, x, y, R * 4, 6u))) { moved = true; }
@@ -4837,9 +4868,10 @@ fn antStep(i: u32) {
     }
   }
   if (a.state == S_CARRY) {
-    let q = pdist(a.col, 1u, x, y); if (q < a.dFood) { a.dFood = q; }
-    if ((a.steps & 3u) == 0u) { var tt = 1u; if (a.why == W_ALLY) { tt = 3u; } a.dFood = nearSource(a.col, tt, x, y, a.dFood); }
-    if (a.why != W_ALLY) { lay(a.col, 1u, x, y, a.dFood, prm.trailInc); }
+    let ct = select(1u, 4u, a.why == W_CASINO); // a casino finder lays gold instead of orange
+    let q = pdist(a.col, ct, x, y); if (q < a.dFood) { a.dFood = q; }
+    if ((a.steps & 3u) == 0u) { var tt = ct; if (a.why == W_ALLY) { tt = 3u; } a.dFood = nearSource(a.col, tt, x, y, a.dFood); }
+    if (a.why != W_ALLY) { lay(a.col, ct, x, y, a.dFood, prm.trailInc * select(1.0, 2.0, ct == 4u)); }
     if (a.why == W_ALLY) { let qg = pdist(a.col, 3u, x, y); var dg = a.dFood; if (qg < dg) { dg = qg; } lay(a.col, 3u, x, y, dg, prm.trailInc); }
     if (a.why == W_RAID) {
       // raiders also lay the red route back to the nest they robbed
@@ -4979,7 +5011,9 @@ fn trailSum(@builtin(workgroup_id) wg: vec3u, @builtin(local_invocation_index) l
     let f = atomicLoad(&world[base + c * 64u]) & 0xFFFFu; if (f == 0u) { continue; }
     let cell = c * 64u + li;
     let ti = (ky * 64u + (cell >> 6u)) * u32(W) + kx * 64u + (cell & 63u);
-    if (prm.colTrails == 1u) { atomicMax(&tsum[ti * 4u + t], (f << 8u) | (fam & 255u)); } else { atomicAdd(&tsum[ti * 4u + t], f); }
+    // the casino's gold trail shares the orange channel, with the top bit marking gold
+    let ch = select(t, 1u, t == 4u);
+    if (prm.colTrails == 1u) { atomicMax(&tsum[ti * 4u + ch], (f << 8u) | (fam & 255u)); } else { atomicAdd(&tsum[ti * 4u + ch], f); if (t == 4u) { atomicOr(&tsum[ti * 4u + 1u], 0x80000000u); } }
   }
 }
 // wipe every trail inside a rectangle (used when a wall is drawn, so old scent can't lead ants into it)
@@ -5171,7 +5205,7 @@ fn ramp(t: f32, a: vec3f, b: vec3f, c: vec3f) -> vec3f { if (t < 0.5) { return m
   else if (wl == 3u) { let dpt = clamp((0.2 - ht) / 0.2, 0.0, 1.0); c = mix(vec3f(28.0, 62.0, 96.0), vec3f(12.0, 26.0, 52.0), dpt) + t; }
   else if (wl == 1u) { c = vec3f(96.0, 84.0, 70.0) + t * 2.0; }
   // climate views
-  let vm = cam.showTrails >> 8u;
+  let vm = (cam.showTrails >> 8u) & 255u;
   if (vm == 1u) { c = mix(mix(vec3f(40.0, 80.0, 200.0), vec3f(230.0, 230.0, 210.0), clamp(temp * 2.0, 0.0, 1.0)), vec3f(220.0, 60.0, 30.0), clamp(temp * 2.0 - 1.0, 0.0, 1.0)); }
   else if (vm == 2u) { let hm = f32((cl >> 8u) & 255u) / 255.0; c = mix(vec3f(180.0, 140.0, 80.0), vec3f(30.0, 140.0, 170.0), hm); }
   else if (vm == 3u) { let wd = f32((cl >> 16u) & 255u) / 255.0; c = mix(vec3f(30.0, 30.0, 34.0), vec3f(200.0, 90.0, 230.0), abs(wd * 2.0 - 1.0)); }
@@ -5181,11 +5215,17 @@ fn ramp(t: f32, a: vec3f, b: vec3f, c: vec3f) -> vec3f { if (t < 0.5) { return m
   else if (((fv >> 16u) & 255u) > 0u) { c = vec3f(215.0, 124.0, 255.0); }
   else if ((fv & 255u) > 0u) { c = FOOD_COL[min((fv >> 24u) & 15u, 9u)]; }
   else if ((cam.showTrails & 255u) == 1u) {
-    var s = vec4f(f32(tsum[ti * 4u]), f32(tsum[ti * 4u + 1u]), f32(tsum[ti * 4u + 2u]), f32(tsum[ti * 4u + 3u])) / 65535.0;
+    let o1 = tsum[ti * 4u + 1u]; let gold = (o1 >> 31u) != 0u;
+    var s = vec4f(f32(tsum[ti * 4u]), f32(o1 & 0x7FFFFFFFu), f32(tsum[ti * 4u + 2u]), f32(tsum[ti * 4u + 3u])) / 65535.0;
     s = min(s, vec4f(1.0));
     if (s.x > 0.0) { let al = sqrt(s.x) * 0.6; c += (ramp(s.x, vec3f(22.0, 36.0, 110.0), vec3f(52.0, 110.0, 232.0), vec3f(170.0, 225.0, 255.0)) - c) * al; }
     if (s.w > 0.0) { let al = min(1.0, 0.25 + s.w * 0.8); c += (ramp(s.w, vec3f(14.0, 80.0, 46.0), vec3f(52.0, 204.0, 112.0), vec3f(190.0, 255.0, 210.0)) - c) * al; }
-    if (s.y > 0.0) { let al = min(1.0, 0.25 + s.y * 0.8); c += (ramp(s.y, vec3f(110.0, 38.0, 10.0), vec3f(232.0, 118.0, 30.0), vec3f(255.0, 214.0, 140.0)) - c) * al; }
+    if (s.y > 0.0 && gold) {
+      // the casino's gold trail: bright gold that sparkles
+      let al = min(1.0, 0.45 + s.y * 0.8); c += (ramp(s.y, vec3f(150.0, 105.0, 10.0), vec3f(255.0, 205.0, 40.0), vec3f(255.0, 245.0, 170.0)) - c) * al;
+      let tw = cam.showTrails >> 16u;
+      if (hash(u32(x) * 7u + (tw / 6u) * 131u, u32(y) * 3u + (tw / 6u)) > 0.9) { c = mix(c, vec3f(255.0, 255.0, 235.0), 0.85); }
+    } else if (s.y > 0.0) { let al = min(1.0, 0.25 + s.y * 0.8); c += (ramp(s.y, vec3f(110.0, 38.0, 10.0), vec3f(232.0, 118.0, 30.0), vec3f(255.0, 214.0, 140.0)) - c) * al; }
     if (s.z > 0.0) { let al = min(1.0, 0.25 + s.z * 0.8); c += (ramp(s.z, vec3f(105.0, 10.0, 22.0), vec3f(228.0, 40.0, 52.0), vec3f(255.0, 170.0, 180.0)) - c) * al; }
   } else if ((cam.showTrails & 255u) == 3u) {
     // territory: the ground takes the colour of the family whose trail is strongest here
@@ -5348,7 +5388,7 @@ const bufs = {};
 const mk = (size, usage) => device.createBuffer({ size, usage });
 const STO = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC;
 bufs.params = mk(224, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
-bufs.nests = mk(MAXCOL * 48 + 128, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+bufs.nests = mk(MAXCOL * 48 + 144, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.cam = mk(32 + MAXCOL * 16 + MAXFAM * 16, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.look = mk(MAXCOL * 64, STO); const lookF = new Float32Array(MAXCOL * 16);
 bufs.tiles = mk(N * 4, STO);
@@ -5438,7 +5478,7 @@ function newFamily() {
   const used = new Set(colonies.map(c => families.get(c.fam).ci));
   if (used.size >= P.maxColours) return null;
   let ci = 0; while (used.has(ci)) ci++;
-  if (ci >= MAXFAM) return null;
+  if (ci >= Math.min(MAXFAM, CASINO_CI[0])) return null; // gold, silver and bronze are kept for the casino
   const fam = ++famCounter; families.set(fam, { ci, name: famName(ci), n: 0 }); return fam;
 }
 function newColony(x, y, fam, ants = P.startAnts, food = P.startFood) {
@@ -5563,7 +5603,7 @@ let genesDirty = true, TOT = { born: 0, starved: 0, lost: 0, gathered: 0 }; // r
 const clampL = (v, a, b) => Math.min(b, Math.max(a, v));
 // markings belong to the colour family, so related nests look alike: 0 plain, 1 stripes, 2 spots, 3 two-tone, 4 pale tail tip, 5 chevrons
 const famHash = i => { let h = (i + 1) * 2654435761 >>> 0; h ^= h >>> 15; h = Math.imul(h, 2246822519) >>> 0; h ^= h >>> 13; return h >>> 0; };
-const lookPattern = c => famHash(c.ci) % 6;
+const lookPattern = c => CASINO_CI.includes(c.ci) ? 1 : famHash(c.ci) % 6;
 const lookShade = c => { const r = (famHash(c.ci) >>> 8) % 100 / 100; return r < 0.5 ? -0.9 + r * 0.8 : 0.35 + (r - 0.5) * 0.9; };
 function antLooks(c) {
   const g = k => gmul(c, k) - 1, T = c.temp ?? 0.5;
@@ -5580,10 +5620,10 @@ function antLooks(c) {
     clampL(0.6 + 2.5 * g(2), 0, 3),                 // waist length (Agility)
     clampL(2.0 * (g(8) - 0.05), 0, 1.4),            // back spines (Courage)
     lookPattern(c),                                 // markings (colour family)
-    clampL((T - 0.5) * 4, 0, 1),                    // shine (likes warmth)
+    CASINO_CI.includes(c.ci) ? 1 : clampL((T - 0.5) * 4, 0, 1), // shine (likes warmth; casino colours always gleam)
     clampL((0.5 - T) * 4, 0, 1),                    // hair (likes cold)
     clampL(1 + 0.6 * g(11) + 0.5 * g(13), 0.75, 1.6), // chest size (Carry, Energy)
-    lookShade(c)];                                  // shade of the markings
+    CASINO_CI.includes(c.ci) ? 0.9 : lookShade(c)]; // shade of the markings
 }
 function mutate(c, x, why) {
   if (!(x > 0)) return;
@@ -5852,6 +5892,76 @@ function spawnBeast() {
     return;
   }
 }
+// ---------- experimental: the casino ----------
+// now and then a casino opens somewhere. The first ant of a colour to find it runs home laying a sparkly gold trail;
+// every ant that follows that trail in is paid to the house. After 15 ants of one colour the wheels spin
+let casino = null;
+const CASINO_PAY = 15;
+function placeCasino() {
+  for (let k = 0; k < 80; k++) {
+    const x = 100 + ((rnd() * (W - 200)) | 0), y = 100 + ((rnd() * (H - 200)) | 0), i = y * W + x;
+    if (wall[i]) continue;
+    const near = colonies.reduce((m, c) => Math.min(m, Math.hypot(c.x - x, c.y - y)), 1e9);
+    if (near < 120 || near > 900) continue; // not on anyone's doorstep, but not out of reach either
+    casino = { x, y, open: true, at: simStep, paid: new Map(), spin: null };
+    emit('casino', 'A casino opened its doors', x, y);
+    return;
+  }
+}
+// what the wheels can land on: [symbol, how often, what happens]
+const CASINO_OUT = [
+  ['×2', 16, c => { for (let k = 0; k < CASINO_PAY * 2; k++) spawns.push(c.slot); return `${c.name} doubled up: ${CASINO_PAY * 2} ants walk out of the casino and home`; }],
+  ['♛', 14, c => { for (let k = 0; k < 3; k++) { spawns.push(c.slot | 1024); c.foundersOut++; } return `${c.name} won three queens, off to found new nests`; }],
+  ['💥', 7, c => {
+    const hit = colonies.filter(o => Math.hypot(o.x - casino.x, o.y - casino.y) < 260);
+    for (const o of hit) { const n = o.inside + o.out; if (n > 0) kills[o.slot * 2 + 1] += n; }
+    casino.boom = performance.now();
+    return hit.length ? `The casino exploded and took ${hit.length} nest${hit.length > 1 ? 's' : ''} with it` : 'The casino exploded. Luckily no nest was close enough to care';
+  }],
+  ['🍎', 14, c => {
+    const g = [0, 1, 2, 3, 4].reduce((b, k) => c.skills[k] > c.skills[b] ? k : b, 0);
+    const kind = ['grass', 'leafy', 'fruit', 'herb', 'herb'][g];
+    const p = addPlant(casino.x, casino.y, kind, (P.plantMin + P.plantVar) * 14);
+    p.rMul = 2.5; p.rateMul = 4; p.giant = true; if (g >= 3) p.ft = 7; // meat lovers get a mountain of insects
+    return `${c.name} won a giant ${['seed patch', 'leafy bush', 'fruit tree', 'pile of insects', 'pile of insects'][g]}: a lot of their favourite food`;
+  }],
+  ['🥇', 12, c => {
+    const ci = CASINO_CI[(rnd() * 3) | 0];
+    let fam = null; for (const [f, F] of families) if (F.ci === ci && colonies.some(o => o.fam === f)) { fam = f; break; }
+    if (!fam) { fam = ++famCounter; families.set(fam, { ci, name: famName(ci), n: 0 }); }
+    const n = newColony(casino.x, casino.y, fam, 20, 150);
+    if (!n) return 'The house tried to open its own nest, but there was no room';
+    // 20 lucky changes, all for the better here: the nest likes this spot's temperature and gets stronger genes
+    n.temp = tEff[casino.y * W + casino.x] / 255;
+    for (let k = 0; k < 20; k++) { const g = [0, 1, 2, 3, 6, 8, 9, 11, 13, 14][(rnd() * 10) | 0]; n.genes[g] = Math.min(GMAX, n.genes[g] + 6 + rnd() * 6); }
+    genesDirty = true;
+    return `The house wins: a ${famName(ci)} nest moved in where the casino stood`;
+  }],
+  ['👹', 7, c => {
+    const slot = [0, 1, 2, 3].find(s => !beasts.some(b => b.slot === s));
+    if (slot === undefined) return 'A giant beast tried to come out, but the map is full of beasts already';
+    beasts.push({ slot, fx: casino.x + 0.5, fy: casino.y + 0.5, hd: rnd() * Math.PI * 2, hp: P.beastHp * 5, maxHp: P.beastHp * 5, bite: 0, age: 0, goal: null, size: 5, slow: 5 });
+    beastDmgSeen[slot] = beastWords[slot * 2];
+    return 'A giant beast crawled out of the casino: five times bigger and stronger, but slow';
+  }],
+  ['🍀', 9, c => { for (let k = 0; k < 6; k++) { const g = [0, 1, 2, 3, 6, 8, 9, 11, 13, 14][(rnd() * 10) | 0]; c.genes[g] = Math.min(GMAX, c.genes[g] + 5 + rnd() * 5); } genesDirty = true; return `${c.name} got lucky genes: six of their genes got better`; }],
+  ['💰', 11, c => { addMixed(c, 300); return `${c.name} hit the jackpot: 300 food delivered to the nest`; }],
+  ['✗', 10, c => `${c.name} lost everything. The house always wins`],
+];
+function startSpin(c) {
+  let r = rnd() * CASINO_OUT.reduce((s, o) => s + o[1], 0), out = CASINO_OUT[0];
+  for (const o of CASINO_OUT) { r -= o[1]; if (r <= 0) { out = o; break; } }
+  casino.open = false; casino.spin = { t0: performance.now(), c, out, done: false };
+  emit('casino', `${c.name} paid ${CASINO_PAY} ants and pulled the lever`, casino.x, casino.y, [c]);
+}
+function stepCasino(steps) {
+  if (!casino) { if (P.xCasino && colonies.length && rnd() < steps / (P.casinoEvery * MINUTE)) placeCasino(); return; }
+  if (casino.open && (!P.xCasino || simStep - casino.at > 20 * MINUTE)) { if (P.xCasino) emit('casino', 'The casino closed and moved on', casino.x, casino.y); casino = null; return; }
+  const sp = casino.spin; if (!sp) return;
+  const t = performance.now() - sp.t0;
+  if (!sp.done && t > 2800) { sp.done = true; const msg = sp.out[2](sp.c); sp.msg = msg; emit('casino', msg, casino.x, casino.y, [sp.c]); }
+  if (t > 7000) casino = null;
+}
 const wrapA = a => Math.atan2(Math.sin(a), Math.cos(a));
 // beasts wander toward plants, steer away from nests and the edge, and earn a bite every few steps
 function stepBeasts(steps) {
@@ -5867,7 +5977,7 @@ function stepBeasts(steps) {
     if (b.goal && plants.includes(b.goal)) b.hd += wrapA(Math.atan2(b.goal.y - b.fy, b.goal.x - b.fx) - b.hd) * 0.03;
     for (const c of colonies) { const dx = b.fx - c.x, dy = b.fy - c.y; if (dx * dx + dy * dy < 3600) b.hd += wrapA(Math.atan2(dy, dx) - b.hd) * 0.08; }
     if (b.fx < 40 || b.fy < 40 || b.fx > W - 40 || b.fy > H - 40) b.hd += wrapA(Math.atan2(H / 2 - b.fy, W / 2 - b.fx) - b.hd) * 0.1;
-    const nx = b.fx + Math.cos(b.hd) * P.beastSpeed, ny = b.fy + Math.sin(b.hd) * P.beastSpeed, tx = Math.floor(nx), ty = Math.floor(ny);
+    const sp = P.beastSpeed / (b.slow || 1), nx = b.fx + Math.cos(b.hd) * sp, ny = b.fy + Math.sin(b.hd) * sp, tx = Math.floor(nx), ty = Math.floor(ny);
     if (tx >= 0 && ty >= 0 && tx < W && ty < H && !wall[ty * W + tx]) { b.fx = nx; b.fy = ny; } else b.hd += Math.PI * (0.5 + rnd());
     if (++b.bite >= P.beastBiteEvery) { b.bite = 0; beastTok[b.slot]++; }
   }
@@ -5925,11 +6035,11 @@ function stepPlants(steps) {
     }
     p.t -= steps;
     while (p.t <= 0 && p.left > 0) {
-      p.t += Math.max(1, Math.round((30 / P.rate + rnd() * 30) / P.dropDiv / K.rate));
+      p.t += Math.max(1, Math.round((30 / P.rate + rnd() * 30) / P.dropDiv / (K.rate * (p.rateMul || 1))));
       p.left -= P.plantDecay * K.decay;
-      const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * K.r;
+      const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * K.r * (p.rMul || 1);
       const x = Math.round(p.x + Math.cos(ang) * d), y = Math.round(p.y + Math.sin(ang) * d);
-      if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) drops.push((y * W + x) | (K.ft << 24));
+      if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) drops.push((y * W + x) | ((p.ft ?? K.ft) << 24));
     }
   }
   plants = plants.filter(p => p.left > 0);
@@ -5949,6 +6059,8 @@ function colonyUpdate() {
     c.meat += d(CTR.groups + 3) + d(CTR.groups + 4); c.incRecent = (c.incRecent || 0) * 0.995 + gsum;
     c.gathered += delivered; c.starved += deaths; TOT.gathered += delivered; TOT.starved += deaths; c.incAcc += delivered;
     takeFood(c, robbed); c.raided += robbed; if (robbed) c.raidedT = simStep;
+    const paid = d(CTR.casino);
+    if (paid && casino && casino.open) { const v = (casino.paid.get(c.slot) || 0) + paid; casino.paid.set(c.slot, v); if (v >= CASINO_PAY) startSpin(c); }
     c.kills += d(CTR.kills); c.lost += d(CTR.lost) + killedIn; TOT.lost += d(CTR.lost) + killedIn; c.plundered += d(CTR.plundered);
     if (killedIn) kills[c.slot * 2] += killedIn;
     const lv = d(CTR.leaves); c.fungus += lv; c.leaves += lv; c.leafRecent = (c.leafRecent || 0) * 0.995 + lv; c.incRecent = (c.incRecent || 0) + lv;
@@ -6036,7 +6148,7 @@ const nColUsed = () => Math.max(1, ...colonies.map(c => c.slot + 1));
 // small colonies lay low and only defend themselves
 const peaceful = c => (c.inside + c.out) < P.peaceBelow / gmul(c, 8) || (c.food < 1 && c.searchMul > 1.5);
 function writeNests() {
-  const reach = Math.max(P.nestEnter, P.space + 1.5), buf = new ArrayBuffer(MAXCOL * 48 + 128), nb = new Float32Array(buf), nu = new Uint32Array(buf);
+  const reach = Math.max(P.nestEnter, P.space + 1.5), buf = new ArrayBuffer(MAXCOL * 48 + 144), nb = new Float32Array(buf), nu = new Uint32Array(buf);
   for (const c of colonies) {
     const o = c.slot * 4;
     nb[o] = c.x; nb[o + 1] = c.y; nb[o + 2] = reach + 3 + Math.min(220, Math.sqrt(c.out) * 1.0); nb[o + 3] = P.wander * c.searchMul * gmul(c, 12);
@@ -6048,7 +6160,8 @@ function writeNests() {
     const lb = c.slot * CTRN, lo = MAXCOL * 8 + 32 + o;
     nu[lo] = (counts[lb + CTR.sent] + spare) >>> 0; nu[lo + 1] = (counts[lb + CTR.raidedFrom] + Math.max(0, Math.floor(c.food) - spare)) >>> 0;
   }
-  for (const b of beasts) { const o = MAXCOL * 8 + b.slot * 4; nb[o] = b.fx; nb[o + 1] = b.fy; nb[o + 2] = 1; }
+  for (const b of beasts) { const o = MAXCOL * 8 + b.slot * 4; nb[o] = b.fx; nb[o + 1] = b.fy; nb[o + 2] = b.size || 1; }
+  if (casino && casino.open) { const o = MAXCOL * 12 + 32; nb[o] = casino.x; nb[o + 1] = casino.y; nb[o + 2] = 1; }
   plants.filter(p => p.tree).slice(0, 4).forEach((p, k) => { const o = MAXCOL * 8 + 16 + k * 4; nb[o] = p.x; nb[o + 1] = p.y; nb[o + 2] = P.treeScent; nb[o + 3] = 1; });
   device.queue.writeBuffer(bufs.nests, 0, buf);
   // nest lookup grid: every chunk lists the nests whose pass-through zone or 70 tiles reach it
@@ -6089,7 +6202,7 @@ function setup(newCap, opt = {}) {
   bufs.posB = mk(cap * 16, STO);
   TOT = { born: 0, starved: 0, lost: 0, gathered: 0 };
   usedNestNames = new Set();
-  simStep = 0; cur = 0; colonies = []; deadColonies = []; slotFreed = new Array(MAXCOL); readApplied = readSeq; plants = []; drops = []; spawns = []; kills.fill(0); beasts = []; families = new Map(); famCounter = 0; lastSend = 0; lastSiege = 0; foundSeen = 0; beastDmgSeen.fill(0); beastWords.fill(0); foundRing.fill(0);
+  simStep = 0; cur = 0; colonies = []; deadColonies = []; slotFreed = new Array(MAXCOL); readApplied = readSeq; plants = []; drops = []; spawns = []; kills.fill(0); beasts = []; casino = null; families = new Map(); famCounter = 0; lastSend = 0; lastSiege = 0; foundSeen = 0; beastDmgSeen.fill(0); beastWords.fill(0); foundRing.fill(0);
   counts.fill(0); lastCtr.fill(0); freeAnts = cap;
   homeSpots = [];
   if (opt.climate === 'flat') { clT.fill(128); clH.fill(128); clW.fill(128); }
@@ -6145,6 +6258,7 @@ function setupBuffers(tiles, withPlants) {
 }
 
 // one frame: births, deaths and pellets from the CPU, then the steps, counting, the follow and tap readbacks, and drawing
+let doneT = 0; // when the graphics card last reported finished work
 let colTrails = false, followData = null, pickWanted = null, pickMissed = null, pickFrom = Infinity, readSeq = 0, readApplied = 0;
 const followBufs = [0, 1, 2].map(() => ({ buf: device.createBuffer({ size: 112, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ }), busy: false }));
 // a pending trail wipe (x0, y0, x1, y1 in tiles), done on the next frame
@@ -6204,7 +6318,7 @@ function simFrame(steps, o) {
   // draw
   if (o.view) {
   camF[0] = o.zoom * o.dpr; camF[1] = (o.vw / 2 - o.cx * o.zoom) * o.dpr; camF[2] = (o.vh / 2 - o.cy * o.zoom) * o.dpr;
-  camU[3] = cap; camF[4] = o.w; camF[5] = o.h; camU[6] = (o.trails ? (o.territory ? 3 : o.trailCol ? 2 : 1) : 0) | ((o.mapView || 0) << 8); camU[7] = nColUsed();
+  camU[3] = cap; camF[4] = o.w; camF[5] = o.h; camU[6] = (o.trails ? (o.territory ? 3 : o.trailCol ? 2 : 1) : 0) | ((o.mapView || 0) << 8) | (((performance.now() / 16) & 0xFFFF) << 16); camU[7] = nColUsed();
   for (let k = 0; k < MAXFAM; k++) { const fo = 8 + MAXCOL * 4 + k * 4, rgb = famRGB(k); camF[fo] = rgb[0] / 255; camF[fo + 1] = rgb[1] / 255; camF[fo + 2] = rgb[2] / 255; camF[fo + 3] = 1; }
   for (const c of colonies) { const o = 8 + c.slot * 4, rgb = famRGB(c.ci); camF[o] = rgb[0] / 255; camF[o + 1] = rgb[1] / 255; camF[o + 2] = rgb[2] / 255; camF[o + 3] = antSize(c); const L = antLooks(c); lookF.set(L, c.slot * 16); }
   device.queue.writeBuffer(bufs.cam, 0, camBuf); device.queue.writeBuffer(bufs.look, 0, lookF);
@@ -6217,7 +6331,7 @@ function simFrame(steps, o) {
   if (o.copy) o.copy(enc);
   device.queue.submit([enc.finish()]);
   inflight++;
-  device.queue.onSubmittedWorkDone().then(() => { inflight--; });
+  device.queue.onSubmittedWorkDone().then(() => { inflight = Math.max(0, inflight - 1); doneT = performance.now(); });
   if (rb) {
     rb.busy = true;
     const seq = ++readSeq;
@@ -6247,6 +6361,7 @@ function simFrame(steps, o) {
     });
   }
   stepBeasts(steps);
+  stepCasino(steps);
   stepPlants(steps);
   simStep += steps;
 }
@@ -6479,6 +6594,8 @@ bindRange('vision', v => {
 });
 const chk = (id, fn) => { const el = $(id); el.addEventListener('change', () => fn(el.checked)); fn(el.checked); };
 chk('clearOn', v => { P.clearTrails = v; });
+chk('xCasino', v => { P.xCasino = v; });
+knob('casinoEvery', v => { P.casinoEvery = v; }, v => `${v} sim min`);
 knob('mutStrength', v => { P.mutStrength = v; }, v => v ? `${v} points (${Math.round(v / 3 * 10) / 10} later)` : 'off');
 knob('mutEvery', v => { P.mutEvery = v; }, v => `every ${v} births`);
 chk('mutLean', v => { P.mutLean = v; });
@@ -7037,8 +7154,8 @@ $('pFactory').addEventListener('click', () => applyWithConfirm(FACTORY, 'Back to
 
 // ---------- event log and hyperspeed ----------
 const EVENTS = []; let eventsDirty = true;
-const EVENT_KINDS = { nest: 'New nest', death: 'Nest died out', colour: 'New colour founded', ability: 'Ability unlocked', split: 'Colour split off', mutation: 'Mutation', war: 'Siege started', beast: 'Beast appeared', slain: 'Beast slain', tree: 'Food tree grew', carcass: 'Frozen carcass found' };
-const AUTOSTOP = { nest: false, death: false, colour: false, ability: false, split: false, mutation: false, war: false, beast: false, slain: false, tree: false };
+const EVENT_KINDS = { nest: 'New nest', death: 'Nest died out', colour: 'New colour founded', ability: 'Ability unlocked', split: 'Colour split off', mutation: 'Mutation', war: 'Siege started', beast: 'Beast appeared', slain: 'Beast slain', tree: 'Food tree grew', carcass: 'Frozen carcass found', casino: 'Casino' };
+const AUTOSTOP = { nest: false, death: false, colour: false, ability: false, split: false, mutation: false, war: false, beast: false, slain: false, tree: false, casino: false };
 const HYPER_MAX = 1024, hyper = { on: false, until: 0, stopAny: false, stopNow: false, rate: 0, start: 0, steps: 32 };
 window.antEvent = (kind, text, x, y, who = []) => {
   EVENTS.push({ step: simStep, kind, text, x, y, who });
@@ -7159,16 +7276,18 @@ function drawThings(g, z) {
       g.fillStyle = '#7a5230'; g.beginPath(); g.arc(cx, cy, R * 0.25, 0, 7); g.fill();
       continue;
     }
-    drawPlant(g, p, z);
+    if (p.giant) { g.save(); g.translate(p.x + 0.5, p.y + 0.5); g.scale(4, 4); g.translate(-p.x - 0.5, -p.y - 0.5); drawPlant(g, p, z * 4); g.restore(); }
+    else drawPlant(g, p, z);
   }
   for (const b of beasts) {
-    const L = Math.max(5, 16 / z), Wd = L * 0.62;
+    const L = Math.max(5, 16 / z) * (b.size || 1), Wd = L * 0.62;
     g.save(); g.translate(b.fx, b.fy); g.rotate(b.hd);
     g.fillStyle = '#c8261e'; g.beginPath(); g.ellipse(0, 0, L * 0.5, Wd * 0.5, 0, 0, 7); g.fill();
     g.fillStyle = '#8e1712'; g.beginPath(); g.ellipse(L * 0.5, 0, L * 0.17, Wd * 0.32, 0, 0, 7); g.fill();
     g.restore();
     if (b.hp < b.maxHp) { const bh = Math.max(0.6, 3 / z); g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(b.fx - L / 2, b.fy - Wd - bh * 2, L, bh); g.fillStyle = '#f0645a'; g.fillRect(b.fx - L / 2, b.fy - Wd - bh * 2, L * Math.max(0, b.hp / b.maxHp), bh); }
   }
+  if (casino) drawCasino(g, z);
   const nr = Math.max(4, 8 / z);
   for (const c of colonies) {
     const rgb = FAM_OF(c), cx = c.x + .5, cy = c.y + .5;
@@ -7176,6 +7295,42 @@ function drawThings(g, z) {
     g.fillStyle = '#17120e'; g.beginPath(); g.arc(cx, cy, nr, 0, 7); g.fill();
     g.lineWidth = nr * 0.2; g.strokeStyle = `rgb(${rgb})`; g.beginPath(); g.arc(cx, cy, nr, 0, 7); g.stroke();
     drawIcon(g, nestIcon(c), cx, cy, nr * 0.62, `rgb(${rgb})`);
+  }
+}
+// the casino: a little gold building, and when someone pays up, three wheels above it
+function drawCasino(g, z) {
+  const cx = casino.x + 0.5, cy = casino.y + 0.5, s = Math.max(6, 14 / z), now = performance.now();
+  const glow = 0.25 + 0.15 * Math.sin(now / 300);
+  g.fillStyle = `rgba(255,205,60,${glow})`; g.beginPath(); g.arc(cx, cy, s * 2.2, 0, 7); g.fill();
+  g.fillStyle = '#3a2410'; g.fillRect(cx - s, cy - s * 0.7, s * 2, s * 1.5);
+  g.fillStyle = '#ffcc33'; g.beginPath(); g.moveTo(cx - s * 1.2, cy - s * 0.7); g.lineTo(cx, cy - s * 1.5); g.lineTo(cx + s * 1.2, cy - s * 0.7); g.closePath(); g.fill();
+  g.fillStyle = '#ffe9a0'; for (let k = -1; k <= 1; k++) g.fillRect(cx + k * s * 0.6 - s * 0.18, cy - s * 0.35, s * 0.36, s * 0.5);
+  g.fillStyle = '#1a1208'; g.fillRect(cx - s * 0.25, cy + s * 0.3, s * 0.5, s * 0.5);
+  const font = Math.max(5, 11 / z);
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  if (casino.open) {
+    let best = 0; for (const v of casino.paid.values()) best = Math.max(best, v);
+    g.font = `600 ${font}px Instrument Sans, sans-serif`; g.fillStyle = '#ffd96a';
+    g.fillText(best ? `CASINO · ${best}/${CASINO_PAY} paid` : 'CASINO', cx, cy - s * 2.1);
+  }
+  const sp = casino.spin;
+  if (sp) {
+    const t = now - sp.t0, rw = s * 1.3, rh = s * 1.6, y0 = cy - s * 2.2 - rh;
+    const syms = CASINO_OUT.map(o => o[0]);
+    g.fillStyle = 'rgba(20,14,8,.92)'; g.fillRect(cx - rw * 1.75, y0 - s * 0.3, rw * 3.5, rh + s * 0.6);
+    g.strokeStyle = '#ffcc33'; g.lineWidth = Math.max(0.6, 1.5 / z); g.strokeRect(cx - rw * 1.75, y0 - s * 0.3, rw * 3.5, rh + s * 0.6);
+    g.font = `${rh * 0.62}px sans-serif`;
+    for (let k = 0; k < 3; k++) {
+      const x = cx + (k - 1) * rw * 1.12, stopAt = 1200 + k * 700;
+      g.fillStyle = '#f4ead7'; g.fillRect(x - rw / 2, y0, rw, rh);
+      const sym = t < stopAt ? syms[Math.floor(t / 70 + k * 3) % syms.length] : sp.out[0];
+      g.fillStyle = '#17120e'; g.fillText(sym, x, y0 + rh / 2);
+    }
+    if (sp.done && sp.msg) { g.font = `600 ${font}px Instrument Sans, sans-serif`; g.fillStyle = '#ffd96a'; g.fillText(sp.msg, cx, y0 - s * 0.9); }
+  }
+  if (casino.boom) {
+    const t = (now - casino.boom) / 1500;
+    if (t < 1) { g.fillStyle = `rgba(255,${120 + 100 * (1 - t)},40,${0.55 * (1 - t)})`; g.beginPath(); g.arc(cx, cy, 260 * Math.min(1, t * 2), 0, 7); g.fill(); }
   }
 }
 function drawOverlay() {
@@ -8417,6 +8572,7 @@ view.cx = W / 2; view.cy = H / 2; view.zoom = view.tz = fitZoom(); clampView();
 updatePanel();
 
 // ---------- main loop ----------
+let wdCount = 0;
 let skippedDt = 0, capBoost = 1, lastDone = 0, perfLine = '', gpuMs = 16, gpuPerStep = 0.5, loaded = false, sheetMin = -1, ft = 16, stepCap = 64, acc = 0, last = performance.now(), lastDraw = 0, frames = 0, stepsDone = 0, statT = performance.now(), shownSps = 0;
 // timing for the speed readout: time spent in each frame's own work and in the nest bookkeeping
 let cpuMs = 0, cuMs = 0, cuN = 0;
@@ -8433,7 +8589,12 @@ function frameBody(now) {
   frameNo++;
   if (pickWanted && !pendingPick && frameNo - pickFrame > 90) { const m = pickMissed; pickWanted = null; pickMissed = null; pickFrom = Infinity; if (m) m(); } // no answer from the graphics card: give up
   // the browser can report finished work a few frames late, so allow several frames in flight; the time of skipped frames is kept so speed doesn't drop
-  if (inflight >= 6) { skippedDt = Math.min(0.2, skippedDt + dt); return; }
+  if (inflight >= 6) {
+    // some browsers only report finished work when something else wakes them up (after a pause, for example):
+    // if no report came for a moment, stop waiting for it instead of freezing
+    if (now - doneT < 250) { skippedDt = Math.min(0.2, skippedDt + dt); return; }
+    inflight = 0; doneT = now; wdCount++;
+  }
   // real graphics card time from the timestamps, when the card offers them
   if (gpuTsSteps) { gpuMs = gpuMs * 0.7 + gpuTsMs * 0.3; gpuPerStep = gpuPerStep * 0.7 + gpuTsMs / gpuTsSteps * 0.3; gpuTsSteps = 0; }
   ft = ft * 0.85 + dt * 1000 * 0.15;
@@ -8485,7 +8646,7 @@ function frameBody(now) {
   }
 }
 requestAnimationFrame(frame);
-window.__antGpu = { P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
+window.__antGpu = { dbg: () => ({ inflight, running, loaded, frames, gpuLost, editing, ft, stepCap, acc, skippedDt }), casinoNear: (d = 60) => { const c = colonies[0]; P.xCasino = true; casino = { x: Math.min(W - 5, c.x + d), y: c.y, open: true, at: simStep, paid: new Map(), spin: null }; return [casino.x, casino.y]; }, casinoSpin: k => { const c = colonies[0]; startSpin(c); casino.spin.out = CASINO_OUT[k]; }, casinoState: () => casino && { open: casino.open, paid: [...casino.paid], spin: casino.spin && { done: casino.spin.done, msg: casino.spin.msg } }, nests: () => colonies.map(c => [c.name, c.inside + c.out, c.ci]), P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
   async pngRoundTrip() { // test hook: export, read back, compare
     const px = new Uint8Array(N * 4); for (let i = 0; i < N; i++) { px[i * 4] = clT[i]; px[i * 4 + 1] = clH[i]; px[i * 4 + 2] = clW[i]; px[i * 4 + 3] = Math.min(254, terr[i]); }
     const blob = await encodePNG(W, H, px), img = await decodePNG(await blob.arrayBuffer()); let diff = 0; for (let i = 0; i < px.length; i++) if (px[i] !== img.data[i]) diff++;
