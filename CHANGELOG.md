@@ -9,6 +9,14 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.4 (test build)
+
+### More ways of living, and none can take over
+- Three new ways of living: **Raiders** (take food from rival nests: strong Courage and Bite, or a habit of plundering), **Scavengers** (live off the dead and what others leave behind) and **Gatherers** (live off wild plants without farming). They join Runners, Thrifty, Hunters, the three kinds of farmers and Generalists.
+- Crowded niches: a way of living that many ants share gets less out of its food (down to 65%), and a rare one gets more (up to 125%). So when farmers spread everywhere, every farmer nest feels it, and hunters, raiders or scavengers nearby get their chance. Worked out once a minute from all the ants on the map.
+- The nest panel shows when a nest lives a crowded or a rare way of life, and how much its food is worth because of it.
+- New setting: "Crowded niches", next to "Niches".
+
 ## 2.0.3.1 (fix)
 
 ### Casino: metal colonies get a fair start
