@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.7 (test build)
+
+From the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.
+- Plants only wither on really worn-out soil now (below 70% fertility instead of 90%), so lightly grazed ground near a nest keeps its plants. Below 80%, plants still use themselves up faster.
+- Grazing wears the soil a bit more slowly.
+
 ## 2.0.6 (test build)
 
 Fixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.
