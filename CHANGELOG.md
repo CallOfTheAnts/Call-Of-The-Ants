@@ -9,6 +9,30 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.5 (test build)
+
+### Tunnels and chambers
+- Rough ground is rougher and slows ants much more (1/6 speed at its worst instead of 1/3), so a tunnel makes a real difference.
+- Ants dig twice as much per scrape and dig most on their runs between nest and food, so their routes sink into tunnels that speed up gathering. The earth is piled up beside the tunnel.
+- Tunnels are drawn as dark sunken channels with soft, lit walls, and the dug-out earth shows as pale heaps.
+- Chambers: nests with enough ants dig rooms over time, in a ring around the nest and joined to it by corridors, plus a store room beside their best food (a farm, tended tree or food tree). Bigger and higher-level nests dig more. Each finished chamber holds 10% more food.
+- New setting: "Chambers". "Ants dig roads" is now "Ants dig tunnels".
+
+### Worn-out soil
+- Plants on worn-out soil wither within a few minutes, and use themselves up faster while they last. Farmers have to keep planting or spread their farms onto fresh ground.
+
+### Experimental
+- Tap tools in the Experimental tab: place a casino, or a metal nest, where you tap.
+
+### Likes and dislikes
+- Every nest has its own tastes, passed on to its new nests with a little change (a new colour changes them more):
+- Mountains: some settle close to rock and lean their scouting toward it, others prefer open ground.
+- Water: some settle near water, others keep away from it.
+- Gambling: some spot the casino from much further away, others never go in or follow its gold trail.
+- Company: some queens settle closer to other nests and sooner, others walk further and keep their distance.
+- Each colour has one friend it never lays siege to, and one foe it attacks sooner.
+- The nest panel lists a nest's strong likes and dislikes, its friend and its foe. New setting: "Likes and dislikes".
+
 ## 2.0.4 (test build)
 
 ### More ways of living, and none can take over
