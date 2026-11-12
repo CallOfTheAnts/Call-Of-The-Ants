@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.13 (test build)
+
+- No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.
+- Ground grows back faster: 5% of the way every 15 minutes by default (it was 1%, which brings back only about a third in 10 hours). The slider now goes up to 20%.
+- More visible evolution: mutations after births are half the founding size instead of a third, and come every 150 births instead of 200. Body parts start to show from 105% (were 112%), are fully grown at 135% (were 160%), and reach their extreme form near 200% (were 250%), so drifting colours look different much sooner.
+
 ## 2.0.12 (test build)
 
 Aphid herders won almost every run, and every colony ended up with the same long nectar straw.
