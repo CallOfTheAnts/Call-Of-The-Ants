@@ -242,6 +242,14 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
 .ov-top{display:flex;flex-direction:column;gap:8px}
 .ovleg{display:flex;flex-wrap:wrap;gap:4px}
 .verline{margin:10px 0 4px;text-align:center}.verline a{color:var(--amber)}
+.linkbtn{background:none;border:0;padding:0;color:var(--amber);font:inherit;cursor:pointer;text-decoration:underline}
+.logwin{position:fixed;inset:0;z-index:100000;background:rgba(8,6,4,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.logwin[hidden]{display:none}
+.logcard{background:#1c1612;border:1px solid #3a2f26;border-radius:12px;width:min(640px,100%);max-height:86vh;display:flex;flex-direction:column;color:#efe6d8}
+.loghead{display:flex;align-items:baseline;gap:10px;padding:14px 16px;border-bottom:1px solid #3a2f26}.loghead b{font-size:1.05rem}.loghead span{color:var(--muted);font-size:.8rem;flex:1}
+.logx{background:none;border:0;color:#efe6d8;font-size:1.4rem;line-height:1;cursor:pointer;padding:0 4px}
+.logbody{overflow:auto;padding:4px 18px 16px;font-size:.86rem;line-height:1.5}.logbody h2{font-size:1rem;margin:18px 0 6px;color:var(--amber)}.logbody h3{font-size:.9rem;margin:12px 0 4px}
+.logbody ul{margin:0;padding-left:18px}.logbody li{margin:2px 0}.logbody p{margin:6px 0}.logbody a{color:var(--amber)}
 .ovants{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:4px}
 .ovants button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:6px;min-width:0}
 .ovants canvas{width:100%;aspect-ratio:1/1;display:block}
@@ -400,7 +408,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
         <span><i style="background:#6a5a4a"></i>Wall</span>
         <span><i style="background:#7c766c"></i>Rock</span>
         <span><i style="background:#f1dc86"></i>Plant food (1)</span>
-        <span><i style="background:#d6b270"></i>Seeds (1, never rot): grassland, steppe, desert</span>
+        <span><i style="background:#d6b270"></i>Seeds (1, keep four times as long): grassland, steppe, desert</span>
         <span><i style="background:#96dc5a"></i>Cactus (2, spines hurt, Defense helps): desert, badlands</span>
         <span><i style="background:#ffc440"></i>Honeydew from aphids (1, slow and steady): taiga, groves, swamp</span>
         <span><i style="background:#5ac850"></i>Leaves (2, become fungus food at home after a while): jungle, swamp</span>
@@ -510,7 +518,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="hint" id="pMsg" aria-live="polite"></div>
             </div>
           </details>
-          <div class="hint verline">Version <b id="verNum">2.0.1</b> · <a href="https://github.com/CallOfTheAnts/call-of-the-ants/blob/main/CHANGELOG.md" target="_blank" rel="noopener">What's new</a></div>
+          <div class="hint verline">Version <b id="verNum">2.0.2</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
           <div id="devTools" hidden>
           <details class="sec" open>
             <summary>Developer: speed check</summary>
@@ -5546,14 +5554,17 @@ struct PO { @builtin(position) p: vec4f, @location(0) uv: vec2f };
 }`;
   const mod = device.createShaderModule({ code });
   const fmt = navigator.gpu.getPreferredCanvasFormat();
-  const pipe = device.createRenderPipeline({ layout: 'auto', vertex: { module: mod, entryPoint: 'pVS' }, fragment: { module: mod, entryPoint: 'pFS', targets: [{ format: fmt }] }, primitive: { topology: 'triangle-list' } });
+  // built in the background: the shader is big, and compiling it in one go would stall the game for a moment
   const ubuf = device.createBuffer({ size: 48 + 192, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-  const bg = device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: ubuf } }] });
+  let pipe = null, bg = null;
+  draw.ready = device.createRenderPipelineAsync({ layout: 'auto', vertex: { module: mod, entryPoint: 'pVS' }, fragment: { module: mod, entryPoint: 'pFS', targets: [{ format: fmt }] }, primitive: { topology: 'triangle-list' } })
+    .then(p => { pipe = p; bg = device.createBindGroup({ layout: p.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: ubuf } }] }); });
   const ctxs = new WeakMap();
   // draw(canvas, L, rgb 0..1, { headUp, queen, tw, fill }) — fill: how much of the canvas the ant takes
   draw.format = fmt;
   return draw;
   function draw(cv, L, rgb, opt = {}) {
+    if (!pipe) return false;
     let ctx = opt.texture ? null : ctxs.get(cv);
     if (!ctx && !opt.texture) { ctx = cv.getContext('webgpu'); ctx.configure({ device, format: fmt, alphaMode: 'premultiplied' }); ctxs.set(cv, ctx); }
     const w = opt.texture ? opt.texture.width : cv.width, h = opt.texture ? opt.texture.height : cv.height, e = antLayout(L), up = !!opt.headUp;
@@ -5569,6 +5580,7 @@ struct PO { @builtin(position) p: vec4f, @location(0) uv: vec2f };
     const rp = enc.beginRenderPass({ colorAttachments: [{ view: (opt.texture || ctx.getCurrentTexture()).createView(), loadOp: 'clear', clearValue: { r: 0, g: 0, b: 0, a: 0 }, storeOp: 'store' }] });
     rp.setPipeline(pipe); rp.setBindGroup(0, bg); rp.draw(3); rp.end();
     device.queue.submit([enc.finish()]);
+    return true;
   }
 }
 // ANT-LOOK-END
@@ -6015,7 +6027,35 @@ function antLookNow(c) {
 }
 const antLooks = c => c.lookCur || antLookTargetC(c);
 let antPortrait = null;
-function drawAntPortrait(el, L, rgb, opt) { try { if (!antPortrait) antPortrait = makeAntPortrait(device); antPortrait(el, L, rgb, opt); } catch (e) { console.warn('ant picture', e); } }
+// ant pictures for the interface: drawn into a small texture on the graphics card and read back into a plain canvas,
+// one at a time (the newest request per canvas wins), so the game's own canvas and readbacks are never disturbed
+const portraitWant = new Map(); let portraitBusy = false;
+function drawAntPortrait(el, L, rgb, opt) { portraitWant.set(el, [Float32Array.from(L), rgb, opt]); if (!portraitBusy) portraitPump(); }
+async function portraitPump() {
+  portraitBusy = true;
+  try {
+    if (!antPortrait) antPortrait = makeAntPortrait(device);
+    await antPortrait.ready;
+    while (portraitWant.size) {
+      const [el, [L, rgb, opt]] = portraitWant.entries().next().value; portraitWant.delete(el);
+      const w = el.width, h = el.height; if (w < 2 || h < 2) continue;
+      const bpr = Math.ceil(w * 4 / 256) * 256;
+      const tex = device.createTexture({ size: [w, h], format: antPortrait.format, usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC });
+      const buf = device.createBuffer({ size: bpr * h, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+      antPortrait(null, L, rgb, { ...opt, texture: tex });
+      const enc = device.createCommandEncoder(); enc.copyTextureToBuffer({ texture: tex }, { buffer: buf, bytesPerRow: bpr }, [w, h]); device.queue.submit([enc.finish()]);
+      await buf.mapAsync(GPUMapMode.READ);
+      const src = new Uint8Array(buf.getMappedRange()), img = new ImageData(w, h), bgra = antPortrait.format.startsWith('bgra');
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = y * bpr + x * 4, o = (y * w + x) * 4, a = src[i + 3], k = a ? 255 / a : 0; // premultiplied to straight alpha
+        img.data[o] = (bgra ? src[i + 2] : src[i]) * k; img.data[o + 1] = src[i + 1] * k; img.data[o + 2] = (bgra ? src[i] : src[i + 2]) * k; img.data[o + 3] = a;
+      }
+      buf.unmap(); buf.destroy(); tex.destroy();
+      el.getContext('2d').putImageData(img, 0, 0);
+    }
+  } catch (e) { console.warn('ant picture', e); }
+  portraitBusy = false;
+}
 function mutate(c, x, why) {
   if (!(x > 0)) return;
   const picks = [];
@@ -7662,8 +7702,36 @@ if (/(^#|,)dev(,|$)/.test(location.hash)) $('devTools').hidden = false;
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) { e.preventDefault(); $('devTools').hidden = !$('devTools').hidden; } });
 const settingInputs = () => [...document.querySelectorAll('.settings input[type=range], .settings input[type=checkbox]')].filter(el => el.id && !el.closest('.nopreset'));
 // version: big release . stable build . test build (see CHANGELOG.md on GitHub)
-const GAME_VERSION = '2.0.1';
+const GAME_VERSION = '2.0.2';
 if ($('verNum')) $('verNum').textContent = GAME_VERSION;
+// the changelog, built into the page from CHANGELOG.md, shown in a window over the game
+const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
+function mdHTML(md) {
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const inl = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  let out = '', list = false;
+  for (const line of md.split('\n')) {
+    const m = line.match(/^(#{1,3}) (.*)/), li = line.match(/^- (.*)/);
+    if (!li && list) { out += '</ul>'; list = false; }
+    if (m) out += `<h${m[1].length + 1}>${inl(m[2])}</h${m[1].length + 1}>`;
+    else if (li) { if (!list) { out += '<ul>'; list = true; } out += `<li>${inl(li[1])}</li>`; }
+    else if (line.trim()) out += `<p>${inl(line)}</p>`;
+  }
+  return out + (list ? '</ul>' : '');
+}
+function showChangelog() {
+  let box = document.getElementById('logWin');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'logWin'; box.className = 'logwin'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'What is new');
+    box.innerHTML = `<div class="logcard"><div class="loghead"><b>What's new</b><span>Version ${GAME_VERSION}</span><button type="button" class="logx" aria-label="Close">×</button></div>
+      <div class="logbody">${mdHTML(CHANGELOG_MD.replace(/^# Changelog\s*/, ''))}<p><a href="https://github.com/CallOfTheAnts/call-of-the-ants/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Read it on GitHub</a></p></div></div>`;
+    box.addEventListener('click', e => { if (e.target === box || e.target.closest('.logx')) box.hidden = true; });
+    document.body.appendChild(box);
+  }
+  box.hidden = false;
+}
+if ($('verLog')) $('verLog').addEventListener('click', showChangelog);
+addEventListener('keydown', e => { if (e.key === 'Escape') { const b = document.getElementById('logWin'); if (b && !b.hidden) b.hidden = true; } });
 function captureSettings() { const o = {}; for (const el of settingInputs()) o[el.id] = el.type === 'checkbox' ? el.checked : +el.value; return o; }
 function applySettings(o) {
   const before = capFromSlider(+$('maxAnts').value);
@@ -8367,6 +8435,8 @@ function ovAntPics(top) {
     box.dataset.k = key;
     box.innerHTML = top.map(f => `<button data-ci="${f.ci}"><canvas></canvas><span class="nm">${famName(f.ci)}</span><span class="v"></span></button>`).join('') || '<div class="hint">No colonies.</div>';
   }
+  const now = performance.now(); if (now - (+box.dataset.t || 0) < 3000 && box.dataset.done === key) return; // pictures refresh every few seconds
+  box.dataset.t = now; box.dataset.done = key;
   [...box.querySelectorAll('button')].forEach((b, i) => {
     const f = top[i]; if (!f) return;
     b.querySelector('.v').textContent = `${f.ants.toLocaleString()} ants · ${lifestyleTag(f.nests[0])}`;
