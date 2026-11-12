@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.10 (test build)
+
+- Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.
+- The History section is now a real family tree: each colour is a card with a picture of its ant (as it looked at its biggest), joined by lines to the colour it came from and the colours that came from it. Hover a card for its details; dead colours are faded with a dashed border, metal ones glow. Wide trees scroll sideways.
+
 ## 2.0.9 (test build)
 
 - Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: "Ground grows back".
