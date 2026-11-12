@@ -11,6 +11,7 @@ The version you're playing is shown at the bottom of the settings panel, where "
 ## 2.0.2 (test build)
 
 - The changelog can be read in the game: "What's new" at the bottom of the settings panel.
+- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.
 
 ## 2.0.1 (test build)
 
