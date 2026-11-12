@@ -5,8 +5,21 @@ Version numbers are **big release . stable build . test build**:
 - **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).
 - **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.
 - **Test build** (third number): goes up with every update while things are still being tested and tuned.
+- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
+
+## 2.0.3.1 (fix)
+
+### Casino: metal colonies get a fair start
+- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.
+- The casino explosion reaches further (340 tiles instead of 260).
+- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.
+- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.
+
+### Overview
+- The average ants of the three biggest colours have their own "Ants" section.
+- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.
 
 ## 2.0.3 (test build)
 

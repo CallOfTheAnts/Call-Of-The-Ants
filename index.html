@@ -518,7 +518,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="hint" id="pMsg" aria-live="polite"></div>
             </div>
           </details>
-          <div class="hint verline">Version <b id="verNum">2.0.3</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
+          <div class="hint verline">Version <b id="verNum">2.0.3.1</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
           <div id="devTools" hidden>
           <details class="sec" open>
             <summary>Developer: speed check</summary>
@@ -6480,7 +6480,7 @@ function spawnBeast() {
 // now and then a casino opens somewhere. The first ant of a colour to find it runs home laying a sparkly gold trail;
 // every ant that follows that trail in is paid to the house. After 15 ants of one colour the wheels spin
 let casino = null;
-const CASINO_PAY = 15;
+const CASINO_PAY = 15, CASINO_BLAST = 340; // blast: how far the explosion reaches
 function placeCasino() {
   for (let k = 0; k < 80; k++) {
     const x = 100 + ((rnd() * (W - 200)) | 0), y = 100 + ((rnd() * (H - 200)) | 0), i = y * W + x;
@@ -6497,9 +6497,7 @@ const CASINO_OUT = [
   ['×2', 16, c => { for (let k = 0; k < CASINO_PAY * 2; k++) spawns.push(c.slot); return `${c.name} doubled up: ${CASINO_PAY * 2} ants walk out of the casino and home`; }],
   ['♛', 14, c => { for (let k = 0; k < 3; k++) { spawns.push(c.slot | 1024); c.foundersOut++; } return `${c.name} won three queens, off to found new nests`; }],
   ['💥', 7, c => {
-    const hit = colonies.filter(o => Math.hypot(o.x - casino.x, o.y - casino.y) < 260);
-    for (const o of hit) { const n = o.inside + o.out; if (n > 0) kills[o.slot * 2 + 1] += n; }
-    casino.boom = performance.now();
+    const hit = casinoBlast();
     return hit.length ? `The casino exploded and took ${hit.length} nest${hit.length > 1 ? 's' : ''} with it` : 'The casino exploded. Luckily no nest was close enough to care';
   }],
   ['🍎', 14, c => {
@@ -6510,16 +6508,25 @@ const CASINO_OUT = [
     return `${c.name} won a giant ${['seed patch', 'leafy bush', 'fruit tree', 'pile of insects', 'pile of insects'][g]}: a lot of their favourite food`;
   }],
   ['🥇', 12, c => {
+    // the house wins: the casino blows up, clearing the ground around it, and a metal colony moves into the empty land
+    const hit = casinoBlast();
     const ci = CASINO_CI[(rnd() * 3) | 0];
     let fam = null; for (const [f, F] of families) if (F.ci === ci && colonies.some(o => o.fam === f)) { fam = f; break; }
     if (!fam) { fam = ++famCounter; families.set(fam, { ci, name: famName(ci), n: 0 }); }
-    const n = newColony(casino.x, casino.y, fam, 20, 150);
+    const n = newColony(casino.x, casino.y, fam, 30, 300);
     if (!n) return 'The house tried to open its own nest, but there was no room';
-    // 20 lucky changes, all for the better here: the nest likes this spot's temperature and gets stronger genes
-    n.temp = tEff[casino.y * W + casino.x] / 255;
-    for (let k = 0; k < 20; k++) { const g = [0, 1, 2, 3, 6, 8, 9, 11, 13, 14][(rnd() * 10) | 0]; n.genes[g] = Math.min(GMAX, n.genes[g] + 6 + rnd() * 6); }
+    // made for this spot: it likes exactly this temperature, copes with a wider range, and is skilled at the food that grows here
+    n.temp = tEff[casino.y * W + casino.x] / 255; n.band = bandOf(n) * 1.5;
+    const mix = localFoodMix(casino.x, casino.y), sharp = mix.map(v => v * v), st = sharp.reduce((a, v) => a + v, 0);
+    n.skills = mix.map((v, k) => 0.3 * v + 0.7 * sharp[k] / st);
+    // and a few very strong genes: 3 to 5 of these at 200% or more, plus smaller lucky changes elsewhere
+    const STRONG = [0, 1, 3, 6, 8, 9, 11, 13, 14], picks = [];
+    while (picks.length < 3 + ((rnd() * 3) | 0)) { const g = STRONG[(rnd() * STRONG.length) | 0]; if (!picks.includes(g)) picks.push(g); }
+    for (const g of picks) n.genes[g] = Math.min(GMAX, 100 + rnd() * 30);
+    for (let k = 0; k < 8; k++) { const g = STRONG[(rnd() * STRONG.length) | 0]; if (!picks.includes(g)) n.genes[g] = Math.min(GMAX, n.genes[g] + 6 + rnd() * 6); }
     genesDirty = true;
-    return `The house wins: a ${famName(ci)} nest moved in where the casino stood`;
+    const what = picks.map(g => GENES[g].toLowerCase()).join(', ');
+    return `The house wins: the casino blew up${hit.length ? ` and took ${hit.length} nest${hit.length > 1 ? 's' : ''} with it` : ''}, and a ${famName(ci)} nest moved into the empty land, with double ${what}`;
   }],
   ['👹', 7, c => {
     const slot = [0, 1, 2, 3].find(s => !beasts.some(b => b.slot === s));
@@ -6532,6 +6539,13 @@ const CASINO_OUT = [
   ['💰', 11, c => { addMixed(c, 300); return `${c.name} hit the jackpot: 300 food delivered to the nest`; }],
   ['✗', 10, c => `${c.name} lost everything. The house always wins`],
 ];
+// the explosion: every nest within reach loses all its ants (their stores stay behind as food)
+function casinoBlast() {
+  const hit = colonies.filter(o => Math.hypot(o.x - casino.x, o.y - casino.y) < CASINO_BLAST);
+  for (const o of hit) { const n = o.inside + o.out; if (n > 0) kills[o.slot * 2 + 1] += n; }
+  casino.boom = performance.now();
+  return hit;
+}
 function startSpin(c) {
   let r = rnd() * CASINO_OUT.reduce((s, o) => s + o[1], 0), out = CASINO_OUT[0];
   for (const o of CASINO_OUT) { r -= o[1]; if (r <= 0) { out = o; break; } }
@@ -7704,10 +7718,10 @@ if (/(^#|,)dev(,|$)/.test(location.hash)) $('devTools').hidden = false;
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) { e.preventDefault(); $('devTools').hidden = !$('devTools').hidden; } });
 const settingInputs = () => [...document.querySelectorAll('.settings input[type=range], .settings input[type=checkbox]')].filter(el => el.id && !el.closest('.nopreset'));
 // version: big release . stable build . test build (see CHANGELOG.md on GitHub)
-const GAME_VERSION = '2.0.3';
+const GAME_VERSION = '2.0.3.1';
 if ($('verNum')) $('verNum').textContent = GAME_VERSION;
 // the changelog, built into the page from CHANGELOG.md, shown in a window over the game
-const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
+const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.0.3.1 (fix)\n\n### Casino: metal colonies get a fair start\n- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.\n- The casino explosion reaches further (340 tiles instead of 260).\n- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.\n- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.\n\n### Overview\n- The average ants of the three biggest colours have their own \"Ants\" section.\n- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
 function mdHTML(md) {
   const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const inl = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
@@ -7983,7 +7997,7 @@ function drawCasino(g, z) {
   }
   if (casino.boom) {
     const t = (now - casino.boom) / 1500;
-    if (t < 1) { g.fillStyle = `rgba(255,${120 + 100 * (1 - t)},40,${0.55 * (1 - t)})`; g.beginPath(); g.arc(cx, cy, 260 * Math.min(1, t * 2), 0, 7); g.fill(); }
+    if (t < 1) { g.fillStyle = `rgba(255,${120 + 100 * (1 - t)},40,${0.55 * (1 - t)})`; g.beginPath(); g.arc(cx, cy, CASINO_BLAST * Math.min(1, t * 2), 0, 7); g.fill(); }
   }
 }
 function drawOverlay() {
@@ -8337,12 +8351,12 @@ const OV_KINDS = new Set(['colour', 'death', 'war', 'split', 'ability']); // the
 const ovHL = new Set();
 sideEmpty.className = 'side-empty ov';
 sideEmpty.innerHTML = `<div class="ovtabs" role="group" aria-label="Show or hide sections">
-    <button data-ov="genes">Genes</button><button data-ov="clim">Climate &amp; food</button><button data-ov="size">Sizes</button><button data-ov="log">Events</button></div>
+    <button data-ov="genes">Genes</button><button data-ov="ants">Ants</button><button data-ov="clim">Climate &amp; food</button><button data-ov="size">Sizes</button><button data-ov="log">Events</button></div>
   <div class="ov-scroll">
   <div class="ov-top" data-sec="genes"><div class="chart-h"><span>Genes by colour</span><b>averages</b></div>
-    <canvas id="ovRadar" class="radar" role="img" aria-label="Radar chart comparing the average genes of every colour"></canvas>
-    <div class="ovleg" id="ovLegend"></div>
-    <div class="chart-h"><span>Average ant of the biggest colours</span></div>
+    <canvas id="ovRadar" class="radar" role="img" aria-label="Radar chart comparing the average genes of every colour; bigger colours are drawn more solid"></canvas>
+    <div class="ovleg" id="ovLegend" hidden></div></div>
+  <div class="ov-top" data-sec="ants"><div class="chart-h"><span>Average ant of the biggest colours</span><b>click to open</b></div>
     <div class="ovants" id="ovAnts"></div></div>
   <div class="ov-top" data-sec="clim"><div class="chart-h"><span>Climate and main food by colour</span><b>click a dot</b></div>
     <canvas id="ovClim" class="ovclim" role="img" aria-label="Chart of each colour's liked temperature against its diet"></canvas></div>
@@ -8352,7 +8366,7 @@ sideEmpty.innerHTML = `<div class="ovtabs" role="group" aria-label="Show or hide
   </div>
   <div class="hint">Click a nest on the map to see its own stats.</div>`;
 // which overview sections are showing (remembered in this browser)
-const OV_SHOW = { genes: true, clim: true, size: true, log: true };
+const OV_SHOW = { genes: true, ants: true, clim: true, size: true, log: true };
 try { Object.assign(OV_SHOW, JSON.parse(localStorage.getItem('antsim.gpu.ovShow') || '{}')); } catch (e) {}
 function applyOvShow() {
   sideEmpty.querySelectorAll('[data-ov]').forEach(b => b.setAttribute('aria-pressed', !!OV_SHOW[b.dataset.ov]));
@@ -8402,11 +8416,11 @@ function radarMulti(el, series) {
   g.setLineDash([3, 3]); g.strokeStyle = 'rgba(239,230,216,.42)'; g.beginPath(); g.arc(cx, cy, R / 2, 0, 7); g.stroke(); g.setLineDash([]);
   for (let i = 0; i < n; i++) { const [x, y] = at(i, 2); g.strokeStyle = 'rgba(166,149,127,.14)'; g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke(); }
   const any = series.some(s => s.hl);
-  for (const s of series.slice().sort((a, b) => a.hl - b.hl)) {
+  for (const s of series.slice().sort((a, b) => (a.hl - b.hl) || ((a.w ?? 1) - (b.w ?? 1)))) {
     g.beginPath(); s.vals.forEach((v, i) => { const [x, y] = at(i, v); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.closePath();
-    const dim = any && !s.hl;
-    g.fillStyle = `rgba(${s.rgb},${dim ? 0.02 : s.hl ? 0.22 : 0.07})`; g.fill();
-    g.strokeStyle = `rgba(${s.rgb},${dim ? 0.25 : 1})`; g.lineWidth = s.hl ? 2.4 : 1.4; g.stroke();
+    const dim = any && !s.hl, w = s.w ?? 1; // w: how solid this colour is drawn (bigger colours more solid)
+    g.fillStyle = `rgba(${s.rgb},${dim ? 0.02 : s.hl ? 0.22 : 0.09 * w})`; g.fill();
+    g.strokeStyle = `rgba(${s.rgb},${dim ? 0.25 : s.hl ? 1 : w})`; g.lineWidth = s.hl ? 2.4 : 0.8 + 1.2 * w; g.stroke();
   }
   g.font = '10.5px Inter, system-ui, sans-serif'; g.textBaseline = 'middle'; g.fillStyle = '#a6957f';
   for (let i = 0; i < n; i++) {
@@ -8451,8 +8465,9 @@ function updateOverview() {
   for (const c of colonies) { let f = fams.find(f => f.ci === c.ci); if (!f) fams.push(f = { ci: c.ci, nests: [], ants: 0 }); f.nests.push(c); f.ants += c.inside + c.out; }
   fams.sort((a, b) => b.ants - a.ants);
   for (const ci of [...ovHL]) if (!fams.some(f => f.ci === ci)) ovHL.delete(ci);
-  if (OV_SHOW.genes) ovAntPics(fams.slice(0, 3));
-  if (OV_SHOW.genes) radarMulti($('ovRadar'), fams.map(f => ({ rgb: famRGB(f.ci).join(','), hl: ovHL.has(f.ci), vals: GENES.map((_, k) => 1 + f.nests.reduce((s, c) => s + c.genes[k], 0) / f.nests.length / 100) })));
+  if (OV_SHOW.ants) ovAntPics(fams.slice(0, 3));
+  const maxAnts = Math.max(1, ...fams.map(f => f.ants));
+  if (OV_SHOW.genes) radarMulti($('ovRadar'), fams.map(f => ({ rgb: famRGB(f.ci).join(','), hl: ovHL.has(f.ci), w: 0.12 + 0.88 * Math.sqrt(f.ants / maxAnts), vals: GENES.map((_, k) => 1 + f.nests.reduce((s, c) => s + c.genes[k], 0) / f.nests.length / 100) })));
   // average climate and diet per colour, weighted by ants (every nest counts at least a little)
   for (const f of fams) { let wsum = 0, t = 0; const sk = [0, 0, 0, 0, 0]; for (const c of f.nests) { const wt = c.inside + c.out + 1; wsum += wt; t += c.temp * wt; for (let g = 0; g < 5; g++) sk[g] += c.skills[g] * wt; } f.temp = t / wsum; f.skills = sk.map(v => v / wsum); }
   if (OV_SHOW.clim) climChart($('ovClim'), fams);
