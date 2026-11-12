@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.8 (test build)
+
+- New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.
+- Metal colonies (gold, silver, bronze) keep their colour when they spread. They only become a new colour by drifting too far from their family, and then they keep their metal shine in the new colour, and so do their descendants.
+- History: a new section in the overview with a family tree of every colour that ever lived, under the colour it came from. Each shows when it lived, its biggest size and way of living, and how it began (first colours, a queen on new ground, breaking away, or the casino). Colours that died out are crossed out; clicking a living one opens its biggest nest.
+
 ## 2.0.7 (test build)
 
 From the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.
