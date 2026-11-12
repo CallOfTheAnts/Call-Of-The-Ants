@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.11 (test build)
+
+- The family tree has its own "Family tree" section in the overview, and a "full screen" button that opens it in a big window (Esc or a click outside closes it).
+- The tree stays readable as it grows: a colour that died out, along with its whole line, is folded away. Sister colours that all died out share one small "+N died out" chip under their parent; click it to show them, and "fold" to hide them again. A dead colour that still has living descendants stays visible, as a smaller card.
+- New colours appear even less often: 10% of new nests start a new colour, down from 20%.
+
 ## 2.0.10 (test build)
 
 - Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.
