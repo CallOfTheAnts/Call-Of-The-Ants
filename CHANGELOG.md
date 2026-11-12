@@ -9,6 +9,13 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.6 (test build)
+
+Fixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.
+- Crowded niches are measured against the map's own mix. Before, when nearly every nest lived the same way, every nest lost a third of its food at once. Now the average nest keeps 100%, and only ways of living more common than usual lose out (down to 70%), while rarer ones gain (up to 125%).
+- Rough ground is a bit easier: 1/4 speed at its worst instead of 1/6, and a little less rough overall. Tunnels still pay off clearly.
+- A new nest starts in a small dug-out hollow, so it isn't stuck in rough ground before its tunnels exist.
+
 ## 2.0.5.1 (fix)
 
 - Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.
