@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.5.1 (fix)
+
+- Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.
+
 ## 2.0.5 (test build)
 
 ### Tunnels and chambers
