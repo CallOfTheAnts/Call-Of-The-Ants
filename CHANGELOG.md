@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.9 (test build)
+
+- Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: "Ground grows back".
+- From the 2.0.8 balance test, where all three worlds shrank to 2 or 3 nests: ground roughness is back near its natural level (the 1/4 slowdown stays, so tunnels still pay off), since the rougher ground of 2.0.5 slowed every trip by about a third.
+- Queens are less picky about mountains and water: they give up on their taste sooner and settle, instead of walking far and dying on the way.
+
 ## 2.0.8 (test build)
 
 - New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.
