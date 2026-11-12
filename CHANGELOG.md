@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.13.1 (fix)
+
+- Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.
+
 ## 2.0.13 (test build)
 
 - No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.
