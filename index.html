@@ -241,6 +241,11 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
 #sideEmpty.ov[hidden]{display:none}
 .ov-top{display:flex;flex-direction:column;gap:8px}
 .ovleg{display:flex;flex-wrap:wrap;gap:4px}
+.verline{margin:10px 0 4px;text-align:center}.verline a{color:var(--amber)}
+.ovants{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:4px}
+.ovants button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:6px;min-width:0}
+.ovants canvas{width:100%;aspect-ratio:1/1;display:block}
+.ovants .nm{font-size:.76rem;font-weight:600}.ovants .v{font-size:.68rem;color:var(--muted);text-align:center;line-height:1.25}
 .ovleg button{display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:.74rem;font-weight:600;border-radius:3px}
 .ovleg button i{width:9px;height:9px;border-radius:50%}.ovleg button em{font-style:normal;font-weight:400;color:var(--muted)}
 .ovleg button[aria-pressed="true"]{background:rgba(232,180,74,.14);border-color:var(--amber)}
@@ -505,6 +510,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="hint" id="pMsg" aria-live="polite"></div>
             </div>
           </details>
+          <div class="hint verline">Version <b id="verNum">2.0.1</b> · <a href="https://github.com/CallOfTheAnts/call-of-the-ants/blob/main/CHANGELOG.md" target="_blank" rel="noopener">What's new</a></div>
           <div id="devTools" hidden>
           <details class="sec" open>
             <summary>Developer: speed check</summary>
@@ -645,6 +651,24 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
 
         <!-- ===== Food ===== -->
         <section class="tabpanel" id="tab-food" role="tabpanel" hidden>
+          <details class="sec" open>
+            <summary>Living land</summary>
+            <div class="sec-body">
+            <div class="hint">The land reacts to the ants: food that is left to rot feeds the soil, ground that is stripped bare grows less, and plants that are left alone spread.</div>
+            <label class="switch" for="fertOn" data-tip="On: every patch of ground has a fertility. Plants grow more and bigger where it is high. Where ants take nearly everything that grows, it drops; where food is left to rot, and around busy nests, it rises. Plants that are not overgrazed seed a new plant nearby before they die."><span>Soil remembers</span><input type="checkbox" id="fertOn" checked></label>
+            <label class="switch" for="fertShow" data-tip="Tints the map by soil fertility: green is rich, brown is worn out."><span>Show soil fertility</span><input type="checkbox" id="fertShow"></label>
+            <label class="switch" for="seasonsOn" data-tip="On: the year turns through spring, summer, autumn and winter. Plants, insects and prey grow with the warmth, and all ground is warmer in summer and colder in winter, which suits some nests better than others."><span>Seasons</span><input type="checkbox" id="seasonsOn" checked></label>
+            <div class="ctl" data-tip="How long one full year lasts, in sim minutes.">
+              <div class="row"><label for="yearMin">A year lasts</label><output id="yearMinV">40 min per year</output></div>
+              <input type="range" id="yearMin" min="10" max="120" step="5" value="40">
+            </div>
+            <div class="ctl" data-tip="How big the difference between summer and winter is.">
+              <div class="row"><label for="seasonAmp">Seasons are</label><output id="seasonAmpV">clear</output></div>
+              <input type="range" id="seasonAmp" min="0.25" max="1.5" step="0.25" value="1">
+            </div>
+            <label class="switch" for="farmOn" data-tip="On: nests can learn to farm. Strong seed eaters plant grass patches around their nest, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them slowly through winter."><span>Farming</span><input type="checkbox" id="farmOn" checked></label>
+            </div>
+          </details>
           <details class="sec" open>
             <summary>Plants</summary>
             <div class="sec-body">
@@ -851,12 +875,17 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
               <input type="range" id="maxCols" min="1" max="8" step="1" value="8">
             </div>
             <div class="ctl" data-tip="The most nests that can exist at once, all colours together. More nests means more ants, which can slow the game down. At the top of the slider there is no limit.">
-              <div class="row"><label for="maxNests">Most nests</label><output id="maxNestsV">50</output></div>
-              <input type="range" id="maxNests" min="1" max="65" step="1" value="50">
+              <div class="row"><label for="maxNests">Most nests</label><output id="maxNestsV">no limit</output></div>
+              <input type="range" id="maxNests" min="1" max="65" step="1" value="65">
             </div>
             <div class="ctl" data-tip="The most ants one nest can hold. A full nest stops growing, saves its food and sends out queens to start new nests.">
               <div class="row"><label for="nestMax">Ants per nest</label><output id="nestMaxV">150 ants</output></div>
               <input type="range" id="nestMax" min="20" max="1000" step="10" value="150">
+            </div>
+            <label class="switch" for="mergeOn" data-tip="On: a queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest, and small same-colour neighbours move into the older nest. Each merge raises that nest a level: it holds half again as many ants and as much food, but needs more ants before it sends out queens. Colours with many nests also send queens less often."><span>Nests merge</span><input type="checkbox" id="mergeOn" checked></label>
+            <div class="ctl" data-tip="The most nests, of any colour, allowed in one area (four times the space between nests across). A queen that finds the area full goes home. At the top of the slider there is no limit.">
+              <div class="row"><label for="crowdMax">Nests in one area</label><output id="crowdMaxV">6 nests</output></div>
+              <input type="range" id="crowdMax" min="2" max="13" step="1" value="6">
             </div>
             </div>
           </details>
@@ -926,6 +955,8 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
               <div class="row"><label for="mutEvery">Change again</label><output id="mutEveryV">every 200 births</output></div>
               <input type="range" id="mutEvery" min="50" max="1000" step="50" value="200">
             </div>
+            <label class="switch" for="adaptOn" data-tip="On: changes lean a little toward what the nest's life rewards. Long trips favour range and stamina, fights favour jaws and armour, hunger favours thrift, and food skills move toward what it actually eats."><span>Changes follow how the nest lives</span><input type="checkbox" id="adaptOn" checked></label>
+            <label class="switch" for="paceOn" data-tip="On: fast, far-ranging, heavy-carrying ants eat more; energy-efficient, steady ants eat less. Neither is better everywhere."><span>Fast ants eat more</span><input type="checkbox" id="paceOn" checked></label>
             <label class="switch" for="mutLean" data-tip="On: changes are more often for the better, so colonies slowly get stronger overall. Off: better and worse are equally likely."><span>Changes lean toward better</span><input type="checkbox" id="mutLean"></label>
             <div class="ctl" data-tip="A nest whose gene for something is this high gets a special ability, like Sprint for fast ants or Crushing jaws for strong biters. Each nest's Genes tab lists them all.">
               <div class="row"><label for="abilityAt">Special abilities at</label><output id="abilityAtV">160%</output></div>
@@ -958,6 +989,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
           <details class="sec" open>
             <summary>Food skills</summary>
             <div class="sec-body">
+            <label class="switch" for="nicheOn" data-tip="On: specialists gain more from their food and generalists less; nests with the same diet go to war sooner while different diets live side by side; a new colour is more likely where the ground differs from home; and each nest has its own comfort range, where a wide range costs a little food."><span>Niches</span><input type="checkbox" id="nicheOn" checked></label>
             <label class="switch" for="skillsOn" data-tip="Each nest is good at some kinds of food: seeds, greens, sweets, hunting or scavenging. Food it's good at is worth more to it. Off: every nest gets the same from any food."><span>Food skills matter</span><input type="checkbox" id="skillsOn" checked></label>
             <div class="ctl" data-tip="How much a nest gains from being a specialist. Higher makes each nest stick to its own kind of food.">
               <div class="row"><label for="skillPower">Specialist bonus</label><output id="skillPowerV">strong</output></div>
@@ -3719,10 +3751,10 @@ function nestName() {
 }
 const P = { trailView: 3, deadFade: 0.6, scouts: 0.15, wander: 600, vision: 4, wobble: 0.35, novelty: 0.3, turnMax: 26 * Math.PI / 180, jitter: 0.18, exploreInc: 0.05, trailInc: 0.15,
   fade: 1, space: 2.2, slow: 3, nestEnter: 3.5, restMin: 20, restVar: 120, stamina: 4000, hungryAt: 0.2, starveDmg: 0.04, hp: 30,
-  dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.35, maxColours: 24, capFounderEvery: 3, firstFounder: 900, maxNests: 50, xCasino: false, casinoEvery: 15, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
+  dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.35, maxColours: 24, capFounderEvery: 3, firstFounder: 900, rotFeed: 0.002, grazeWear: 0.0004, farmWear: 0.02, farmWither: 0.25, maxNests: 65, merge: true, mergeGap: 2.5, maxTier: 5, crowdR: 4, crowdMax: 6, storeMax: 1500, famThrottle: 12, xCasino: false, casinoEvery: 15, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
   treeChance: 0.2, treeMax: 2, treeFood: 20000, treeRadius: 10, treeScent: 140, treeDrop: 1.2,
   beastChance: 0.25, beastMax: 3, beastHp: 300, beastDmg: 4, beastBiteEvery: 6, beastFood: 400, beastSpeed: 0.35, beastReach: 2.6, beastLife: 6, dig: true, digRate: 0.15, rate: 1, eat: 0.9, birthBuffer: 2, birthCost: 1, birthBurst: 3, starveKill: 1, startAnts: 10, startFood: 80, nestMax: 150,
-  foodLife: 8, graceMin: 8, shieldMin: 10, founderStock: 4, abilityAt: 1.6, mutStrength: 12, mutEvery: 200, mutLean: false, splitDrift: 120, plantMin: 1500, plantVar: 1500, plantDensity: 0.85, plantDecay: 1, plantSpawn: 1, dropDiv: 4, plantNestGap: 70,
+  foodLife: 8, graceMin: 8, shieldMin: 10, founderStock: 4, abilityAt: 1.6, mutStrength: 12, mutEvery: 200, mutLean: false, splitDrift: 120, plantMin: 1500, plantVar: 1500, plantDensity: 0.85, plantDecay: 1, plantSpawn: 1, dropDiv: 4, plantNestGap: 70, fert: true, seasons: true, yearMin: 40, seasonAmp: 1, paceCost: true, farming: true, adaptive: true, niche: true,
   comfort: 0.12, climCost: 4, skills: true, tempPull: 0.1, minSkill: 0.06, skillPower: 3.5, prey: 1, settleTol: 0.03, nestGap: 90, climate: true, spine: 3, insects: 1, carcass: 1, fungusMin: 1, biomeFood: true };
 
 
@@ -3754,7 +3786,9 @@ function layout() {
   o.DROP_OFF = o.SPAWN_OFF + MAXSPAWN;          // list of tiles that get a pellet
   o.AFREE_OFF = o.DROP_OFF + MAXDROP;           // stack of free ant slots
   o.GENE_OFF = o.AFREE_OFF + CAPMAX;              // per nest: 16 gene multipliers, then ant size (GSTRIDE words)
-  o.POOL_OFF = Math.ceil((o.GENE_OFF + MAXCOL * GSTRIDE) / 64) * 64;
+  o.HARV_OFF = o.GENE_OFF + MAXCOL * GSTRIDE;    // per 64x64 chunk: plant food picked up there (for the soil fertility map)
+  o.ROT_OFF = o.HARV_OFF + NCH;                  // per chunk: food that rotted there (feeds the soil)
+  o.POOL_OFF = Math.ceil((o.ROT_OFF + NCH) / 64) * 64;
   o.WORDS = o.POOL_OFF + SLOTS * 4096;
   return o;
 }
@@ -3916,7 +3950,7 @@ const NCOL: u32 = ${MAXCOL}u; const TABLE_HOME: u32 = ${TABLE_HOME}u; const PICK
 const W: i32 = ${W}; const H: i32 = ${H}; const CW: i32 = ${CW}; const NCH: u32 = ${NCH}u; const NT: u32 = ${N}u;
 const SLOTS: u32 = ${SLOTS}u; const FADE_EVERY: u32 = ${FADE_EVERY}u; const PENDING: u32 = 0xFFFFFFFFu; const NONE: u32 = 0xFFFFFFFFu;
 const TABLE_OFF: u32 = ${TABLE_OFF}u; const OWNER_OFF: u32 = ${OWNER_OFF}u; const FREE_OFF: u32 = ${LO.FREE_OFF}u;
-const GENE_OFF: u32 = ${LO.GENE_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
+const GENE_OFF: u32 = ${LO.GENE_OFF}u; const HARV_OFF: u32 = ${LO.HARV_OFF}u; const ROT_OFF: u32 = ${LO.ROT_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
 const CTR_OFF: u32 = ${LO.CTR_OFF}u; const KILL_OFF: u32 = ${LO.KILL_OFF}u; const SPAWN_OFF: u32 = ${LO.SPAWN_OFF}u;
 const CALL_OFF: u32 = ${LO.CALL_OFF}u; const BEAST_OFF: u32 = ${LO.BEAST_OFF}u; const FOUND_OFF: u32 = ${LO.FOUND_OFF}u; const DMG_OFF: u32 = ${LO.DMG_OFF}u; const HIT_OFF: u32 = ${LO.HIT_OFF}u;
 const DROP_OFF: u32 = ${LO.DROP_OFF}u; const AFREE_OFF: u32 = ${LO.AFREE_OFF}u; const POOL_OFF: u32 = ${LO.POOL_OFF}u;
@@ -3945,6 +3979,7 @@ struct Params {
   comfort: f32, climCost: f32, settleTol: f32, nestGap: f32,
   minSkill: f32, scouts: f32, trailView: f32, deadFade: f32,
   wipeX0: u32, wipeY0: u32, wipeX1: u32, wipeY1: u32,
+  seasonT: f32, pad1: u32, pad2: u32, pad3: u32,
 };
 // 24 words per ant
 struct Ant {
@@ -4221,10 +4256,10 @@ fn addPellet(t: u32, ft: u32) -> bool {
 fn abil(col: u32, k: u32) -> bool { return (atomicLoad(&world[GENE_OFF + col * GSTRIDE + 17u]) & (1u << k)) != 0u; }
 // climate: each nest has a preferred temperature (gene slot 18). Outside its comfort band ants burn energy faster.
 // Midday foragers (bit 16) stretch the band on the hot side, Winter clusters (bit 17) on the cold side
-fn feltTemp(x: i32, y: i32) -> f32 { return f32(atomicLoad(&tiles[tileIndex(x, y)]) >> 24u) / 255.0; }
+fn feltTemp(x: i32, y: i32) -> f32 { return clamp(f32(atomicLoad(&tiles[tileIndex(x, y)]) >> 24u) / 255.0 + prm.seasonT, 0.0, 1.0); } // the season warms or cools all ground
 fn climateOff(col: u32, t: f32) -> f32 {
-  let pref = gene(col, 18u);
-  var hi = pref + prm.comfort; var lo = pref - prm.comfort;
+  let pref = gene(col, 18u); let band = gene(col, 24u); // each nest's own comfort band
+  var hi = pref + band; var lo = pref - band;
   if (abil(col, 16u)) { hi += 0.15; }
   if (abil(col, 17u)) { lo -= 0.15; }
   return max(0.0, lo - t) + max(0.0, t - hi);
@@ -4568,7 +4603,9 @@ fn takeFood(ti: u32) -> u32 {
     else if (pel) { amt = FOOD_VALUE[min(ft, 9u)]; nv = old - 1u; why = W_FOOD + ft; }
     else { return 0u; }
     if (atomicCompareExchangeWeak(&food[ti], old, nv).exchanged) {
-      atomicStore(&food[NT + ti], curStep()); a.why = why; return amt;
+      atomicStore(&food[NT + ti], curStep()); a.why = why;
+      if (why >= W_FOOD && ft <= F_NECTAR) { let hx = i32(ti % u32(W)); let hy = i32(ti / u32(W)); atomicAdd(&world[HARV_OFF + u32((hy >> 6) * CW + (hx >> 6))], 1u); } // count plant food picked up per chunk
+      return amt;
     }
   }
   return 0u;
@@ -4975,18 +5012,26 @@ fn fadeChunk(k: u32, li: u32) {
     if ((dU > d - 3.0 && d > 6.0) || dV < d + 3.0) { atomicSub(&world[base + c * 64u], f - u32(f32(f) * prm.deadFade)); }
   }
 }
-// ---- food left untouched too long rots away (one 256th of the map per step); fallen nest food never rots ----
+// ---- food left untouched too long rots away (one 256th of the map per step) and feeds the soil where it lay.
+// Pellets and dead ants rot after the food life, seeds after four times that, fallen nest food after three; frozen meat keeps ----
 fn rotTile(k: u32) {
   let per = NT / 256u;
   if (k >= per) { return; }
   let ti = (curStep() % 256u) * per + k;
   let v = atomicLoad(&food[ti]);
-  if ((v & 0xFFFFu) == 0u) { return; }
+  if ((v & 0xFFFFFFu) == 0u) { return; }
   let ft = (v >> 24u) & 15u; let age = curStep() - atomicLoad(&food[NT + ti]);
   var life = prm.foodLife; if (ft == F_FRUIT) { life = life / 3u; }
-  if (age > life) {
-    if ((ft == F_SEED || ft == F_FROZEN) && (v & 255u) > 0u) { atomicAnd(&food[ti], 0xFFFF00FFu); } // seeds and frozen meat never rot
-    else { atomicAnd(&food[ti], 0xFFFF0000u); }
+  if (age <= life) { return; }
+  var keep = 0xFF000000u; var gone = 0u;
+  let pel = v & 255u; let dead = (v >> 8u) & 255u; let nestF = (v >> 16u) & 255u;
+  if (ft == F_FROZEN || (ft == F_SEED && age <= life * 4u)) { keep |= 255u; } else { gone += pel; }
+  gone += dead;
+  if (age <= life * 3u) { keep |= 0xFF0000u; } else { gone += nestF * 3u; }
+  if (gone == 0u) { return; }
+  if (atomicCompareExchangeWeak(&food[ti], v, v & keep).exchanged) {
+    let x = i32(ti % u32(W)); let y = i32(ti / u32(W));
+    atomicAdd(&world[ROT_OFF + u32((y >> 6) * CW + (x >> 6))], gone);
   }
 }
 @compute @workgroup_size(64)
@@ -5149,7 +5194,385 @@ fn count(@builtin(global_invocation_id) gid: vec3u) {
 }
 `;
 
-const DRAW = COMMON + /* wgsl */`
+// ANT-LOOK-BEGIN
+// ---------- how ants look: one body built from parts that grow, shrink and blend, so a nest's ants change shape smoothly as its genes drift ----------
+// 48 numbers per nest (12 groups of 4), the same layout in the shader (antShade), the bounds helper (antLayout) and the gene mapping (antLookTarget)
+const LOOKN = 48;
+const LOOK_NAMES = ['legLen', 'legW', 'strider', 'pads', 'jaw', 'pincer', 'antler', 'trap', 'straw', 'snout', 'shovel', 'horn', 'eye', 'stalk', 'antL', 'feather',
+  'third', 'ab', 'abLong', 'honey', 'gas2', 'beetle', 'chain', 'extra', 'wasp', 'sting', 'scorp', 'cerci', 'wings', 'dragon', 'glow', 'mantis',
+  'head', 'chest', 'spines', 'shell', 'pattern', 'shade', 'shine', 'hair', 'metal', 'scale', 'reach', 'paddles', 'waist', 'pill', 'spare1', 'spare2'];
+const LI = Object.fromEntries(LOOK_NAMES.map((n, i) => [n, i]));
+const ANT_WGSL = /* wgsl */`
+fn aEll(p: vec2f, c: vec2f, r: vec2f) -> f32 { if (min(r.x, r.y) < 0.03) { return 1e9; } let q = (p - c) / r; return (length(q) - 1.0) * min(r.x, r.y); }
+fn aSeg(p: vec2f, a: vec2f, b: vec2f, ra: f32, rb: f32) -> f32 { let pa = p - a; let ba = b - a; let h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-5), 0.0, 1.0); return length(pa - ba * h) - mix(ra, rb, h); }
+fn aBezAt(a: vec2f, b: vec2f, c: vec2f, t: f32) -> vec2f { return mix(mix(a, b, t), mix(b, c, t), t); }
+fn aBez(p: vec2f, a: vec2f, b: vec2f, c: vec2f, r0: f32, r1: f32) -> f32 {
+  var d = 1e9; var prev = a;
+  for (var i = 1; i <= 6; i++) { let t = f32(i) / 6.0; let n = aBezAt(a, b, c, t); d = min(d, aSeg(p, prev, n, mix(r0, r1, t - 0.1667), mix(r0, r1, t))); prev = n; }
+  return d;
+}
+fn aLeg(q: vec2f, a: vec2f, k: vec2f, f: vec2f, w: f32) -> f32 { return min(aSeg(q, a, k, w, w * 0.85), aSeg(q, k, f, w * 0.7, w * 0.4)); }
+fn aRot(p: vec2f, a: f32) -> vec2f { let c = cos(a); let s = sin(a); return vec2f(p.x * c + p.y * s, -p.x * s + p.y * c); }
+fn aHash(x: u32, y: u32) -> f32 { var h = (x * 374761393u) ^ (y * 668265263u); h = (h ^ (h >> 13u)) * 1274126177u; h ^= h >> 16u; return f32(h & 1023u) / 1023.0; }
+fn aStar(p: vec2f, r: f32) -> f32 { let a = abs(p) / max(r, 1e-3); return (min(a.x * 0.25 + a.y, a.x + a.y * 0.25) - 1.0) * r; }
+fn aNoise(p: vec2f) -> f32 { return fract(sin(dot(floor(p), vec2f(12.9898, 78.233))) * 43758.5453); }
+
+// p: the point in the ant's own frame (head toward +x, about 32 units across a standard ant's quad). Returns premultiplied colour
+fn antShade(p: vec2f, L: array<vec4f, 12>, base: vec3f, queen: bool, carry: bool, iid: u32, tw: u32, pw: f32) -> vec4f {
+  let L0 = L[0]; let L1 = L[1]; let L2 = L[2]; let L3 = L[3]; let L4 = L[4]; let L5 = L[5];
+  let L6 = L[6]; let L7 = L[7]; let L8 = L[8]; let L9 = L[9]; let L10 = L[10]; let L11 = L[11];
+  let legLen = L0.x; let legW = L0.y; let strider = L0.z; let pads = L0.w;
+  let jaw = L1.x; let wp0 = L1.y; let wa0 = L1.z; let wt0 = L1.w;
+  let straw = L2.x; let snout = L2.y; let shovel = L2.z; let horn = L2.w;
+  let eyeS = L3.x; let stalk = L3.y; let antL = L3.z; let feather = L3.w;
+  let third = L4.x; let ab = L4.y; let abLong = L4.z; let honey = L4.w;
+  let gas2 = L5.x; let b = L5.y; let cn = L5.z; let extra = L5.w;
+  let wasp = L6.x; let sting = L6.y; let scorp = L6.z; let cerci = L6.w;
+  var wings = L7.x; let dragon = L7.y; let glow = L7.z; let mantis = L7.w;
+  let hsIn = L8.x; let th = L8.y; let sp = L8.z; let shell = L8.w;
+  let pat = i32(round(L9.x)); let shade = L9.y; let gl = L9.z; let hair = L9.w;
+  let metal = L10.x; let paddles = L10.w; let wl = L11.x; let pill = L11.y;
+  if (queen) { wings = max(wings, 1.0); }
+  let q = vec2f(p.x, abs(p.y));
+  // ---- layout: head, chest, extra segments, waist, abdomen, tail ----
+  let hs = hsIn * (1.0 - 0.12 * b) * (1.0 - 0.25 * cn);
+  let hc = vec2f(8.0 + (hs - 1.0) * 1.8 - 1.2 * b, 0.0);
+  let hr = vec2f(3.0, 2.8 * (1.0 + 0.25 * b)) * hs;
+  let front = hc.x + hr.x;
+  let chC = vec2f(1.0 - 0.6 * b, 0.0);
+  let chR = vec2f(3.8 * th * (1.0 + 0.1 * b) * (1.0 - 0.3 * cn), 2.4 * th * (1.0 + 0.9 * b) * (1.0 + 0.15 * cn + 0.7 * pill));
+  var dBody = min(aEll(p, hc, hr), aEll(p, chC, chR));
+  var dLimb = 1e9;
+  let ll = legLen * (1.0 + 0.35 * b);
+  let lt = legW * (1.0 + 0.5 * b);
+  let chestBack = chC.x - chR.x * 0.8;
+  let nseg = extra + cn * 13.0 * (1.0 - 0.55 * pill);
+  let segSp = mix(4.6, 3.5, cn) * (1.0 - 0.12 * pill);
+  let segW = mix(2.3 * th, 2.6, cn) * (1.0 + 1.3 * pill);
+  let nk = i32(ceil(nseg - 0.001));
+  for (var k = 0; k < nk; k++) {
+    let f = clamp(nseg - f32(k), 0.0, 1.0);
+    let x = chestBack - segSp * (f32(k) + 0.5 * f);
+    let taper = 1.0 - 0.3 * pow(f32(k) / max(nseg, 1.0), 3.0) * (1.0 - pill);
+    let r = vec2f(segSp * 0.62 * f, segW * taper * sqrt(f));
+    dBody = min(dBody, aEll(p, vec2f(x, 0.0), r));
+    let a = vec2f(x, r.y * 0.6);
+    let ls = f * (1.0 - 0.7 * pill);
+    let kA = a + vec2f(-1.0, 4.0 * ll) * ls; let fA = a + vec2f(-4.0 * ll, 8.0 * ll) * ls;
+    let kC = a + vec2f(0.6, 3.6) * ls; let fC = a + vec2f(-2.4, 6.8) * ls;
+    var kk = mix(kA, kC, cn); var ff = mix(fA, fC, cn);
+    if (k == nk - 1 && cn > 0.4) { let rl = (cn - 0.4) / 0.6; kk = mix(kk, a + vec2f(-3.0, 4.5) * ls, rl); ff = mix(ff, a + vec2f(-9.0, 6.5) * ls, rl); } // centipede: long trailing back legs
+    dLimb = min(dLimb, aLeg(q, a, kk, ff, mix(lt, 0.42, cn) * sqrt(f)));
+  }
+  let tailX = chestBack - segSp * nseg;
+  let keepW = (1.0 - b) * (1.0 - cn);
+  let wlen = ((2.0 + wl * 0.9) + wasp * 7.0) * keepW;
+  let wry = mix(1.0, 0.5, wasp) * keepW;
+  dBody = min(dBody, aEll(p, vec2f(tailX - wlen * 0.5 + 0.4, 0.0), vec2f(wlen * 0.5, wry)));
+  var abR = vec2f(6.0 * ab * (1.0 + 0.9 * abLong) * (1.0 + 0.5 * b), 4.4 * ab * (1.0 + 0.7 * b) * (1.0 - 0.22 * abLong) * (1.0 - 0.25 * wasp)) * (1.0 + 0.2 * honey);
+  abR *= 1.0 - 0.72 * cn * (1.0 - 0.5 * pill);
+  let abFront = tailX - wlen + 0.6 + 3.0 * b + 1.5 * cn;
+  let abC = vec2f(abFront - abR.x, 0.0);
+  let dAbd = aEll(p, abC, abR);
+  dBody = min(dBody, dAbd);
+  let g2R = abR * 0.78 * gas2;
+  let g2C = vec2f(abC.x - abR.x - g2R.x + 1.2, 0.0);
+  let dG2 = aEll(p, g2C, g2R);
+  dBody = min(dBody, dG2);
+  let tip = abC.x - abR.x - max(0.0, 2.0 * g2R.x - 1.2);
+  // ---- legs on the chest: back, middle, front ----
+  let ay = chR.y * 0.6;
+  for (var i = 0; i < 3; i++) {
+    let fi = f32(i);
+    let a = vec2f(chC.x - 1.5 + 2.25 * fi, ay);
+    var d = vec2f(-3.5 * ll, 6.0 * ll);
+    if (i == 1) { d = vec2f(0.7 * ll, 7.0 * ll); }
+    if (i == 2) { d = vec2f(5.5 * ll, 5.5 * ll); }
+    var w = lt;
+    if (i < 2) { d *= 1.0 + 1.5 * strider; w *= 1.0 - 0.4 * strider; }
+    d = mix(d, vec2f(-2.4 + 1.6 * fi, 6.8), cn);
+    var k = a + vec2f(d.x * 0.35, d.y * 0.62);
+    var f = a + d;
+    if (i == 2) {
+      // praying-mantis arms: the front pair rises forward and folds back, spiked
+      let km = vec2f(front + 0.8, chR.y + 3.4); let fm = vec2f(hc.x - 0.6, hr.y + 1.0);
+      k = mix(k, km, mantis); f = mix(f, fm, mantis); w *= 1.0 + 0.8 * mantis;
+      if (mantis > 0.15) {
+        for (var s = 1; s <= 3; s++) { let m = mix(a, k, f32(s) / 4.0); dLimb = min(dLimb, aSeg(q, m, m + vec2f(0.6, -1.6) * mantis, 0.35 * mantis, 0.05)); }
+      }
+      dLimb = min(dLimb, aEll(q, f + vec2f(1.0, 0.6), vec2f(1.6, 2.3) * paddles));
+    }
+    dLimb = min(dLimb, aLeg(q, a, k, f, w));
+    if (pads > 0.02) { dLimb = min(dLimb, length(q - f) - 0.9 * pads); }
+  }
+  // ---- antennae ----
+  let an = antL * (1.0 - 0.45 * b) * (1.0 + 0.9 * cn);
+  let ab0 = vec2f(hc.x + 1.5 * hs, 1.2 * hs);
+  let el = ab0 + mix(vec2f(2.2, 2.6), vec2f(2.8, 1.6), cn) * an;
+  let atip = el + mix(vec2f(2.6, 0.6), vec2f(4.0, 2.6), cn) * an;
+  dLimb = min(dLimb, min(aSeg(q, ab0, el, 0.45, 0.42), aSeg(q, el, atip, 0.42, 0.32)));
+  if (b > 0.05) { dLimb = min(dLimb, aEll(q, atip, vec2f(1.0, 0.7) * b)); }
+  if (feather > 0.02) {
+    let dir = normalize(atip - el); let pr = vec2f(-dir.y, dir.x);
+    for (var i = 0; i < 6; i++) { let m = mix(el, atip, (f32(i) + 0.5) / 6.0); dLimb = min(dLimb, aSeg(q, m - pr * 1.4 * feather, m + pr * 1.4 * feather, 0.18, 0.12)); }
+  }
+  if (third > 0.02) {
+    let t3 = vec2f(front + 4.5 * an * third + 0.5, 0.0);
+    dLimb = min(dLimb, min(aSeg(q, vec2f(front - 1.0, 0.0), t3, 0.4, 0.3), length(q - t3) - 0.75 * third));
+  }
+  // ---- mouth: jaws blend between plain, crab claws, stag antlers, trap jaws and centipede fangs ----
+  let sup = 1.0 - 0.85 * max(straw, snout);
+  let wf = cn; let rest = 1.0 - wf;
+  let wp = wp0 * rest; let wa = wa0 * rest; let wt = wt0 * rest;
+  let w0 = max(0.0, 1.0 - wp - wa - wt - wf);
+  let s = jaw;
+  let B = vec2f(front - 0.6, 1.4 * hs);
+  let M = B + (w0 * vec2f(1.6, -0.3) * s + wp * vec2f(4.5, 3.4) * s + wa * vec2f(6.5, 6.0) * s + wt * vec2f(5.5, 0.3) * s + wf * vec2f(2.0, 1.8)) * sup;
+  let T = B + (w0 * (vec2f(3.2 * s, 0.35 * s) - vec2f(0.0, B.y)) + wp * (vec2f(8.0 * s, 0.5 * s) - vec2f(0.0, B.y)) + wa * (vec2f(14.0 * s, 1.0 * s) - vec2f(0.0, B.y))
+          + wt * (vec2f(11.0 * s, 0.7 * s) - vec2f(0.0, B.y)) + wf * (vec2f(3.0, -0.1) - vec2f(0.0, B.y))) * sup;
+  let r0 = ((0.35 + 0.35 * s) * w0 + 0.95 * s * wp + 0.75 * s * wa + 0.45 * s * wt + 0.6 * wf) * sup;
+  let r1 = (0.3 * w0 + 0.35 * wp + 0.28 * wa + 0.2 * wt + 0.15 * wf) * sup;
+  dLimb = min(dLimb, aBez(q, B, M, T, r0, r1));
+  if (wa > 0.05) { let P = aBezAt(B, M, T, 0.6); dLimb = min(dLimb, aSeg(q, P, P + vec2f(1.4, -2.8) * s * wa * sup, 0.55 * wa * s, 0.1)); }
+  if (wt > 0.05) { for (var i = 1; i <= 3; i++) { let P = aBezAt(B, M, T, f32(i) / 4.0); dLimb = min(dLimb, aSeg(q, P, P + vec2f(0.3, -1.0) * wt * s, 0.25 * wt, 0.05)); } }
+  if (straw > 0.02) { dLimb = min(dLimb, aSeg(q, vec2f(front - 0.5, 0.0), vec2f(front + 11.0 * straw, 0.0), 0.38 * min(straw * 3.0, 1.0), 0.18)); }
+  if (snout > 0.02) {
+    let st = vec2f(front + 9.0 * snout, 0.0);
+    dBody = min(dBody, aSeg(q, vec2f(front - 1.0, 0.0), st, 1.2 * snout + 0.01, 0.85 * snout));
+    dLimb = min(dLimb, aSeg(q, st + vec2f(0.0, 0.5 * snout), st + vec2f(1.2, 1.0) * snout, 0.3 * snout, 0.12));
+  }
+  if (shovel > 0.02) { dBody = min(dBody, aEll(p, vec2f(front - 0.4 + 0.6 * shovel, 0.0), vec2f(1.1, 3.6 * hs) * shovel)); }
+  if (horn > 0.02) { dBody = min(dBody, aSeg(q, hc, vec2f(front + 9.0 * horn, 0.0), 1.6 * horn + 0.01, 0.12)); }
+  // ---- eyes, maybe on stalks ----
+  let E = vec2f(hc.x + 1.0 * hs, 1.5 * hs);
+  let Es = E + vec2f(2.0, 5.0) * stalk;
+  if (stalk > 0.02) { dLimb = min(dLimb, aSeg(q, E, Es, 0.55 * stalk, 0.45 * stalk)); }
+  let er = 0.85 * eyeS * (1.0 + 0.3 * stalk);
+  let dEye = length(q - Es) - er;
+  // ---- back spines, stinger, scorpion tail, earwig forceps ----
+  if (sp > 0.05) {
+    dLimb = min(dLimb, aSeg(q, vec2f(chC.x - 1.5, 1.6 * th), vec2f(chC.x - 2.8 - 1.5 * sp, 2.4 * th + 2.6 * sp), 0.35, 0.05));
+    dLimb = min(dLimb, aSeg(q, vec2f(tailX - wlen * 0.5, 0.8), vec2f(tailX - wlen * 0.5 - 0.8 - sp, 1.6 + 1.8 * sp), 0.3, 0.05));
+  }
+  if (sting > 0.02) { dLimb = min(dLimb, aSeg(p, vec2f(tip + 1.0, 0.0), vec2f(tip - 4.5 * sting, 0.0), 1.0 * sting, 0.05)); }
+  if (scorp > 0.02) {
+    let ns = scorp * 6.0; var cur = vec2f(tip + 0.8, 0.0); var ang = 3.1416;
+    for (var k = 0; k < 6; k++) {
+      let f = clamp(ns - f32(k), 0.0, 1.0); if (f <= 0.0) { break; }
+      let nx = cur + vec2f(cos(ang), sin(ang)) * 3.1 * f; let r = (1.9 - 0.09 * f32(k)) * sqrt(f) * max(ab, 0.8);
+      dBody = min(dBody, min(aSeg(p, cur, nx, r * 0.85, r * 0.8), length(p - nx) - r));
+      cur = nx; ang -= 0.47;
+    }
+    if (scorp > 0.8) {
+      let g = (scorp - 0.8) * 5.0; let dir = vec2f(cos(ang), sin(ang));
+      let bc = cur + dir * 2.0 * g;
+      dBody = min(dBody, length(p - bc) - 1.9 * g);
+      dLimb = min(dLimb, aBez(p, bc + dir * 1.2 * g, bc + dir * 3.6 * g, bc + (dir * 3.0 + vec2f(-dir.y, dir.x) * 2.4) * g, 0.6 * g, 0.08));
+    }
+  }
+  if (cerci > 0.02) { dLimb = min(dLimb, aBez(q, vec2f(tip + 1.0, 0.9), vec2f(tip - 4.0 * cerci, 3.4 * cerci + 0.9), vec2f(tip - 8.5 * cerci, 0.9 * cerci + 0.3), 0.75 * cerci + 0.01, 0.3 * cerci)); }
+  // ---- wings: laid back like a queen's, swinging out into long dragonfly wings ----
+  var dWing = 1e9;
+  if (wings > 0.02) {
+    let o = vec2f(chC.x + 0.5, chR.y * 0.4);
+    let a1 = mix(-0.38, -1.45, dragon); let l1 = mix(10.5, 14.0, dragon) * wings; let w1 = mix(3.6, 2.2, dragon) * wings;
+    dWing = aEll(aRot(q - o, a1), vec2f(-l1 * 0.92, 0.0), vec2f(l1, w1));
+    let o2 = o + vec2f(-2.5, 0.0);
+    let a2 = mix(-0.6, -1.78, dragon); let l2 = mix(7.0, 12.5, dragon) * wings; let w2 = mix(2.6, 2.1, dragon) * wings;
+    dWing = min(dWing, aEll(aRot(q - o2, a2), vec2f(-l2 * 0.92, 0.0), vec2f(l2, w2)));
+  }
+  let dfood = aEll(p, vec2f(front + 2.5 + jaw, 0.0), vec2f(3.0, 3.0));
+  // ---- colour ----
+  let aa = pw; let al = pw;
+  if (carry && dfood < 0.0) { return vec4f(241.0, 220.0, 134.0, 255.0) / 255.0; }
+  let alt = select(base * (1.0 + shade) * 0.5, mix(base, vec3f(1.0), shade * 0.6), shade > 0.0);
+  var a = clamp(0.5 - dBody / aa, 0.0, 1.0);
+  var c = base;
+  let ql = (p - abC) / max(abR, vec2f(0.01));
+  let inAb = dAbd < 0.0 || dG2 < 0.0;
+  if (dAbd < 0.0) {
+    if (pat == 1 && fract(ql.x * 2.4 + 0.2) < 0.35) { c = alt; }
+    if (pat == 2 && length(fract(ql * 2.2 + 0.5) - 0.5) < 0.24) { c = alt; }
+    if (pat == 4 && ql.x < -0.45) { c = alt; }
+    if (pat == 5 && fract(ql.x * 2.0 + abs(ql.y) * 1.3) < 0.3) { c = alt; }
+  } else if (pat == 3) { c = alt; }
+  c *= 0.82 + 0.18 * clamp(-dBody / 4.0, 0.0, 1.0);
+  // ant: thin bands across the abdomen. Beetle: a centre seam and grooves on the wing cases. Honeypot or queen: pale stretched bands
+  if (inAb) {
+    if (fract(ql.x * 1.6 + 0.5) < 0.07) { c *= 1.0 - 0.22 * (1.0 - b); }
+    let pb = max(honey, abLong);
+    if (pb > 0.02 && fract(ql.x * 2.2 + 0.3) < 0.32 * pb) { c = mix(c, mix(base, vec3f(1.0), 0.7), 0.8); }
+    if (b > 0.05 && dAbd < 0.0) {
+      if (abs(p.y) < 0.25 + 0.15 * b) { c *= 1.0 - 0.55 * b; }
+      if (abs(fract(abs(ql.y) * 2.6) - 0.5) > 0.44) { c *= 1.0 - 0.25 * b; }
+    }
+    if (glow > 0.02 && dAbd < 0.0 && ql.x < -0.3) { c = mix(c, vec3f(0.94, 1.0, 0.62), glow); }
+  }
+  // segment lines on a long body or centipede
+  if (nseg > 0.05 && p.x < chestBack && p.x > tailX && fract((chestBack - p.x) / segSp) < 0.12) { c *= 0.75; }
+  if (dBody > -shell * 4.0) { c = c * 0.55; }
+  if (shell > 0.12 && dAbd < 0.0 && fract(ql.x * 3.0 + 0.5) < (shell - 0.08) * 0.6 * (1.0 - b)) { c = c * 0.6; }
+  let h1 = length((p - abC - vec2f(1.5, -1.6) * ab) / (abR * 0.32));
+  let h2 = length((p - hc - vec2f(0.6, -0.9) * hs) / (hr * 0.35));
+  let h3 = length((p - chC - vec2f(0.6, -0.7) * th) / (chR * 0.35));
+  if (gl > 0.02) { c = mix(c, vec3f(1.0), gl * 0.55 * max(max(exp(-h1 * h1 * 2.0), exp(-h2 * h2 * 2.0)), exp(-h3 * h3 * 2.0))); }
+  // metal (casino colonies): banded tones instead of one flat colour, a hard glint, a warm rim on the shadow side
+  var limbC = base * 0.35;
+  if (metal > 0.5) {
+    let nIn = clamp(-dBody / 4.0, 0.0, 1.0);
+    let v = 0.5 + 0.5 * sin(p.x * 0.42 - p.y * 0.66 + nIn * 3.2);
+    let dark = base * 0.28; let light = mix(base, vec3f(1.0), 0.55);
+    var mc = select(mix(base, light, (v - 0.5) * 2.0), mix(dark, base, v * 2.0), v < 0.5);
+    mc = mix(mc, vec3f(1.0), clamp(max(max(exp(-h1 * h1 * 5.0), exp(-h2 * h2 * 5.0)), exp(-h3 * h3 * 5.0)) * 0.85, 0.0, 1.0));
+    if (p.y > 0.0 && dBody > -1.0 && dBody < -0.3) { mc = mix(mc, base * 0.5 + vec3f(0.5, 0.45, 0.3), 0.6); }
+    if (dBody > -0.3) { mc = base * 0.3; }
+    if (b > 0.05 && dAbd < 0.0 && abs(p.y) < 0.25 + 0.15 * b) { mc *= 1.0 - 0.5 * b; }
+    c = mc; limbC = mix(base * 0.4, base, 0.35 + 0.25 * sin(p.x * 0.8 + p.y * 0.5));
+  }
+  if (dEye < 0.0) {
+    c = vec3f(0.07, 0.05, 0.04);
+    if (eyeS > 1.4 && aNoise((q - Es) * 3.0) < 0.3) { c = mix(c, vec3f(0.45, 0.7, 0.6), min(1.0, eyeS - 1.4)); }
+    if (length(q - Es - vec2f(0.3, -0.35) * er) < 0.32 * er) { c = vec3f(0.85); }
+    a = max(a, clamp(0.5 - dEye / pw, 0.0, 1.0));
+  }
+  if (hair > 0.02 && dBody > 0.0 && dBody < 0.06 + 0.5 * hair && aNoise(p * 3.0) < 0.45) { a = max(a, 0.6); c = base * 0.5; }
+  let aLimb = clamp(0.5 - dLimb / al, 0.0, 1.0) * 0.95;
+  if (aLimb > a) { a = aLimb; c = limbC; }
+  if (dWing < 0.0 && a < 0.5) {
+    let rib = abs(fract(dWing * 2.5) - 0.5) < 0.12 || (dragon > 0.3 && abs(fract(dot(q, vec2f(0.7, 0.7))) - 0.5) < 0.08);
+    let wa2 = select(0.15, 0.38, rib);
+    let wc = select(vec3f(0.9, 0.94, 0.98), vec3f(0.55, 0.58, 0.62), rib);
+    c = mix(wc, c, a); a = max(a, wa2);
+  }
+  // firefly glow: a soft halo around the lantern
+  if (glow > 0.02) {
+    let hd = length((p - abC + vec2f(abR.x * 0.65, 0.0)) / (abR * 1.5));
+    let ha = glow * 0.55 * exp(-hd * hd * 1.6);
+    if (ha > a) { c = mix(vec3f(0.85, 1.0, 0.35), c, a / ha); a = ha; }
+  }
+  // metal sparkle: now and then a four-point star flashes on a highlight
+  if (metal > 0.5) {
+    let ph = f32(tw % 40u) / 40.0; let on = aHash(iid * 7u + 3u, tw / 40u);
+    if (on > 0.55) {
+      let sc = sin(ph * 3.1416) * 1.3;
+      let spot = select(abC + vec2f(1.5, -1.6) * ab, hc + vec2f(0.6, -0.9) * hs, on > 0.8);
+      let ds = aStar(p - spot, sc);
+      if (ds < 0.0) { let sa = clamp(-ds * 2.0, 0.0, 1.0); c = mix(c, vec3f(1.0, 0.99, 0.9), sa); a = max(a, sa); }
+    }
+  }
+  if (a <= 0.0) { return vec4f(0.0); }
+  return vec4f(c * a, a);
+}
+`;
+// the same layout in JS, only to know how far the parts reach (quad size and the portrait frame)
+function antLayout(L) {
+  const g = n => L[LI[n]];
+  const b = g('beetle'), cn = g('chain'), pill = g('pill'), th = g('chest'), ab = g('ab');
+  const hs = g('head') * (1 - 0.12 * b) * (1 - 0.25 * cn), hcx = 8 + (hs - 1) * 1.8 - 1.2 * b, front = hcx + 3 * hs;
+  const chx = 1 - 0.6 * b, chrx = 3.8 * th * (1 + 0.1 * b) * (1 - 0.3 * cn), chry = 2.4 * th * (1 + 0.9 * b) * (1 + 0.15 * cn + 0.7 * pill);
+  const ll = g('legLen') * (1 + 0.35 * b), chestBack = chx - chrx * 0.8, nseg = g('extra') + cn * 13 * (1 - 0.55 * pill), segSp = (4.6 + (3.5 - 4.6) * cn) * (1 - 0.12 * pill);
+  const segW = (2.3 * th + (2.6 - 2.3 * th) * cn) * (1 + 1.3 * pill);
+  const tailX = chestBack - segSp * nseg, keepW = (1 - b) * (1 - cn), wlen = ((2 + g('waist') * 0.9) + g('wasp') * 7) * keepW;
+  const k1 = (1 + 0.2 * g('honey')) * (1 - 0.72 * cn * (1 - 0.5 * pill));
+  const arx = 6 * ab * (1 + 0.9 * g('abLong')) * (1 + 0.5 * b) * k1, ary = 4.4 * ab * (1 + 0.7 * b) * (1 - 0.22 * g('abLong')) * (1 - 0.25 * g('wasp')) * k1;
+  const abx = tailX - wlen + 0.6 + 3 * b + 1.5 * cn - arx;
+  const tip = abx - arx - Math.max(0, 2 * arx * 0.78 * g('gas2') - 1.2);
+  const s = g('jaw'), an = g('antL') * (1 - 0.45 * b) * (1 + 0.9 * cn);
+  let xMax = Math.max(front + 3.2 * s, front + 8 * s * g('pincer') + 1, front + 14 * s * g('antler') + 1, front + 11 * s * g('trap') + 1, front + 11 * g('straw'), front + 10.5 * g('snout'),
+    front + 9 * g('horn'), hcx + 1.5 * hs + 4.8 * an + 1.5 * cn * an, front + 4.5 * an * g('third') + 1.5, front + 3 * g('mantis'), chx + 0.75 + 5.5 * ll * (1 - cn), front + 2.5 + s + 3);
+  const spread = Math.max(6 * ll, 7 * ll * (1 + 1.5 * g('strider')), 5.5 * ll);
+  let yMax = Math.max(ary, chry * 0.6 + spread, segW + 8 * ll, chry + 7, 1.2 * hs + 3.2 * an * (1 + 0.5 * cn), 1.5 * hs + 5 * g('stalk') + 2.5 * g('eye'),
+    wingY(g('wings'), g('dragon')), 6 * g('mantis') + chry, g('cerci') * 4.5, g('scorp') * 10);
+  let xMin = Math.min(tip - 4.5 * g('sting'), tip - 8.5 * g('cerci'), tip - 12 * g('scorp'), chx - 1.5 - 3.5 * ll * (1 + 1.5 * g('strider')), tailX - 9 * cn,
+    chx - wingX(g('wings'), g('dragon')));
+  if (g('scorp') > 0.2) yMax = Math.max(yMax, 12 * g('scorp'));
+  return { xMin: xMin - 1.5, xMax: xMax + 1.5, yMax: yMax + 1.5 };
+}
+function wingY(w, d) { const a = -0.38 + (-1.45 + 0.38) * d, l = (10.5 + 3.5 * d) * w; return 1.92 * l * Math.sin(-a) + (3.6 - 1.4 * d) * w + 1; }
+function wingX(w, d) { const a = -0.38 + (-1.45 + 0.38) * d, l = (10.5 + 3.5 * d) * w; return 1.92 * l * Math.cos(a) + 3 * w; }
+const antReach = L => { const e = antLayout(L); return Math.max(-e.xMin, e.xMax, e.yMax) + 1; };
+// genes to looks. gm(k): the gene as a multiplier (1 = standard). Mild changes run from 1.12 to 1.6 (where abilities start), extreme ones from 1.6 to 2.5
+const sm01 = v => { v = Math.min(1, Math.max(0, v)); return v * v * (3 - 2 * v); };
+function antLookTarget(gm, o) {
+  // o: { hunt, sweet, temp, pattern, shade, metal } (food skills 0 to 1, liked temperature 0 cold to 1 hot)
+  const mild = k => sm01((gm(k) - 1.12) / 0.48), ext = k => sm01((gm(k) - 1.6) / 0.9), cl = (v, a, b) => Math.min(b, Math.max(a, v));
+  const L = new Float32Array(LOOKN), set = (n, v) => { L[LI[n]] = v; };
+  const T = o.temp ?? 0.5;
+  set('legLen', cl(1 + 0.9 * (gm(0) - 1) - 0.25 * mild(13), 0.55, 1.9)); set('strider', ext(0));
+  set('legW', cl(0.5 + 0.6 * (gm(10) - 1), 0.3, 1.2)); set('pads', mild(10));
+  set('jaw', cl(0.6 + 0.9 * (gm(14) - 1), 0.3, 1.7));
+  let pin = mild(14) * (1 - ext(14)), ant = ext(14), trap = sm01(((o.hunt ?? 0.2) - 0.28) / 0.14);
+  const tot = pin + ant + trap; if (tot > 1) { pin /= tot; ant /= tot; trap /= tot; }
+  set('pincer', pin); set('antler', ant); set('trap', trap); set('mantis', sm01(((o.hunt ?? 0.2) - 0.42) / 0.2));
+  const snout = sm01(((o.sweet ?? 0.2) - 0.42) / 0.2); set('snout', snout); set('straw', sm01(((o.sweet ?? 0.2) - 0.28) / 0.14) * (1 - snout));
+  set('shovel', mild(15) * (1 - 0.6 * ext(15))); set('horn', ext(15)); set('paddles', mild(15));
+  set('eye', cl(0.8 + 1.0 * (gm(6) - 1), 0.45, 2.4)); set('stalk', ext(6));
+  set('antL', cl(0.8 + 0.8 * (gm(5) - 1) + 0.6 * (gm(4) - 1), 0.4, 2.0)); set('feather', mild(5)); set('glow', ext(5)); set('third', mild(4));
+  set('ab', cl((1 + 0.6 * (gm(11) - 1)) * (1 + 0.3 * mild(13)), 0.7, 1.7)); set('abLong', ext(11)); set('honey', mild(13));
+  set('gas2', mild(7)); set('cerci', ext(7));
+  set('beetle', cl(0.7 * ext(1) + 0.5 * ext(14) + 0.3 * mild(1) * mild(14), 0, 1));
+  const chain = cl(0.6 * ext(3) + 0.6 * ext(9), 0, 1); set('chain', chain); set('pill', Math.min(chain, ext(1)));
+  set('extra', cl(mild(3) + 0.5 * mild(9), 0, 1));
+  set('waist', cl(0.6 + 1.5 * (gm(2) - 1), 0, 2)); set('wasp', ext(2));
+  set('sting', Math.max(mild(8), 0.8 * ext(2))); set('spines', cl(2 * (gm(8) - 1.05), 0, 1.4)); set('scorp', ext(8));
+  set('wings', mild(12)); set('dragon', ext(12));
+  set('head', cl(1 + 0.6 * (gm(14) - 1) + 0.4 * (gm(9) - 1), 0.75, 1.8)); set('chest', cl(1 + 0.4 * (gm(11) - 1) + 0.4 * (gm(13) - 1), 0.8, 1.5));
+  set('shell', cl(0.08 + 0.45 * Math.max(0, gm(1) - 1), 0.08, 0.42));
+  set('pattern', o.pattern ?? 0); set('shade', o.shade ?? 0.5);
+  set('shine', o.metal ? 1 : cl((T - 0.5) * 4, 0, 1)); set('hair', cl((0.5 - T) * 4, 0, 1)); set('metal', o.metal ? 1 : 0);
+  set('scale', cl(1 + 0.6 * (gm(9) - 1) + 0.3 * (gm(11) - 1) - 0.2 * (gm(0) - 1), 0.75, 1.6));
+  set('reach', antReach(L));
+  return L;
+}
+// ease a nest's current looks toward its target, so new body parts grow in rather than pop. Pattern and metal switch at once
+function antLookStep(cur, tgt, k) {
+  for (let i = 0; i < LOOKN; i++) cur[i] = (i === LI.pattern || i === LI.metal) ? tgt[i] : cur[i] + (tgt[i] - cur[i]) * k;
+  cur[LI.reach] = antReach(cur);
+  return cur;
+}
+// a still picture of one ant on a canvas, drawn with the same shader as the game
+function makeAntPortrait(device) {
+  const code = ANT_WGSL + /* wgsl */`
+struct PU { base: vec4f, view: vec4f, misc: vec4u, L: array<vec4f, 12> };
+@group(0) @binding(0) var<uniform> pu: PU;
+struct PO { @builtin(position) p: vec4f, @location(0) uv: vec2f };
+@vertex fn pVS(@builtin(vertex_index) vi: u32) -> PO { var o: PO; let xy = vec2f(f32((vi << 1u) & 2u), f32(vi & 2u)); o.p = vec4f(xy * 2.0 - 1.0, 0.0, 1.0); o.uv = vec2f(xy.x, 1.0 - xy.y); return o; }
+@fragment fn pFS(in: PO) -> @location(0) vec4f {
+  // view: x, y = the ant-frame point at the canvas centre, z = units per pixel, w = 1 for head up
+  let px = (in.uv - 0.5) * vec2f(f32(pu.misc.x), f32(pu.misc.y)) * pu.view.z;
+  var p = vec2f(pu.view.x + px.x, pu.view.y + px.y);
+  if (pu.view.w > 0.5) { p = vec2f(pu.view.x - px.y, pu.view.y + px.x); }
+  return antShade(p, pu.L, pu.base.rgb, pu.misc.z == 1u, false, 1u, pu.misc.w, max(length(fwidth(p)) * 0.7, 1e-4));
+}`;
+  const mod = device.createShaderModule({ code });
+  const fmt = navigator.gpu.getPreferredCanvasFormat();
+  const pipe = device.createRenderPipeline({ layout: 'auto', vertex: { module: mod, entryPoint: 'pVS' }, fragment: { module: mod, entryPoint: 'pFS', targets: [{ format: fmt }] }, primitive: { topology: 'triangle-list' } });
+  const ubuf = device.createBuffer({ size: 48 + 192, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const bg = device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: ubuf } }] });
+  const ctxs = new WeakMap();
+  // draw(canvas, L, rgb 0..1, { headUp, queen, tw, fill }) — fill: how much of the canvas the ant takes
+  draw.format = fmt;
+  return draw;
+  function draw(cv, L, rgb, opt = {}) {
+    let ctx = opt.texture ? null : ctxs.get(cv);
+    if (!ctx && !opt.texture) { ctx = cv.getContext('webgpu'); ctx.configure({ device, format: fmt, alphaMode: 'premultiplied' }); ctxs.set(cv, ctx); }
+    const w = opt.texture ? opt.texture.width : cv.width, h = opt.texture ? opt.texture.height : cv.height, e = antLayout(L), up = !!opt.headUp;
+    const sx = e.xMax - e.xMin, sy = 2 * e.yMax, fill = opt.fill ?? 0.92;
+    const upp = up ? Math.max(sx / h, sy / w) / fill : Math.max(sx / w, sy / h) / fill;
+    const buf = new ArrayBuffer(48 + 192), f = new Float32Array(buf), u = new Uint32Array(buf);
+    f[0] = rgb[0]; f[1] = rgb[1]; f[2] = rgb[2]; f[3] = 1;
+    f[4] = (e.xMin + e.xMax) / 2; f[5] = 0; f[6] = upp; f[7] = up ? 1 : 0;
+    u[8] = w; u[9] = h; u[10] = opt.queen ? 1 : 0; u[11] = opt.tw | 0;
+    f.set(L, 12);
+    device.queue.writeBuffer(ubuf, 0, buf);
+    const enc = device.createCommandEncoder();
+    const rp = enc.beginRenderPass({ colorAttachments: [{ view: (opt.texture || ctx.getCurrentTexture()).createView(), loadOp: 'clear', clearValue: { r: 0, g: 0, b: 0, a: 0 }, storeOp: 'store' }] });
+    rp.setPipeline(pipe); rp.setBindGroup(0, bg); rp.draw(3); rp.end();
+    device.queue.submit([enc.finish()]);
+  }
+}
+// ANT-LOOK-END
+const DRAW = COMMON + ANT_WGSL + /* wgsl */`
 struct Cam { scale: f32, ox: f32, oy: f32, cap: u32, vw: f32, vh: f32, showTrails: u32, nCol: u32, colors: array<vec4f, ${MAXCOL}>, fam: array<vec4f, ${MAXFAM}> }; // showTrails: 0 off, 1 trail colours, 2 colony colours, 3 territory
 @group(0) @binding(0) var<uniform> cam: Cam;
 @group(0) @binding(1) var<storage, read> tiles: array<u32>;
@@ -5161,7 +5584,7 @@ struct Cam { scale: f32, ox: f32, oy: f32, cap: u32, vw: f32, vh: f32, showTrail
 @group(0) @binding(7) var<storage, read> baseRough: array<u32>;
 @group(0) @binding(8) var<storage, read> look: array<vec4f>; // four per nest: how its ants look
 
-struct VOut { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) col: vec4f, @location(2) kind: f32, @location(3) @interpolate(flat) l1: vec4f, @location(4) @interpolate(flat) l2: vec4f, @location(5) @interpolate(flat) l3: vec4f, @location(6) @interpolate(flat) l4: vec4f };
+struct VOut { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) col: vec4f, @location(2) kind: f32, @location(3) @interpolate(flat) ci: u32, @location(4) @interpolate(flat) iid: u32 };
 @vertex fn mapVS(@builtin(vertex_index) vi: u32) -> VOut {
   var o: VOut; let xy = vec2f(f32((vi << 1u) & 2u), f32(vi & 2u));
   o.p = vec4f(xy * 2.0 - 1.0, 0.0, 1.0); o.uv = vec2f(xy.x, 1.0 - xy.y); return o;
@@ -5261,10 +5684,11 @@ fn ramp(t: f32, a: vec3f, b: vec3f, c: vec3f) -> vec3f { if (t < 0.5) { return m
   let corner = vec2f(f32(vi & 1u), f32((vi >> 1u) & 1u)) - 0.5;
   let gs = max(0.4, cam.colors[an.col].w);
   var size = 2.6 * gs; var kind = 0.0;
-  if (zoom < 6.0) { size = max(0.8, 2.6 * gs / zoom); kind = 1.0; } else { size *= look[an.col * 4u + 1u].w; }
-  var pad = size + 2.0 / zoom; if (kind < 0.5) { pad = size * 1.8 + 2.0 / zoom; } // room for legs, antennae and jaws
+  let lk = look[an.col * 12u + 10u]; // y: drawn size, z: how far its parts reach
+  if (zoom < 6.0) { size = max(0.8, 2.6 * gs / zoom); kind = 1.0; } else { size *= lk.y; }
+  var pad = size + 2.0 / zoom; if (kind < 0.5) { pad = size * max(1.8, lk.z / 16.0) + 2.0 / zoom; } // room for legs, antennae, jaws, tails and wings
   if (an.state == S_FOUNDER) {
-    if (zoom >= 6.0) { size = 2.6 * gs * 1.7; pad = size * 1.8 + 2.0 / zoom; kind = 6.0; } // close up: a big winged queen
+    if (zoom >= 6.0) { size = 2.6 * gs * 1.7; pad = size * max(1.8, max(lk.z, 24.0) / 16.0) + 2.0 / zoom; kind = 6.0; } // close up: a big winged queen
     else { size = max(4.5, 9.0 / zoom); pad = size; kind = 5.0; } // far out: a big ringed dot
   }
   let l = corner * pad;
@@ -5277,7 +5701,7 @@ fn ramp(t: f32, a: vec3f, b: vec3f, c: vec3f) -> vec3f { if (t < 0.5) { return m
   if (kind > 0.5) { cl.a = clamp(0.25 + zoom * 0.11, 0.3, 0.9); }
   if (an.state == S_CARRY && kind < 4.5) { kind += 2.0; } // carrying: draw the food it holds
   o.col = cl; o.kind = kind;
-  o.l1 = look[an.col * 4u]; o.l2 = vec4f(look[an.col * 4u + 1u].xyz, pad / size); o.l3 = look[an.col * 4u + 2u]; o.l4 = look[an.col * 4u + 3u];
+  o.ci = an.col; o.iid = ii;
   return o;
 }
 fn ell(p: vec2f, c: vec2f, r: vec2f) -> f32 { let q = (p - c) / r; return length(q) - 1.0; }
@@ -5285,101 +5709,24 @@ fn seg(p: vec2f, a: vec2f, b: vec2f) -> f32 { let pa = p - a; let ba = b - a; le
 fn rot2(p: vec2f, a: f32) -> vec2f { let c = cos(a); let s = sin(a); return vec2f(p.x * c + p.y * s, -p.x * s + p.y * c); }
 fn noise2(p: vec2f) -> f32 { return fract(sin(dot(floor(p), vec2f(12.9898, 78.233))) * 43758.5453); }
 @fragment fn antFS(in: VOut) -> @location(0) vec4f {
+  let pw = max(length(fwidth(in.uv * 32.0)) * 0.7, 1e-4); // one pixel in ant units (before any branch)
   let queen = in.kind > 5.5;
   let carry = in.kind >= 1.5 && in.kind < 4.5;
-  let p = in.uv * 32.0;
-  // this nest's looks, from its genes and colour family.
-  // l1: leg length, leg thickness, jaw size, eye size. l2: antenna length, abdomen size, shell thickness.
-  // l3: head size, waist length, spines, pattern. l4: shine, hair, chest size, pattern shade
-  let l1 = in.l1; let l2 = in.l2; let l3 = in.l3; let l4 = in.l4;
-  let ab = l2.y; let hs = l3.x; let wl = l3.y; let th = l4.z;
-  let hc = vec2f(8.0 + (hs - 1.0) * 1.8, 0.0); let hr = vec2f(3.0, 2.8) * hs; let front = hc.x + hr.x;
-  let abC = vec2f(-8.0 - (ab - 1.0) * 3.0 - wl, 0.0); let abR = vec2f(6.0, 4.4) * ab;
-  let dAbd = ell(p, abC, abR);
-  let dHead = ell(p, hc, hr);
-  let dChest = min(ell(p, vec2f(1.0, 0.0), vec2f(3.8, 2.4) * th), ell(p, vec2f(-3.0 - wl * 0.5, 0.0), vec2f(1.0 + wl * 0.45, 1.0))); // chest and the waist bead
-  let dBody = min(min(dAbd, dChest), dHead);
-  // legs: three pairs from the chest; antennae and jaws from the head
-  let ll = l1.x; let lt = l1.y;
-  let py = abs(p.y); let q = vec2f(p.x, py);
-  var dLimb = seg(q, vec2f(-1.5, 1.5), vec2f(-5.0 * ll, 7.5 * ll)) - lt;
-  dLimb = min(dLimb, seg(q, vec2f(0.8, 1.5), vec2f(1.5, 8.5 * ll)) - lt);
-  dLimb = min(dLimb, seg(q, vec2f(3.0, 1.5), vec2f(3.0 + 5.5 * ll, 7.0 * ll)) - lt);
-  let an = l2.x; let ab0 = vec2f(hc.x + 1.5 * hs, 1.2 * hs);
-  // antennae bend at an elbow like real ants
-  let el = ab0 + vec2f(2.2 * an, 2.6 * an);
-  dLimb = min(dLimb, min(seg(q, ab0, el), seg(q, el, el + vec2f(2.6 * an, 0.6 * an))) - 0.45);
-  let jw = l1.z;
-  dLimb = min(dLimb, seg(q, vec2f(front - 0.6, 1.4 * hs), vec2f(front - 0.6 + 3.2 * jw, 0.35 * jw)) - 0.35 - 0.35 * jw);
-  // spines on the back (brave nests)
-  let sp = l3.z;
-  if (sp > 0.05) {
-    dLimb = min(dLimb, seg(q, vec2f(-0.5, 1.6 * th), vec2f(-1.8 - 1.5 * sp, 2.4 * th + 2.6 * sp)) - 0.3);
-    dLimb = min(dLimb, seg(q, vec2f(-3.0 - wl * 0.5, 0.8), vec2f(-3.8 - wl * 0.5 - sp, 1.6 + 1.8 * sp)) - 0.25);
-  }
-  let ey = l1.w;
-  let dEye = length(vec2f(p.x - hc.x - 1.0 * hs, py - 1.5 * hs)) - 0.85 * ey;
-  let dfood = ell(p, vec2f(front + 2.5 + jw, 0.0), vec2f(3.0, 3.0));
-  // queen's wings: two see-through blades laid back over the body
-  var dWing = 1e9;
-  if (queen) {
-    let wq = rot2(q - vec2f(0.0, 1.5), -0.38);
-    dWing = ell(wq, vec2f(-9.0, 2.0), vec2f(10.5, 3.6));
-    dWing = min(dWing, ell(rot2(q - vec2f(-1.0, 1.0), -0.6), vec2f(-6.5, 1.5), vec2f(7.0, 2.6)));
-  }
-  let aa = max(fwidth(dBody), 1e-4); let al = max(fwidth(dLimb), 1e-4);
   if (in.kind > 4.5 && in.kind < 5.5) { // queen, far out: colony colour with a gold ring
     let r = length(in.uv) * 2.0; if (r > 1.0) { discard; }
     if (r > 0.62) { return vec4f(255.0, 214.0, 120.0, 255.0) / 255.0; }
     return vec4f(in.col.rgb, 1.0);
   }
-  let speck = !queen && in.kind - select(0.0, 2.0, carry) > 0.5;
-  if (speck) {
+  if (!queen && in.kind - select(0.0, 2.0, carry) > 0.5) { // far out: a coloured speck
     let q = max(abs(in.uv.x), abs(in.uv.y));
     if (q > 0.5) { discard; }
     return vec4f(in.col.rgb * in.col.a, in.col.a);
   }
-  if (carry && dfood < 0.0) { return vec4f(241.0, 220.0, 134.0, 255.0) / 255.0; }
-  let base = in.col.rgb;
-  // second colour for markings: lighter or darker than the body
-  let shade = l4.w;
-  let alt = select(base * (1.0 + shade) * 0.5, mix(base, vec3f(1.0), shade * 0.6), shade > 0.0);
-  var a = clamp(0.5 - dBody / aa, 0.0, 1.0);
-  var c = base;
-  // markings, by pattern: 1 stripes, 2 spots, 3 two-tone, 4 pale tail tip, 5 chevrons
-  let pat = i32(round(l3.w));
-  let ql = (p - abC) / abR;
-  if (dAbd < 0.0) {
-    if (pat == 1 && fract(ql.x * 2.4 + 0.2) < 0.35) { c = alt; }
-    if (pat == 2 && length(fract(ql * 2.2 + 0.5) - 0.5) < 0.24) { c = alt; }
-    if (pat == 4 && ql.x < -0.45) { c = alt; }
-    if (pat == 5 && fract(ql.x * 2.0 + abs(ql.y) * 1.3) < 0.3) { c = alt; }
-  } else if (pat == 3) { c = alt; }
-  // rounded look: a little darker toward the edges
-  c *= 0.82 + 0.18 * clamp(-dBody / 2.0, 0.0, 1.0);
-  // a thick shell shows as a darker rim (Defense)
-  if (dBody > -l2.z) { c = c * 0.55; }
-  // heavy armour also shows as plates across the abdomen
-  if (l2.z > 0.12 && dAbd < 0.0 && fract(ql.x * 3.0 + 0.5) < (l2.z - 0.08) * 0.6) { c = c * 0.6; }
-  // shine: warm-climate nests are glossy
-  let gl = l4.x;
-  if (gl > 0.02) {
-    let h1 = length((p - abC - vec2f(1.5, -1.6) * ab) / (abR * 0.32));
-    let h2 = length((p - hc - vec2f(0.6, -0.9) * hs) / (hr * 0.35));
-    c = mix(c, vec3f(1.0), gl * 0.55 * max(exp(-h1 * h1 * 2.0), exp(-h2 * h2 * 2.0)));
-  }
-  if (dEye < 0.0) { c = mix(base, vec3f(1.0), 0.75) * 0.9; }
-  // hair: cold-climate nests have a fuzzy edge
-  let hr2 = l4.y;
-  if (hr2 > 0.02 && dBody > 0.0 && dBody < 0.06 + 0.14 * hr2 && noise2(p * 3.0) < 0.45) { a = max(a, 0.6); c = base * 0.5; }
-  let aLimb = clamp(0.5 - dLimb / al, 0.0, 1.0) * 0.95;
-  if (aLimb > a) { a = aLimb; c = base * 0.35; }
-  if (queen && dWing < 0.0 && a < 0.5) {
-    let rib = abs(fract(dWing * 2.5) - 0.5) < 0.12;
-    a = select(0.35, 0.55, rib); c = select(vec3f(0.85, 0.9, 0.95), vec3f(0.6, 0.62, 0.66), rib);
-  }
-  if (a <= 0.0) { discard; }
-  return vec4f(c * a, a);
+  var L: array<vec4f, 12>;
+  for (var k = 0u; k < 12u; k++) { L[k] = look[in.ci * 12u + k]; }
+  let r = antShade(in.uv * 32.0, L, in.col.rgb, queen, carry, in.iid, cam.showTrails >> 16u, pw);
+  if (r.a <= 0.002) { discard; }
+  return r;
 }
 `;
 
@@ -5387,10 +5734,10 @@ fn noise2(p: vec2f) -> f32 { return fract(sin(dot(floor(p), vec2f(12.9898, 78.23
 const bufs = {};
 const mk = (size, usage) => device.createBuffer({ size, usage });
 const STO = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC;
-bufs.params = mk(224, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+bufs.params = mk(240, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.nests = mk(MAXCOL * 48 + 144, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.cam = mk(32 + MAXCOL * 16 + MAXFAM * 16, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
-bufs.look = mk(MAXCOL * 64, STO); const lookF = new Float32Array(MAXCOL * 16);
+bufs.look = mk(MAXCOL * LOOKN * 4, STO); const lookF = new Float32Array(MAXCOL * LOOKN);
 bufs.tiles = mk(N * 4, STO);
 bufs.occ = mk(N * 4, STO);
 bufs.food = mk(N * 8, STO);
@@ -5402,7 +5749,7 @@ function uploadClimate() { measureFood(); device.queue.writeBuffer(bufs.base, 0,
 const MAXSTEPS = 1024;
 bufs.phase = mk(256 * MAXSTEPS, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 { const ph = new Uint32Array(64 * MAXSTEPS); for (let k = 0; k < MAXSTEPS; k++) ph[k * 64] = k; device.queue.writeBuffer(bufs.phase, 0, ph); }
-const READ_WORDS = MAXCOL * CTRN + 4 + 8 + 4 + 64 * 4 + 4 + 4; // ... and two timestamps at the end // counters, world header, beasts, founders, tap pick // counters, world header, beasts, founders
+const HARV_AT = MAXCOL * CTRN + 4 + 8 + 4 + 64 * 4 + 4 + 4, READ_WORDS = HARV_AT + 2 * NCH; // last: plant food picked up per chunk // ... and two timestamps at the end // counters, world header, beasts, founders, tap pick // counters, world header, beasts, founders
 const HAS_TS = device.features.has('timestamp-query'), TS_AT = MAXCOL * CTRN + 276;
 const tsSet = HAS_TS ? device.createQuerySet({ type: 'timestamp', count: 2 }) : null;
 const tsBuf = HAS_TS ? mk(16, GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC) : null;
@@ -5459,7 +5806,7 @@ const drawLayout = device.createBindGroupLayout({ entries: [
   { binding: 5, visibility: F, buffer: { type: 'read-only-storage' } },
   { binding: 6, visibility: F, buffer: { type: 'read-only-storage' } },
   { binding: 7, visibility: F, buffer: { type: 'read-only-storage' } },
-  { binding: 8, visibility: V, buffer: { type: 'read-only-storage' } },
+  { binding: 8, visibility: V | F, buffer: { type: 'read-only-storage' } },
 ] });
 const drawPL = device.createPipelineLayout({ bindGroupLayouts: [drawLayout] });
 const blend = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' } };
@@ -5499,7 +5846,16 @@ function newColony(x, y, fam, ants = P.startAnts, food = P.startFood) {
   return c;
 }
 // a colour sends founders when its nests have spare food (nests younger than 10 minutes don't count, they are still settling in)
-const familyInSurplus = fam => colonies.every(o => o.fam !== fam || simStep - o.foundedAt < 10 * MINUTE || eff(o) >= (o.inside + o.out) * eatRate() * P.birthBuffer);
+// ---- nest size levels: a nest grows a level when a same-colour founder settles close by or a small neighbour moves in.
+// Each level holds half again as many ants and as much food, and needs more ants before it sends out queens ----
+const tierOf = c => c.tier || 1;
+const nestCap = c => Math.round(P.nestMax * (1 + 0.5 * (tierOf(c) - 1)));
+const storeCap = c => P.storeMax * (1 + 0.5 * (tierOf(c) - 1)) * (P.nestMax / 150);
+const famNests = fam => colonies.reduce((n, o) => n + (o.fam === fam ? 1 : 0), 0);
+const splitOf = c => P.splitAt * (1 + 0.6 * (tierOf(c) - 1)) * (P.merge ? 1 + famNests(c.fam) / P.famThrottle : 1);
+const nestsNear = (x, y, r) => colonies.filter(o => !o.mergeInto && (o.x - x) ** 2 + (o.y - y) ** 2 < r * r);
+function growNest(o, why) { const t = tierOf(o); if (t >= P.maxTier) return false; o.tier = t + 1; emit('nest', `${o.name} grew into a level ${o.tier} nest (${why})`, o.x, o.y, [o]); return true; }
+const familyInSurplus = fam => colonies.every(o => o.fam !== fam || simStep - o.foundedAt < 10 * MINUTE || eff(o) >= (o.inside + o.out) * eatOf(o) * P.birthBuffer);
 // founders that reached their spot become new nests: a third start a new colour, the rest keep the parent's
 function settleFounders() {
   const total = foundRing[0];
@@ -5508,7 +5864,20 @@ function settleFounders() {
     const k = foundSeen % 64, o = 4 + k * 4, x = foundRing[o], y = foundRing[o + 1], ps = foundRing[o + 2], escort = foundRing[o + 3];
     const parent = colonies.find(c => c.slot === ps);
     if (colonies.some(o => (o.x - x) ** 2 + (o.y - y) ** 2 < (P.nestGap * 0.8) ** 2)) { if (parent) for (let j = 0; j < 1 + escort; j++) spawns.push(parent.slot); continue; } // too close to a nest: the group goes back
-    const fam = rnd() < P.newFamily ? newFamily() : null;
+    let pNew = P.newFamily;
+    const back = () => { if (parent) for (let j = 0; j < 1 + escort; j++) spawns.push(parent.slot); };
+    if (P.niche && parent) { const dT = Math.abs(feltAt(x, y) - parent.temp), dB = biome[y * W + x] !== biome[parent.y * W + parent.x] ? 0.6 : 0; pNew = Math.min(0.9, P.newFamily * (0.3 + 3 * dT + dB)); } // a new colour starts where the ground differs from home
+    const fam = rnd() < pNew ? newFamily() : null;
+    if (P.merge && !fam && parent) {
+      // same colour close by: the group joins the oldest such nest, which grows a level (or they go home if it can't grow)
+      const kin = nestsNear(x, y, P.nestGap * P.mergeGap).filter(o => o.fam === parent.fam).sort((a, b) => a.foundedAt - b.foundedAt)[0];
+      if (kin) {
+        if (growNest(kin, 'a queen from ' + parent.name + ' settled next door')) { for (let j = 0; j < 1 + escort; j++) spawns.push(kin.slot); }
+        else back();
+        continue;
+      }
+    }
+    if (P.merge && nestsNear(x, y, P.nestGap * P.crowdR).length >= P.crowdMax) { back(); continue; } // too many nests around: no room for another
     // founders carry a starter store: the base amount plus a few minutes of food for the whole group, taken from the parent nest's store
     let stock = P.founderFood;
     let carried = null;
@@ -5516,12 +5885,37 @@ function settleFounders() {
     const c = newColony(x, y, fam || (parent ? parent.fam : null), 1 + escort, stock);
     if (c && carried) for (let g = 0; g < 6; g++) addFood(c, g, carried[g]);
     if (c && parent) { parent.children++; c.parent = parent.name; c.genes.set(parent.genes); c.temp = parent.temp; c.skills = parent.skills.slice(); c.cab = parent.cab; c.leafRecent = parent.leafRecent; c.incRecent = parent.incRecent; }
+    if (c && parent && c.fam !== parent.fam && P.niche) { c.temp += (feltAt(x, y) - c.temp) * 0.6; const lf = localFoodMix(x, y); for (let g = 0; g < 5; g++) c.skills[g] = c.skills[g] * 0.7 + lf[g] * 0.3; } // a new colour leans into its new home
+    if (c && parent && parent.lookCur) c.lookCur = Float32Array.from(parent.lookCur);
     if (c) mutate(c, P.mutStrength, 'Founded');
     // a founder that starts a new colour is big news; one that keeps its parent's colour is a routine new nest
     if (c && parent && c.fam !== parent.fam) { c.graceCi = parent.ci; c.graceUntil = simStep + MINUTE * P.graceMin; }
     if (c && parent && c.fam !== parent.fam) emit('colour', `${c.name} broke off from ${parent.name} as a new colour`, c.x, c.y, [c, parent]);
     else if (c) emit('nest', `${c.name} founded by a founder from ${parent ? parent.name : 'a lost nest'}`, c.x, c.y, [c, parent]);
     else if (parent) for (let j = 0; j < 1 + escort; j++) spawns.push(parent.slot); // no room for another nest: the group goes back home
+  }
+}
+// same-colour nests that ended up close together: the smaller, younger one moves into the older one.
+// Its ants walk over (inside ants move at once, ants outside move when they come home), its food goes along, and the older nest grows a level
+let lastMerge = 0;
+function mergeNests() {
+  if (P.merge) for (const y of colonies) {
+    if (y.mergeInto) continue;
+    if (simStep - lastMerge < MINUTE / 2 || simStep - y.foundedAt < 3 * MINUTE || !y.parent) continue;
+    const o = nestsNear(y.x, y.y, P.nestGap * P.mergeGap).filter(o => o !== y && o.fam === y.fam && o.foundedAt < y.foundedAt && tierOf(o) < P.maxTier && o.inside + o.out >= y.inside + y.out).sort((a, b) => a.foundedAt - b.foundedAt)[0];
+    if (!o) continue;
+    y.mergeInto = o.slot + 1; y.noDrop = true; lastMerge = simStep;
+    for (const p of plants) { if (p.farm === y.slot) { p.farm = o.slot; p.farmCi = o.ci; } if (p.tended === y.slot) { p.tended = o.slot; p.tendCi = o.ci; } }
+    growNest(o, `${y.name} moved in`);
+  }
+  for (const y of colonies) {
+    if (!y.mergeInto) continue;
+    const o = colonies.find(c => c.slot === y.mergeInto - 1);
+    if (!o) { y.mergeInto = 0; continue; }
+    if (simStep - (y.moveAt || -1e9) < BATCH * 3) continue; // wait for the counts to catch up before moving more
+    y.moveAt = simStep;
+    const n = y.inside; if (n > 0) { kills[y.slot * 2] += n; for (let k = 0; k < n; k++) spawns.push(o.slot); }
+    if (y.food > 0) { const got = removeFood(y, y.food); for (let g = 0; g < 6; g++) addFood(o, g, got[g]); }
   }
 }
 // once per update: decide which nests send out founders
@@ -5547,16 +5941,20 @@ const ABILITIES = [['Sprint', 'fighters and ants running for help move 40% faste
   ['Expeditions', 'go two and a half times as far while on a food trail'], ['Endurance', 'get hungry far more slowly'], ['Crushing jaws', 'bites ignore half the enemy armor'], ['Tunnelers', 'dig through rock (coming with the rock update)'],
   // climate and diet abilities: unlocked by where a colony lives and what it eats, not by the 16 stats
   ['Midday foragers', 'comfortable in much hotter ground'], ['Winter clusters', 'comfortable in much colder ground, and a cold nest eats less'],
-  ['Fungus farmers', 'leaves become food twice as fast, and half as much again'], ['Raiders', 'carry half as much again when raiding a rival nest']];
+  ['Fungus farmers', 'a fungus garden turns leaves into more than twice the food, slowly and steadily, even through winter'], ['Raiders', 'carry half as much again when raiding a rival nest'],
+  ['Seed planters', 'seeds dropped on the way home sprout into grass patches around the nest'], ['Aphid herders', 'tend aphid trees near the nest so they drip more and last longer, and carry aphids to new trees']];
 // [gene shown, gain it, keep it (a little looser, so it doesn't flicker), how close (1 = unlocked)]
 const CLIM_ABIL = {
   16: ['Heat', c => c.temp >= 0.72, c => c.temp >= 0.66, c => (c.temp - 0.5) / 0.22],
   17: ['Cold', c => c.temp <= 0.28, c => c.temp <= 0.34, c => (0.5 - c.temp) / 0.22],
   18: ['Greens', c => c.skills[1] >= 0.35 && leafShare(c) >= 0.15, c => c.skills[1] >= 0.28 && leafShare(c) >= 0.08, c => Math.min(c.skills[1] / 0.35, leafShare(c) / 0.15)],
-  19: ['Hunting', c => c.skills[3] >= 0.35, c => c.skills[3] >= 0.28, c => c.skills[3] / 0.35] };
+  19: ['Hunting', c => c.skills[3] >= 0.35, c => c.skills[3] >= 0.28, c => c.skills[3] / 0.35],
+  // farming is learned: a strong specialty, and a nest big enough to spare the hands
+  20: ['Seeds', c => P.farming && c.skills[0] >= 0.42 && c.inside + c.out >= 15, c => P.farming && c.skills[0] >= 0.34 && c.inside + c.out >= 8, c => Math.min(c.skills[0] / 0.42, (c.inside + c.out) / 15)],
+  21: ['Sweets', c => P.farming && c.skills[2] >= 0.42 && c.inside + c.out >= 15, c => P.farming && c.skills[2] >= 0.34 && c.inside + c.out >= 8, c => Math.min(c.skills[2] / 0.42, (c.inside + c.out) / 15)] };
 function updateClimAbil(c) {
   let m = 0;
-  for (let k = 16; k < 20; k++) { const has = (c.cab || 0) & (1 << k); if (P.climate && (has ? CLIM_ABIL[k][2](c) : CLIM_ABIL[k][1](c))) m |= 1 << k; }
+  for (let k = 16; k < 22; k++) { const has = (c.cab || 0) & (1 << k); if (P.climate && (has ? CLIM_ABIL[k][2](c) : CLIM_ABIL[k][1](c))) m |= 1 << k; }
   if (m !== (c.cab || 0)) { c.cab = m; genesDirty = true; }
 }
 const leafShare = c => (c.leafRecent || 0) / Math.max(5, c.incRecent || 0);
@@ -5565,7 +5963,7 @@ const leafShare = c => (c.leafRecent || 0) / Math.max(5, c.incRecent || 0);
 const FOOD_GROUPS = ['Seeds', 'Greens', 'Sweets', 'Hunting', 'Scavenging', 'Nest food'];
 const GROUP_COL = ['#d6b270', '#5cbf55', '#ffc440', '#c8462d', '#9a8a7a', '#d77cff'];
 // how much one unit of a food group is worth to a nest: 30% with no skill, 100% at an even spread (0.2), 240% at a 0.6 skill
-const skillVal = (c, g) => g >= 5 || !P.skills ? 1 : 0.3 + P.skillPower * c.skills[g];
+const skillVal = (c, g) => g >= 5 || !P.skills ? 1 : P.niche ? 0.2 + P.skillPower * 1.15 * Math.pow(c.skills[g], 1.25) : 0.3 + P.skillPower * c.skills[g]; // niches: an even spread is worth less, a strong specialty more
 const storeOf = c => c.st || (c.st = [0, 0, 0, 0, 0, c.food || 0]);
 const eff = c => { const st = storeOf(c); let v = 0; for (let g = 0; g < 6; g++) v += st[g] * skillVal(c, g); return v; };
 const nut = c => c.food > 0 ? Math.max(0.05, eff(c) / c.food) : 1; // what one unit in the store is worth to this nest, on average
@@ -5585,19 +5983,20 @@ function addMixed(c, amt) { const t = xfer.reduce((a, b) => a + b, 0) || 1; for 
 const topSkill = c => { let b = 0; for (let g = 1; g < 5; g++) if (c.skills[g] > c.skills[b]) b = g; return b; };
 // a random spread of skills, leaning somewhere, for the first nests of a world
 function randomSkills() { const e = [0, 1, 2, 3, 4].map(() => -Math.log(1 - rnd())), t = e.reduce((a, b) => a + b, 0); return e.map(v => 0.75 * v / t + 0.05); }
-const feltAt = (x, y) => tEff[Math.max(0, Math.min(H - 1, y | 0)) * W + Math.max(0, Math.min(W - 1, x | 0))] / 255;
+const feltAt = (x, y) => Math.min(1, Math.max(0, tEff[Math.max(0, Math.min(H - 1, y | 0)) * W + Math.max(0, Math.min(W - 1, x | 0))] / 255 + seasonShift()));
+const bandOf = c => P.niche ? (c.band ?? P.comfort) : P.comfort; // how wide a temperature range a nest is comfortable in
 function climateOff(c, t) {
-  const hi = c.temp + P.comfort + (hasAbil(c, 16) ? 0.15 : 0), lo = c.temp - P.comfort - (hasAbil(c, 17) ? 0.15 : 0);
+  const hi = c.temp + bandOf(c) + (hasAbil(c, 16) ? 0.15 : 0), lo = c.temp - bandOf(c) - (hasAbil(c, 17) ? 0.15 : 0);
   return Math.max(0, lo - t) + Math.max(0, t - hi);
 }
 function climateUpkeep(c) {
   if (!P.climate) return 1;
   const t = feltAt(c.x, c.y);
-  return (1 + P.climCost * 0.25 * climateOff(c, t)) * (hasAbil(c, 17) && t < 0.35 ? 0.8 : 1);
+  return (1 + P.climCost * 0.25 * climateOff(c, t)) * (hasAbil(c, 17) && t < 0.35 ? 0.8 : 1) * (P.niche ? 1 + 1.5 * (bandOf(c) - 0.1) : 1); // a wide comfort band costs a little food all the time
 }
 const ABIL_LATER = new Set([10, 15]); // these two arrive with the rock update
 const hasAbil = (c, k) => k >= 16 ? P.climate && ((c.cab || 0) & (1 << k)) !== 0 : !ABIL_LATER.has(k) && gmul(c, k) >= P.abilityAt;
-const abilMask = c => { let m = 0; for (let k = 0; k < 20; k++) if (hasAbil(c, k)) m |= 1 << k; return m; };
+const abilMask = c => { let m = 0; for (let k = 0; k < 22; k++) if (hasAbil(c, k)) m |= 1 << k; return m; };
 let genesDirty = true, TOT = { born: 0, starved: 0, lost: 0, gathered: 0 }; // running totals for the balance test
 // what a nest's ants look like up close, from its genes: leg length, leg thickness, jaws, eyes, antennae, abdomen, shell
 const clampL = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -5605,33 +6004,25 @@ const clampL = (v, a, b) => Math.min(b, Math.max(a, v));
 const famHash = i => { let h = (i + 1) * 2654435761 >>> 0; h ^= h >>> 15; h = Math.imul(h, 2246822519) >>> 0; h ^= h >>> 13; return h >>> 0; };
 const lookPattern = c => CASINO_CI.includes(c.ci) ? 1 : famHash(c.ci) % 6;
 const lookShade = c => { const r = (famHash(c.ci) >>> 8) % 100 / 100; return r < 0.5 ? -0.9 + r * 0.8 : 0.35 + (r - 0.5) * 0.9; };
-function antLooks(c) {
-  const g = k => gmul(c, k) - 1, T = c.temp ?? 0.5;
-  return [
-    clampL(1 + 1.4 * g(0), 0.45, 2.0),               // leg length (Speed)
-    clampL(0.5 + 0.75 * g(10), 0.25, 1.3),          // leg thickness (Traversal)
-    clampL(0.6 + 1.6 * g(14), 0.2, 2.4),            // jaw size (Bite)
-    clampL(0.8 + 1.4 * g(6), 0.4, 2.2),             // eye size (View distance)
-    clampL(0.8 + 1.0 * g(5) + 1.0 * g(4), 0.4, 2.0), // antenna length (Pheromone, Curiosity)
-    clampL(1 + 0.8 * g(11), 0.7, 1.7),              // abdomen size (Carry)
-    clampL(0.08 + 0.45 * Math.max(0, g(1)), 0.08, 0.42), // shell: rim thickness (Defense)
-    clampL(1 + 0.6 * g(9) + 0.3 * g(11) - 0.2 * g(0), 0.75, 1.6), // drawn size on top of the body size (Health, Carry, Speed)
-    clampL(1 + 1.0 * g(14) + 0.5 * g(9), 0.7, 1.9),  // head size (Bite, Health)
-    clampL(0.6 + 2.5 * g(2), 0, 3),                 // waist length (Agility)
-    clampL(2.0 * (g(8) - 0.05), 0, 1.4),            // back spines (Courage)
-    lookPattern(c),                                 // markings (colour family)
-    CASINO_CI.includes(c.ci) ? 1 : clampL((T - 0.5) * 4, 0, 1), // shine (likes warmth; casino colours always gleam)
-    clampL((0.5 - T) * 4, 0, 1),                    // hair (likes cold)
-    clampL(1 + 0.6 * g(11) + 0.5 * g(13), 0.75, 1.6), // chest size (Carry, Energy)
-    CASINO_CI.includes(c.ci) ? 0.9 : lookShade(c)]; // shade of the markings
+// a nest's target looks come from its genes, food skills, liked temperature and colour family; what is drawn eases toward them
+const antLookTargetC = c => antLookTarget(k => gmul(c, k), { hunt: c.skills ? c.skills[3] : 0.2, sweet: c.skills ? c.skills[2] : 0.2, temp: c.temp ?? 0.5, pattern: lookPattern(c), shade: lookShade(c), metal: CASINO_CI.includes(c.ci) });
+let lookClock = 0;
+function antLookNow(c) {
+  const t = antLookTargetC(c);
+  if (!c.lookCur) { c.lookCur = Float32Array.from(t); return c.lookCur; }
+  const now = performance.now(), dt = Math.min(0.25, Math.max(0, (now - (c.lookAt || now)) / 1000)); c.lookAt = now;
+  return antLookStep(c.lookCur, t, 1 - Math.exp(-dt * 0.5)); // about two seconds to get most of the way
 }
+const antLooks = c => c.lookCur || antLookTargetC(c);
+let antPortrait = null;
+function drawAntPortrait(el, L, rgb, opt) { try { if (!antPortrait) antPortrait = makeAntPortrait(device); antPortrait(el, L, rgb, opt); } catch (e) { console.warn('ant picture', e); } }
 function mutate(c, x, why) {
   if (!(x > 0)) return;
   const picks = [];
   while (picks.length < 3) { const k = (rnd() * 16) | 0; if (!picks.includes(k)) picks.push(k); }
   const ch = [], kn = [];
   picks.forEach((k, n) => {
-    const dir = P.mutLean ? (n < 2 ? 1 : -1) : (rnd() < 0.5 ? 1 : -1);
+    const dir = P.mutLean ? (n < 2 ? 1 : -1) : (rnd() < (P.adaptive ? 0.5 + 0.12 * Math.max(-1, Math.min(1, leanOf(c, k))) : 0.5) ? 1 : -1);
     const before = c.genes[k];
     c.genes[k] = Math.min(GMAX, Math.max(GMIN, c.genes[k] + dir * x));
     ch.push([k, c.genes[k] - before]);
@@ -5644,9 +6035,16 @@ function mutate(c, x, why) {
   const sh = 0.08 * x / 12, t0 = c.temp;
   let from = 0, r0 = rnd(); for (let g = 0; g < 5; g++) { r0 -= c.skills[g]; if (r0 <= 0) { from = g; break; } }
   let to = (rnd() * 4) | 0; if (to >= from) to++;
+  if (P.adaptive && rnd() < 0.6) { // more often, skill moves toward the food that grows nearby and that rival colours leave alone
+    const room = openNiche(c); let hi = 0, lo = -1;
+    for (let g = 1; g < 5; g++) if (room[g] > room[hi]) hi = g;
+    for (let g = 0; g < 5; g++) if (g !== hi && c.skills[g] > 0.06 && (lo < 0 || room[g] < room[lo])) lo = g;
+    if (lo >= 0) { from = lo; to = hi; }
+  }
   const mv = Math.min(sh, c.skills[from]); c.skills[from] -= mv; c.skills[to] += mv;
   // the liked temperature drifts at random, with only a light lean toward the ground the nest lives on
-  c.temp = Math.min(1, Math.max(0, c.temp + (feltAt(c.x, c.y) - c.temp) * P.tempPull * x / 12 + (rnd() - 0.5) * 0.06 * x / 12));
+  c.temp = Math.min(1, Math.max(0, c.temp + (feltAt(c.x, c.y) - c.temp) * P.tempPull * (P.adaptive ? 2 : 1) * x / 12 + (rnd() - 0.5) * 0.06 * x / 12));
+  if (P.niche) { const off = climateOff(c, feltAt(c.x, c.y)); c.band = Math.min(0.3, Math.max(0.05, bandOf(c) + (off > 0 ? 0.012 : -0.006) * x / 12 + (rnd() - 0.5) * 0.01 * x / 12)); } // the band widens where the nest suffers, narrows (cheaper) where it fits
   const clim = [c.temp - t0, mv, from, to];
   c.muts.unshift({ t: simStep, why, ch, kn, clim }); if (c.muts.length > 30) c.muts.pop();
   c.mutAt = simStep; genesDirty = true;
@@ -5658,11 +6056,11 @@ function writeGenes() {
   const g = new Float32Array(MAXCOL * GSTRIDE).fill(1);
   const gu = new Uint32Array(g.buffer);
   for (const c of colonies) {
-    const o = c.slot * GSTRIDE; for (let k = 0; k < 16; k++) g[o + k] = gmul(c, k); g[o + 16] = antSize(c); g[o + 18] = c.temp; for (let k = 0; k < 5; k++) g[o + 19 + k] = c.skills[k];
+    const o = c.slot * GSTRIDE; for (let k = 0; k < 16; k++) g[o + k] = gmul(c, k); g[o + 16] = antSize(c); g[o + 18] = c.temp; for (let k = 0; k < 5; k++) g[o + 19 + k] = c.skills[k]; g[o + 24] = bandOf(c);
     const m = abilMask(c); gu[o + 17] = m;
     // newly unlocked abilities make the news (not at founding, where they come from the parent)
     const fresh = m & ~(c.abil ?? m);
-    for (let k = 0; k < 20; k++) if (fresh & (1 << k)) emit('ability', `${c.name} unlocked ${ABILITIES[k][0]}`, c.x, c.y, [c]);
+    for (let k = 0; k < 22; k++) if (fresh & (1 << k)) emit('ability', `${c.name} unlocked ${ABILITIES[k][0]}`, c.x, c.y, [c]);
     c.abil = m;
   }
   device.queue.writeBuffer(bufs.world, LO.GENE_OFF * 4, g);
@@ -5703,7 +6101,8 @@ function runSieges() {
     if (simStep - t.foundedAt < P.shieldMin * MINUTE) continue; // a brand new nest gets a few minutes of peace before anyone lays siege to it
     const mine = colonies.filter(o => o.fam === c.fam && Math.hypot(o.x - t.x, o.y - t.y) < 500);
     const strength = mine.reduce((s, o) => s + o.inside + o.out, 0), theirs = colonies.filter(o => o.fam === t.fam && Math.hypot(o.x - t.x, o.y - t.y) < 150).reduce((s, o) => s + o.inside + o.out, 0);
-    if (peaceful(c) || strength < theirs * P.siegeRatio) continue; // not strong enough: keep foraging, defend only
+    const ov = P.niche ? dietOverlap(c, t) : 0.6; // nests that eat the same food fight sooner; different diets can live side by side
+    if (peaceful(c) || strength < theirs * P.siegeRatio * Math.min(1.5, Math.max(0.6, 1.6 - ov))) continue; // not strong enough: keep foraging, defend only
     if (c.siege !== t.name && !colonies.some(o => o !== c && o.fam === c.fam && o.siege === t.name)) emit('war', `${famName(c.ci)} besieges ${t.name}`, t.x, t.y, [{ name: famName(c.ci), ci: c.ci }, t]);
     c.siege = t.name;
     for (const o of mine) if (!peaceful(o) && o.inside > 4) calls.push([o.slot, Math.max(1, Math.round(o.inside * Math.min(0.8, P.siegeShare * gmul(o, 8)))), t]);
@@ -5727,16 +6126,18 @@ function sendFounders() {
     if (c.foundCd > 0) c.foundCd -= elapsed;
     if (c.capCd > 0) c.capCd -= elapsed;
     const room = () => colonies.length + flying < nestLimit();
-    if (total > P.splitAt && !c.foundersOut && c.foundCd <= 0 && room() && c.inside > 1 && familyInSurplus(c.fam)) {
+    if (c.mergeInto) continue;
+    const split = splitOf(c);
+    if (total > split && !c.foundersOut && c.foundCd <= 0 && room() && c.inside > 1 && familyInSurplus(c.fam)) {
       spawns.push(c.slot | 1024); kills[c.slot * 2] += 1; c.foundCd = MINUTE * 3; flying++; c.foundersOut++; // one queen every 3 minutes at most, so the map doesn't fill with tiny nests
     }
     // a nest over twice the split size sends founders with a group of a quarter of the split size
     if (c.extraCd > 0) c.extraCd -= elapsed;
-    if (total > P.splitAt * 2 && c.inside >= group && room() && !(c.extraCd > 0)) {
+    if (total > split * 2 && c.inside >= group && room() && !(c.extraCd > 0)) {
       spawns.push(c.slot | 1024 | ((group - 1) << 16)); kills[c.slot * 2] += group; flying++; c.extraCd = MINUTE; // at most one group a minute
     }
     // a full nest sends a founder now and then
-    if (total >= P.nestMax && c.capCd <= 0 && c.inside > 1 && room()) {
+    if (total >= nestCap(c) && c.capCd <= 0 && c.inside > 1 && room()) {
       spawns.push(c.slot | 1024); kills[c.slot * 2] += 1; c.capCd = MINUTE * P.capFounderEvery; flying++;
     }
   }
@@ -5746,7 +6147,7 @@ function farFromNests(x, y) { return colonies.every(c => Math.hypot(c.x - x, c.y
 // size: how much food it holds, rate: how fast it drops pellets, decay: how much a pellet uses up, r: drop radius
 const PLANT_KINDS = {
   herb:    { ft: 0, size: 1,   rate: 1,    decay: 1,   r: 6 },
-  grass:   { ft: 1, size: 0.8, rate: 1.2,  decay: 1,   r: 8 },   // seeds: harvester ants, never rot
+  grass:   { ft: 1, size: 0.8, rate: 1.2,  decay: 1,   r: 8 },   // seeds: harvester ants, keep four times as long as other food
   cactus:  { ft: 2, size: 2.5, rate: 0.6,  decay: 0.3, r: 4 },   // rich and lasts long, but the spines hurt
   aphid:   { ft: 3, size: 4,   rate: 0.35, decay: 0.15, r: 9 },  // a tree with aphids: a slow, steady trickle of honeydew
   leafy:   { ft: 4, size: 1.2, rate: 0.9,  decay: 0.7, r: 7 },   // leaves feed the fungus garden at home
@@ -5802,18 +6203,160 @@ function spawnPlant() {
   for (let k = 0; k < 60; k++) {
     const x = 4 + ((rnd() * (W - 8)) | 0), y = 4 + ((rnd() * (H - 8)) | 0), i = y * W + x;
     if (wall[i] || !farFromNests(x, y)) continue;
-    if (!P.biomeFood) { addPlant(x, y, 'herb'); return; }
+    const fz = fertAt(x, y);
+    if (!P.biomeFood) { if (rnd() * 1.5 > fz) continue; sizeByFert(addPlant(x, y, 'herb'), fz); return; }
     const bf = BIOME_FOOD[biome[i]] || BIOME_FOOD[0];
-    if (rnd() * 1.6 > bf[0]) continue; // lush biomes get more plants
-    addPlant(x, y, pickKind(biome[i]));
+    if (rnd() * 1.6 > bf[0] * fz) continue; // lush biomes and fertile soil get more plants
+    sizeByFert(addPlant(x, y, pickKind(biome[i])), fz);
     return;
   }
 }
 const plantTarget = () => Math.max(3, Math.round((4 + P.rate * 5) * N / 600000 * P.plantDensity * foodAvg));
+// ---------- the living land: seasons, soil fertility, plants that spread, farms ----------
+// seasons: one year every P.yearMin sim minutes; plants, insects and prey grow with the warmth, and all ground feels warmer or colder
+const SEASON_NAMES = ['spring', 'summer', 'autumn', 'winter'];
+const seasonPhase = () => ((simStep / MINUTE) / Math.max(1, P.yearMin) + 0.05) % 1;
+const seasonName = () => SEASON_NAMES[Math.floor(seasonPhase() * 4) % 4];
+const warmth = () => P.seasons ? 0.5 + 0.5 * Math.sin(2 * Math.PI * (seasonPhase() - 0.125)) : 0.5; // 0 in the dead of winter, 1 at midsummer
+const growth = () => P.seasons ? Math.max(0.05, 1 + P.seasonAmp * (1.5 * warmth() - 0.75)) : 1;    // plant growth: a quarter in winter, 1.75x at midsummer
+const seasonShift = () => P.seasons ? (warmth() - 0.5) * 0.3 * P.seasonAmp : 0;                    // up to 7.5 degrees warmer or colder
+// soil fertility, one value per 64x64 chunk: food left to rot feeds the soil, food stripped bare drains it, nests enrich the ground around them
+const fert = new Float32Array(NCH).fill(1), drip = new Float32Array(NCH), harv = new Float32Array(NCH), harvSeen = new Uint32Array(NCH);
+let harvWords = null, rotWords = null; const harvD = new Float32Array(NCH); const rotSeen = new Uint32Array(NCH), farmN = new Uint16Array(NCH);
+const chunkOf = (x, y) => Math.min(CW - 1, Math.max(0, y >> 6)) * CW + Math.min(CW - 1, Math.max(0, x >> 6));
+const fertAt = (x, y) => P.fert ? fert[chunkOf(x | 0, y | 0)] : 1;
+const sizeByFert = (p, f) => { if (p && P.fert) { p.max = Math.max(1, Math.round(p.max * (0.55 + 0.45 * f))); p.left = p.max; } return p; };
+const pressureAt = i => drip[i] > 3 ? harv[i] / drip[i] : 0; // the share of what grew here that ants took
+function resetLand() { fert.fill(1); drip.fill(0); harv.fill(0); harvSeen.fill(0); harvWords = null; rotWords = null; rotSeen.fill(0); }
+function updateFertility() {
+  harvD.fill(0);
+  if (harvWords) for (let i = 0; i < NCH; i++) { const v = harvWords[i], d = (v - harvSeen[i]) >>> 0; if (d < 0x7FFFFFFF) { harv[i] += d; harvD[i] = d; } harvSeen[i] = v; }
+  if (!P.fert) { drip.fill(0); harv.fill(0); return; }
+  for (let i = 0; i < NCH; i++) {
+    const busy = drip[i] > 3, target = busy ? Math.min(1.5, Math.max(0.2, 1.45 - 1.5 * Math.min(1.5, harv[i] / drip[i]))) : 1;
+    fert[i] += (target - fert[i]) * (busy ? 0.1 : 0.01);
+    fert[i] = Math.max(0.2, fert[i] - Math.min(0.06, (harvD[i] || 0) * P.grazeWear)); // every piece picked up takes a little from the ground
+    drip[i] *= 0.5; harv[i] *= 0.5;
+  }
+  // food that rotted on the ground feeds the soil there (a big heap noticeably, a few crumbs barely)
+  if (rotWords) for (let i = 0; i < NCH; i++) {
+    const d = (rotWords[i] - rotSeen[i]) >>> 0; rotSeen[i] = rotWords[i];
+    if (d > 0 && d < 0x7FFFFFFF) fert[i] = Math.min(1.6, fert[i] + Math.min(0.08, d * P.rotFeed) * Math.max(0, 1 - 1.5 * pressureAt(i)));
+  }
+  // many planted patches in one place wear the soil out, so farms creep outward over time
+  farmN.fill(0); for (const p of plants) if (p.farm !== undefined || p.tended !== undefined) farmN[chunkOf(p.x, p.y)]++;
+  for (let i = 0; i < NCH; i++) if (farmN[i] > 1) fert[i] = Math.max(0.2, fert[i] - P.farmWear * (farmN[i] - 1));
+  for (const c of colonies) { // waste, the dead and dropped food feed the soil around a nest
+    const n = Math.min(150, c.inside + c.out), cx = c.x >> 6, cy = c.y >> 6;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const x = cx + dx, y = cy + dy; if (x < 0 || y < 0 || x >= CW || y >= CW) continue;
+      const i = y * CW + x; fert[i] = Math.min(1.6, fert[i] + 0.00008 * n * (dx || dy ? 0.5 : 1));
+    }
+  }
+}
+// a plant that was left alone seeds a new one nearby before it dies; an overgrazed one doesn't
+function trySpread(p) {
+  if (!P.fert || p.tree || p.giant) return;
+  const i = chunkOf(p.x, p.y);
+  if (pressureAt(i) > 0.55 || rnd() > 0.7 * fert[i] * growth() || plants.length >= plantTarget() * 2) return;
+  const K = PLANT_KINDS[p.kind] || PLANT_KINDS.herb;
+  for (let k = 0; k < 12; k++) {
+    const a = rnd() * 6.283, d = 12 + rnd() * 30, x = Math.round(p.x + Math.cos(a) * d), y = Math.round(p.y + Math.sin(a) * d);
+    if (x < 4 || y < 4 || x >= W - 4 || y >= H - 4 || wall[y * W + x] || (p.farm === undefined && !farFromNests(x, y))) continue;
+    const q = addPlant(x, y, p.kind, Math.round(p.max / K.size * 0.7));
+    if (p.farm !== undefined) { q.farm = p.farm; q.farmCi = p.farmCi; q.farmT = simStep; }
+    return;
+  }
+}
+// farms: seed planters grow grass patches around their nest, aphid herders tend aphid trees
+function farmPlant(c, kind, r0, r1, size) {
+  let best = null, bs = -1;
+  for (let k = 0; k < 24; k++) {
+    const a = rnd() * 6.283, d = r0 + rnd() * (r1 - r0) * 1.8, x = Math.round(c.x + Math.cos(a) * d), y = Math.round(c.y + Math.sin(a) * d);
+    if (x < 4 || y < 4 || x >= W - 4 || y >= H - 4 || wall[y * W + x]) continue;
+    if (colonies.some(o => o !== c && Math.hypot(o.x - x, o.y - y) < 24)) continue;
+    const sc = fertAt(x, y) - 0.4 * Math.max(0, d - r1) / r1; // good soil wins, but a long walk counts against it
+    if (sc > bs) { bs = sc; best = [x, y]; }
+  }
+  if (!best) return null;
+  const p = addPlant(best[0], best[1], kind, Math.round((P.plantMin + P.plantVar / 2) * size * fertAt(best[0], best[1])));
+  p.farm = c.slot; p.farmCi = c.ci; p.farmT = simStep; return p;
+}
+function stepFarms() {
+  for (const p of plants) if (p.farm !== undefined && !colonies.some(c => c.slot === p.farm)) { p.farm = undefined; p.wild = simStep; } // the farmer is gone
+  // a farm patch whose nest is gone, or that nobody picks from, withers away over a few minutes
+  for (const p of plants) {
+    if (p.tree) continue;
+    const i = chunkOf(p.x, p.y), idle = p.farm !== undefined && simStep - (p.farmT || 0) > 3 * MINUTE && drip[i] > 3 && pressureAt(i) < 0.08;
+    if (p.wild !== undefined || idle) p.left -= p.max * P.farmWither * (p.wild !== undefined ? 1 : 0.6);
+  }
+  if (!P.farming) { for (const p of plants) p.tended = undefined; return; }
+  const gr = growth();
+  for (const c of colonies) {
+    const n = c.inside + c.out; if (n < 8) continue;
+    if (hasAbil(c, 20)) {
+      const mine = plants.filter(p => p.farm === c.slot).length;
+      if (mine < 1 + Math.floor(n / 50) && rnd() < 0.25 * gr) farmPlant(c, 'grass', 22, 55, 0.35);
+    }
+    if (hasAbil(c, 21)) {
+      for (const p of plants) if (p.kind === 'aphid' && Math.hypot(p.x - c.x, p.y - c.y) < 180) { p.tended = c.slot; p.tendCi = c.ci; p.tendT = simStep; }
+      const herd = plants.filter(p => p.tended === c.slot).length;
+      if (herd < 1 + Math.floor(n / 40) && rnd() < 0.12 * gr) { const p = farmPlant(c, 'aphid', 30, 80, 0.5); if (p) { p.tended = c.slot; p.tendCi = c.ci; p.tendT = simStep; } }
+    }
+  }
+  for (const p of plants) if (p.tended !== undefined && simStep - p.tendT > 2 * MINUTE) p.tended = undefined; // left alone: back to normal
+}
+// how much a nest eats depends on how it lives: fast, far-ranging, heavy-carrying ants eat more; energy-efficient, steady ones less
+const paceMul = c => !P.paceCost ? 1 : Math.min(2.4, Math.max(0.45, Math.pow(gmul(c, 0), 0.7) * Math.pow(gmul(c, 12), 0.3) * Math.pow(gmul(c, 11), 0.3) / (Math.pow(gmul(c, 13), 0.6) * Math.pow(gmul(c, 3), 0.25))));
+const eatOf = c => eatRate() * paceMul(c);
+// mutations lean toward what the nest's life rewards: long trips favour range and stamina, fights favour jaws and armour, hunger favours thrift
+function leanOf(c, k) {
+  const longT = Math.min(1, Math.max(0, (c.searchMul - 1) / 1.5)), fight = Math.min(1, (c.fightR || 0) / 20), starve = Math.min(1, (c.starveR || 0) / 10);
+  const rich = Math.min(1, eff(c) / Math.max(1, (c.inside + c.out) * eatOf(c) * 3));
+  switch (k) {
+    case 12: return longT; case 13: return 0.6 * longT + 0.6 * starve; case 11: return 0.5 * longT; case 6: return 0.4 * longT;
+    case 0: return 0.6 * rich - 0.6 * starve; case 3: return 0.4 * starve;
+    case 14: case 8: case 1: return fight; case 9: return 0.4 * starve + 0.4 * fight;
+    default: return 0;
+  }
+}
+// how much room each food group leaves a nest: what grows within reach, minus how much nearby rival colours already specialise in it
+function openNiche(c) {
+  const grow = [0, 0, 0, 0, 0], grp = [1, 0, 1, 2, 1, 2, 2];
+  for (const p of plants) { if (p.tree) continue; const d = Math.hypot(p.x - c.x, p.y - c.y); if (d < 260) grow[grp[(PLANT_KINDS[p.kind] || PLANT_KINDS.herb).ft]] += p.left / (1 + d / 80); }
+  const tot = grow.reduce((a, v) => a + v, 0) || 1, lf = localFoodMix(c.x, c.y);
+  const avail = grow.map((v, g) => 0.6 * v / tot + 0.4 * lf[g]);
+  const rival = [0, 0, 0, 0, 0]; let rn = 0;
+  for (const o of colonies) if (o.fam !== c.fam && Math.hypot(o.x - c.x, o.y - c.y) < 450) { rn++; for (let g = 0; g < 5; g++) rival[g] += o.skills[g]; }
+  return avail.map((v, g) => v - (rn ? 0.7 * rival[g] / rn : 0));
+}
+const dietOverlap = (a, b) => { let s = 0; for (let g = 0; g < 5; g++) s += Math.min(a.skills[g], b.skills[g]); return s; };
+// the food that grows around a spot, as shares of the five food groups
+function localFoodMix(x, y) {
+  const b = biome[(y | 0) * W + (x | 0)], w = (BIOME_FOOD[b] || BIOME_FOOD[0])[1], out = [0.02, 0.02, 0.02, 0.02, 0.1], grp = [1, 0, 1, 2, 1, 2, 2];
+  for (const k in w) out[grp[(PLANT_KINDS[k] || PLANT_KINDS.herb).ft]] += w[k];
+  out[3] += (PREY_W[b] ?? 0.5) * 2;
+  const t = out.reduce((a, v) => a + v, 0); return out.map(v => v / t);
+}
+// ways of living, read from genes, food skills and abilities
+const LIFESTYLES = { runner: 'Runners', thrifty: 'Thrifty', hunter: 'Hunters', fungus: 'Fungus farmers', seed: 'Seed farmers', aphid: 'Aphid herders', general: 'Generalists' };
+const LIFE_WHY = { runner: 'fast and far-ranging; eats a lot', thrifty: 'slow and frugal; lasts long without food', hunter: 'lives off prey and rivals', fungus: 'grows fungus on leaves at home', seed: 'grows grass patches around the nest', aphid: 'tends aphid trees for honeydew', general: 'a bit of everything' };
+function lifestyle(c) {
+  if (hasAbil(c, 18)) return 'fungus'; if (hasAbil(c, 20)) return 'seed'; if (hasAbil(c, 21)) return 'aphid';
+  const g = k => gmul(c, k) - 1;
+  const sc = { runner: g(0) + 0.6 * g(12) + 0.6 * g(11) - 0.7 * g(13), thrifty: g(13) + 0.5 * g(9) + 0.5 * g(3) - 0.7 * g(0), hunter: 0.8 * g(14) + 0.6 * g(8) + 2 * (c.skills[3] - 0.2) + (hasAbil(c, 19) ? 0.4 : 0) };
+  let best = 'general', bv = 0.22; for (const k in sc) if (sc[k] > bv) { bv = sc[k]; best = k; }
+  return best;
+}
+function lifestyleTag(c) {
+  const ls = lifestyle(c), t = c.temp ?? 0.5, top = topSkill(c);
+  const diet = ['fungus', 'seed', 'aphid'].includes(ls) ? '' : c.skills[top] >= 0.32 ? ', ' + ['seed', 'plant', 'sweet', 'prey', 'scavenger'][top] + ' eaters' : ', mixed diet';
+  return `${LIFESTYLES[ls]}${diet}${t < 0.36 ? ', cold ground' : t > 0.64 ? ', warm ground' : ''}`;
+}
 // once a minute: insects die in the heat and lie around as meat; in the cold a frozen carcass turns up now and then
 function stepFoodEvents() {
   if (!P.biomeFood) return;
-  const tries = Math.round(40 * N / 600000 * P.insects * P.rate);
+  const tries = Math.round(40 * N / 600000 * P.insects * P.rate * (P.seasons ? 0.3 + 1.4 * warmth() : 1));
   for (let k = 0; k < tries; k++) {
     const x = 4 + ((rnd() * (W - 8)) | 0), y = 4 + ((rnd() * (H - 8)) | 0), i = y * W + x;
     if (wall[i] || clT[i] < 165 || rnd() > (clT[i] - 165) / 90) continue;
@@ -5821,7 +6364,7 @@ function stepFoodEvents() {
     for (let m = 0; m < n && drops.length < MAXDROP; m++) { const xx = x + ((rnd() * 3) | 0) - 1, yy = y + ((rnd() * 3) | 0) - 1; if (!wall[yy * W + xx]) drops.push((yy * W + xx) | (7 << 24)); }
   }
   // live prey (beetles, caterpillars, crickets) turns up in small groups, more in warm grassy and leafy places. It runs if a hunter misses
-  const pt = Math.round(12 * N / 600000 * P.prey * P.rate);
+  const pt = Math.round(12 * N / 600000 * P.prey * P.rate * (P.seasons ? 0.3 + 1.4 * warmth() : 1));
   for (let k = 0; k < pt; k++) {
     const x = 6 + ((rnd() * (W - 12)) | 0), y = 6 + ((rnd() * (H - 12)) | 0), i = y * W + x;
     if (wall[i] || rnd() > (PREY_W[biome[i]] ?? 0.5)) continue;
@@ -5996,24 +6539,25 @@ function stepBeasts(steps) {
   for (let k = 0; k < 4; k++) device.queue.writeBuffer(bufs.world, (LO.BEAST_OFF + k * 2 + 1) * 4, tok, k * 2 + 1, 1);
 }
 function stepPlants(steps) {
-  const target = plantTarget();
+  const target = plantTarget(), gr = growth();
   const minutes = Math.floor((simStep + steps) / MINUTE) - Math.floor(simStep / MINUTE);
   for (let m = 0; m < minutes; m++) {
     if (plants.filter(p => p.tree).length < P.treeMax && rnd() < P.treeChance * P.rate * P.plantSpawn) spawnTree();
     if (beasts.length < P.beastMax && rnd() < P.beastChance * P.rate) spawnBeast();
     stepFoodEvents();
+    updateFertility(); stepFarms();
   }
   for (let s = 0; s < steps; s++) {
-    if (plants.filter(p => !p.tree).length < target && rnd() < 0.25 * P.rate * P.plantSpawn) spawnPlant();
-    else if (plants.length < target * 1.5 && rnd() < 0.01 * P.rate * P.plantSpawn) spawnPlant();
+    if (plants.filter(p => !p.tree).length < target && rnd() < 0.25 * P.rate * P.plantSpawn * gr) spawnPlant();
+    else if (plants.length < target * 1.5 && rnd() < 0.01 * P.rate * P.plantSpawn * gr) spawnPlant();
   }
   for (const p of plants) {
     if (p.tree) {
-      p.acc += P.treeDrop * P.rate * steps;
+      p.acc += P.treeDrop * P.rate * steps * gr;
       while (p.acc >= 1 && p.left > 0) {
         p.acc--; p.left -= P.plantDecay;
         const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * P.treeRadius, x = Math.round(p.x + Math.cos(ang) * d), y = Math.round(p.y + Math.sin(ang) * d);
-        if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) drops.push(y * W + x);
+        if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) { drops.push(y * W + x); drip[chunkOf(x, y)]++; }
       }
       continue;
     }
@@ -6022,11 +6566,11 @@ function stepPlants(steps) {
       p.t -= steps;
       if (p.t <= 0) {
         p.t += MINUTE;
-        if (rnd() < 0.5 * P.rate * P.dropDiv / 4) {
+        if (rnd() < 0.5 * P.rate * P.dropDiv / 4 * gr) {
           for (let m = 0; m < 60 && p.left > 0; m++) {
             p.left -= P.plantDecay * K.decay;
             const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * K.r, x = Math.round(p.x + Math.cos(ang) * d), y = Math.round(p.y + Math.sin(ang) * d);
-            if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) drops.push((y * W + x) | (K.ft << 24));
+            if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) { drops.push((y * W + x) | (K.ft << 24)); drip[chunkOf(x, y)]++; }
           }
         }
         p.left -= 4; // slowly wilt between bursts
@@ -6035,11 +6579,13 @@ function stepPlants(steps) {
     }
     p.t -= steps;
     while (p.t <= 0 && p.left > 0) {
-      p.t += Math.max(1, Math.round((30 / P.rate + rnd() * 30) / P.dropDiv / (K.rate * (p.rateMul || 1))));
-      p.left -= P.plantDecay * K.decay;
+      const tend = p.tended !== undefined; // a tended aphid tree drips more and lasts longer
+      p.t += Math.max(1, Math.round((30 / P.rate + rnd() * 30) / P.dropDiv / (K.rate * (p.rateMul || 1) * gr * (tend ? 1.7 : 1))));
+      p.left -= P.plantDecay * K.decay * (tend ? 0.5 : 1);
+      if (!p.spread && p.left < p.max * 0.35) { p.spread = true; trySpread(p); }
       const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * K.r * (p.rMul || 1);
       const x = Math.round(p.x + Math.cos(ang) * d), y = Math.round(p.y + Math.sin(ang) * d);
-      if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) drops.push((y * W + x) | ((p.ft ?? K.ft) << 24));
+      if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x] && drops.length < MAXDROP) { drops.push((y * W + x) | ((p.ft ?? K.ft) << 24)); drip[chunkOf(x, y)]++; }
     }
   }
   plants = plants.filter(p => p.left > 0);
@@ -6061,11 +6607,12 @@ function colonyUpdate() {
     takeFood(c, robbed); c.raided += robbed; if (robbed) c.raidedT = simStep;
     const paid = d(CTR.casino);
     if (paid && casino && casino.open) { const v = (casino.paid.get(c.slot) || 0) + paid; casino.paid.set(c.slot, v); if (v >= CASINO_PAY) startSpin(c); }
+    c.fightR = (c.fightR || 0) * 0.98 + d(CTR.kills) + d(CTR.lost) + killedIn; c.starveR = (c.starveR || 0) * 0.98 + deaths; // recent fights and hunger, for mutations that lean
     c.kills += d(CTR.kills); c.lost += d(CTR.lost) + killedIn; TOT.lost += d(CTR.lost) + killedIn; c.plundered += d(CTR.plundered);
     if (killedIn) kills[c.slot * 2] += killedIn;
     const lv = d(CTR.leaves); c.fungus += lv; c.leaves += lv; c.leafRecent = (c.leafRecent || 0) * 0.995 + lv; c.incRecent = (c.incRecent || 0) + lv;
     if (c.fungus > 0) { // leaves turn into fungus food over about a minute (Fungus farmers: twice as fast and half as much again)
-      const ff = hasAbil(c, 18), grown = Math.min(c.fungus, c.fungus * BATCH / (MINUTE * P.fungusMin) * (ff ? 2 : 1) + 0.05), got = grown * (ff ? 1.5 : 1); // fungus counts as plant food
+      const ff = hasAbil(c, 18), fl = ff && P.farming, grown = Math.min(c.fungus, c.fungus * BATCH / (MINUTE * P.fungusMin) * (fl ? 0.35 : ff ? 2 : 1) + 0.05), got = grown * (fl ? 2.2 : ff ? 1.5 : 1); // with farming on, a garden holds leaves for a long time and feeds the nest slowly through lean months // fungus counts as plant food
       c.fungus -= grown; addFood(c, 1, got); c.gathered += got; TOT.gathered += got; c.incAcc += got;
     }
     const sent = d(CTR.sent), back = d(CTR.escortBack);
@@ -6088,17 +6635,17 @@ function colonyUpdate() {
     for (let bi = 0; bi < Math.min(batches, 50); bi++) {
       // breed while the store covers the buffer; a rich nest breeds a few at once
       for (let k = 0; k < P.birthBurst; k++) {
-        const br = gmul(c, 7), need = n * eatRate() * P.birthBuffer / br * (k ? 2 : 1) + P.birthCost / br;
-        if (eff(c) < need || n >= P.nestMax || free <= 0) break;
+        const br = gmul(c, 7), need = n * eatOf(c) * P.birthBuffer / br * (k ? 2 : 1) + P.birthCost / br;
+        if (eff(c) < need || n >= nestCap(c) || free <= 0 || c.mergeInto) break;
         removeFood(c, P.birthCost / br / nut(c)); n++; c.born++; TOT.born++; free--; spawns.push(c.slot);
         if (hasAbil(c, 7) && rnd() < 0.25 && free > 0) { n++; c.born++; TOT.born++; free--; spawns.push(c.slot); } // Twins
         if (c.born >= c.nextMut) { c.nextMut += P.mutEvery; mutate(c, P.mutStrength / 3, `After ${c.born} births`); }
       }
       // hungry nests search farther; well-fed nests ease back
-      if (simStep - c.lastFood > MINUTE / 2 && eff(c) < n * eatRate()) c.searchMul = Math.min(5, c.searchMul * 1.05);
-      else if (eff(c) >= n * eatRate()) c.searchMul = Math.max(1, c.searchMul * 0.93);
+      if (simStep - c.lastFood > MINUTE / 2 && eff(c) < n * eatOf(c)) c.searchMul = Math.min(5, c.searchMul * 1.05);
+      else if (eff(c) >= n * eatOf(c)) c.searchMul = Math.max(1, c.searchMul * 0.93);
       // eating, spread over each minute
-      const nu0 = nut(c), up = n * eatRate() * BATCH / MINUTE * climateUpkeep(c) / nu0; // a nest in the wrong climate eats more; food it can't use well goes faster
+      const nu0 = nut(c), up = n * eatOf(c) * BATCH / MINUTE * climateUpkeep(c) / nu0; // a nest in the wrong climate eats more; food it can't use well goes faster
       const short = up - c.food; removeFood(c, up); c.needAcc += up;
       if (short > 0) {
         c.starveAcc += short * nu0 * P.starveKill;
@@ -6116,13 +6663,16 @@ function colonyUpdate() {
     c.incAcc = 0; c.needAcc = 0; if (c.hist.length > HIST) c.hist.shift();
   }
   settleFounders();
+  mergeNests();
+  for (const c of colonies) { const cap = storeCap(c); if (c.food > cap) removeFood(c, c.food - cap); } // a full store: extra food is left to rot
   checkSplits();
   sendFounders();
   runSieges();
   // a nest with no ants left and none on the way dies out, leaving its stores behind as fallen nest food
   for (const c of colonies) if (c.inside + c.out === 0 && !spawns.some(v => (v & 1023) === c.slot) && simStep - c.bornAt > BATCH * 2) {
     c.alive = false; c.diedAt = simStep; c.inside = 0; c.out = 0; slotFreed[c.slot] = simStep;
-    emit('death', `${c.name} died out after ${Math.floor((simStep - c.foundedAt) / MINUTE)} min`, c.x, c.y, [c]);
+    if (c.mergeInto) { const o = colonies.find(k => k.slot === c.mergeInto - 1); emit('nest', `${c.name} moved into ${o ? o.name : 'a nearby nest'}`, c.x, c.y, [c, o]); }
+    else emit('death', `${c.name} died out after ${Math.floor((simStep - c.foundedAt) / MINUTE)} min`, c.x, c.y, [c]);
     deadColonies.push(c); if (deadColonies.length > 50) deadColonies.shift();
     for (let k = 0; k < (c.noDrop ? 0 : 45); k++) { // a nest removed by the tutorial leaves nothing behind
       const ang = rnd() * Math.PI * 2, r = 1 + rnd() * 6, x = Math.round(c.x + Math.cos(ang) * r), y = Math.round(c.y + Math.sin(ang) * r);
@@ -6178,7 +6728,7 @@ function writeNests() {
 }
 let DBG_SKIP = 0; // speed check: parts of the ant step to skip while timing (1 look-around, 2 far trail look, 4 trail source, 8 spacing)
 function writeParams(nSpawn, nDrop, vis, pick) {
-  const b = new ArrayBuffer(224), u = new Uint32Array(b), f = new Float32Array(b);
+  const b = new ArrayBuffer(240), u = new Uint32Array(b), f = new Float32Array(b);
   u[0] = cap; u[1] = nColUsed(); u[2] = simStep; f[3] = P.vision;
   f[4] = P.wobble; f[5] = P.novelty; f[6] = P.turnMax; f[7] = P.jitter;
   f[8] = P.exploreInc; f[9] = P.trailInc; f[10] = Math.pow(1 - 0.001 * P.fade, FADE_EVERY); f[11] = P.space;
@@ -6190,12 +6740,13 @@ function writeParams(nSpawn, nDrop, vis, pick) {
   u[32] = Math.max(0, Math.floor(vis[0] / CS)); u[33] = Math.max(0, Math.floor(vis[1] / CS)); u[34] = Math.min(CW - 1, Math.floor(vis[2] / CS)); u[35] = Math.min(CW - 1, Math.floor(vis[3] / CS));
   if (pick) { f[36] = pick.x; f[37] = pick.y; f[38] = pick.r * pick.r; }
   u[42] = DBG_SKIP; f[39] = Math.pow(1 - P.redFade, FADE_EVERY); u[40] = P.clearTrails ? P.clearRadius : 0; u[41] = colTrails ? 1 : 0; f[43] = P.spine; f[44] = P.comfort; f[45] = P.climate ? P.climCost : 0; f[46] = P.settleTol; f[47] = P.nestGap; f[48] = P.skills ? P.minSkill : 0; f[49] = P.scouts; f[50] = P.trailView; f[51] = P.deadFade; if (wipeRect) { u[52] = wipeRect[0]; u[53] = wipeRect[1]; u[54] = wipeRect[2]; u[55] = wipeRect[3]; }
+  f[56] = seasonShift();
   device.queue.writeBuffer(bufs.params, 0, b);
 }
 
 let worldWaiting = false; // a map without ants yet (being chosen or painted): no queens fly in
 function setup(newCap, opt = {}) {
-  cap = newCap; worldWaiting = !!opt.empty;
+  cap = newCap; worldWaiting = !!opt.empty; resetLand();
   for (const k of ['ants', 'posA', 'posB']) if (bufs[k]) bufs[k].destroy();
   bufs.ants = mk(cap * 96, STO);
   bufs.posA = mk(cap * 16, STO);
@@ -6311,6 +6862,7 @@ function simFrame(steps, o) {
   if (timed) { enc.resolveQuerySet(tsSet, 0, 2, tsBuf, 0); enc.copyBufferToBuffer(tsBuf, 0, rb.buf, TS_AT * 4, 16); }
   if (rb) { rb.tsSteps = timed ? steps : 0; const R0 = MAXCOL * CTRN; enc.copyBufferToBuffer(bufs.world, LO.CTR_OFF * 4, rb.buf, 0, R0 * 4); enc.copyBufferToBuffer(bufs.world, 0, rb.buf, R0 * 4, 16);
     enc.copyBufferToBuffer(bufs.world, LO.PICK_OFF * 4, rb.buf, (R0 + 272) * 4, 4);
+    enc.copyBufferToBuffer(bufs.world, LO.HARV_OFF * 4, rb.buf, HARV_AT * 4, NCH * 8);
     enc.copyBufferToBuffer(bufs.world, LO.BEAST_OFF * 4, rb.buf, (R0 + 4) * 4, 8 * 4); enc.copyBufferToBuffer(bufs.world, LO.FOUND_OFF * 4, rb.buf, (R0 + 12) * 4, (4 + 256) * 4); }
   // the ant being followed: its data comes back every frame
   const fidx = o.follow, fb = fidx !== undefined && fidx !== null ? followBufs.find(f => !f.busy) : null;
@@ -6320,7 +6872,7 @@ function simFrame(steps, o) {
   camF[0] = o.zoom * o.dpr; camF[1] = (o.vw / 2 - o.cx * o.zoom) * o.dpr; camF[2] = (o.vh / 2 - o.cy * o.zoom) * o.dpr;
   camU[3] = cap; camF[4] = o.w; camF[5] = o.h; camU[6] = (o.trails ? (o.territory ? 3 : o.trailCol ? 2 : 1) : 0) | ((o.mapView || 0) << 8) | (((performance.now() / 16) & 0xFFFF) << 16); camU[7] = nColUsed();
   for (let k = 0; k < MAXFAM; k++) { const fo = 8 + MAXCOL * 4 + k * 4, rgb = famRGB(k); camF[fo] = rgb[0] / 255; camF[fo + 1] = rgb[1] / 255; camF[fo + 2] = rgb[2] / 255; camF[fo + 3] = 1; }
-  for (const c of colonies) { const o = 8 + c.slot * 4, rgb = famRGB(c.ci); camF[o] = rgb[0] / 255; camF[o + 1] = rgb[1] / 255; camF[o + 2] = rgb[2] / 255; camF[o + 3] = antSize(c); const L = antLooks(c); lookF.set(L, c.slot * 16); }
+  for (const c of colonies) { const o = 8 + c.slot * 4, rgb = famRGB(c.ci); camF[o] = rgb[0] / 255; camF[o + 1] = rgb[1] / 255; camF[o + 2] = rgb[2] / 255; camF[o + 3] = antSize(c); lookF.set(antLookNow(c), c.slot * LOOKN); }
   device.queue.writeBuffer(bufs.cam, 0, camBuf); device.queue.writeBuffer(bufs.look, 0, lookF);
   const rp = enc.beginRenderPass({ colorAttachments: [{ view: o.view, loadOp: 'clear', storeOp: 'store', clearValue: { r: 0.055, g: 0.04, b: 0.027, a: 1 } }] });
   rp.setBindGroup(0, drawBG[cur]);
@@ -6341,7 +6893,7 @@ function simFrame(steps, o) {
       readApplied = seq;
       const u = new Uint32Array(rb.buf.getMappedRange());
       const R0 = MAXCOL * CTRN; counts = u.slice(0, R0); freeAnts = u[R0 + 2]; trailFree = u[R0 + 1];
-      beastWords = u.slice(R0 + 4, R0 + 12); foundRing = u.slice(R0 + 12, R0 + 12 + 260);
+      beastWords = u.slice(R0 + 4, R0 + 12); foundRing = u.slice(R0 + 12, R0 + 12 + 260); harvWords = u.slice(HARV_AT, HARV_AT + NCH); rotWords = u.slice(HARV_AT + NCH, HARV_AT + 2 * NCH);
       if (rb.tsSteps) { const ns = (u[TS_AT + 3] - u[TS_AT + 1]) * 4294967296 + (u[TS_AT + 2] - u[TS_AT]); if (ns > 0 && ns < 5e9) { gpuTsMs = ns / 1e6; gpuTsSteps = rb.tsSteps; } }
       // a tap's nearest ant: only from readbacks made after that tap
       if (seq >= pickFrom && pickWanted) {
@@ -6369,7 +6921,7 @@ function simFrame(steps, o) {
 const $ = id => document.getElementById(id);
 const cv = canvas, ov = $('ov'), oc = ov.getContext('2d'), tray = $('tray');
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-let inflight = 0;
+let inflight = 0, showFert = false;
 const camBuf = new ArrayBuffer(32 + MAXCOL * 16 + MAXFAM * 16), camU = new Uint32Array(camBuf), camF = new Float32Array(camBuf);
 
 // ---------- camera ----------
@@ -6482,7 +7034,7 @@ const sheets = [], openFams = new Set(), listEl = $('colonies'), clockEl = $('cl
 function updatePanel() {
   if (gpuLost) { clockEl.textContent = gpuLost; return; }
   const total = colonies.reduce((s, c) => s + c.inside + c.out, 0), np = plants.filter(p => !p.tree).length;
-  clockEl.textContent = `minute ${Math.floor(simStep / MINUTE)} · ${total.toLocaleString()} ants · ${np} plants · ${colonies.length} nests${hyper.on ? ` · hyperspeed ${Math.round(hyper.rate * 60 / MINUTE)} min per min` : ''}`;
+  clockEl.textContent = `minute ${Math.floor(simStep / MINUTE)}${P.seasons ? ' · ' + seasonName() : ''} · ${total.toLocaleString()} ants · ${np} plants · ${colonies.length} nests${hyper.on ? ` · hyperspeed ${Math.round(hyper.rate * 60 / MINUTE)} min per min` : ''}`;
   if (!colonies.length) { listEl.innerHTML = '<div class="empty">No colonies left.</div>'; return; }
   const fams = [];
   for (const c of colonies) { let f = fams.find(f => f.ci === c.ci); if (!f) fams.push(f = { ci: c.ci, nests: [] }); f.nests.push(c); }
@@ -6599,6 +7151,17 @@ knob('casinoEvery', v => { P.casinoEvery = v; }, v => `${v} sim min`);
 knob('mutStrength', v => { P.mutStrength = v; }, v => v ? `${v} points (${Math.round(v / 3 * 10) / 10} later)` : 'off');
 knob('mutEvery', v => { P.mutEvery = v; }, v => `every ${v} births`);
 chk('mutLean', v => { P.mutLean = v; });
+chk('adaptOn', v => { P.adaptive = v; });
+chk('paceOn', v => { P.paceCost = v; });
+chk('nicheOn', v => { P.niche = v; genesDirty = true; });
+chk('fertOn', v => { P.fert = v; });
+chk('fertShow', v => { showFert = v; });
+chk('seasonsOn', v => { P.seasons = v; });
+knob('yearMin', v => { P.yearMin = v; }, v => `${v} min per year`);
+knob('seasonAmp', v => { P.seasonAmp = v; }, v => v <= 0.5 ? 'mild' : v <= 1 ? 'clear' : 'harsh');
+chk('farmOn', v => { P.farming = v; genesDirty = true; });
+chk('mergeOn', v => { P.merge = v; });
+knob('crowdMax', v => { P.crowdMax = v >= 13 ? 1e9 : v; }, v => v >= 13 ? 'no limit' : v + ' nests');
 chk('climOn', v => { P.climate = v; genesDirty = true; });
 chk('skillsOn', v => { P.skills = v; genesDirty = true; });
 knob('skillPower', v => { P.skillPower = v; }, v => v <= 2 ? 'mild' : v <= 4 ? 'strong' : 'huge');
@@ -7098,6 +7661,9 @@ document.addEventListener('keydown', e => { if (!resetBox.hidden && e.key === 'E
 if (/(^#|,)dev(,|$)/.test(location.hash)) $('devTools').hidden = false;
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) { e.preventDefault(); $('devTools').hidden = !$('devTools').hidden; } });
 const settingInputs = () => [...document.querySelectorAll('.settings input[type=range], .settings input[type=checkbox]')].filter(el => el.id && !el.closest('.nopreset'));
+// version: big release . stable build . test build (see CHANGELOG.md on GitHub)
+const GAME_VERSION = '2.0.1';
+if ($('verNum')) $('verNum').textContent = GAME_VERSION;
 function captureSettings() { const o = {}; for (const el of settingInputs()) o[el.id] = el.type === 'checkbox' ? el.checked : +el.value; return o; }
 function applySettings(o) {
   const before = capFromSlider(+$('maxAnts').value);
@@ -7265,6 +7831,14 @@ function drawIcon(g, key, cx, cy, r, color) {
 }
 // ---------- drawing the things the CPU tracks: plants, trees, beasts, nests ----------
 function drawThings(g, z) {
+  // the season tints the whole map a little: pale and cold in winter, golden in autumn
+  if (P.seasons) { const s = seasonPhase(), wint = Math.max(0, 1 - Math.abs(s - 0.875) / 0.16), aut = Math.max(0, 1 - Math.abs(s - 0.62) / 0.12);
+    if (wint > 0) { g.fillStyle = `rgba(225,235,255,${0.16 * wint * P.seasonAmp})`; g.fillRect(0, 0, W, H); }
+    if (aut > 0) { g.fillStyle = `rgba(255,170,60,${0.07 * aut * P.seasonAmp})`; g.fillRect(0, 0, W, H); } }
+  if (showFert && P.fert) for (let i = 0; i < NCH; i++) { // soil fertility: brown where ants stripped it, green where it is rich
+    const f = fert[i], a = Math.min(0.55, Math.abs(f - 1) * 0.9); if (a < 0.03) continue; // normal soil stays clear
+    g.fillStyle = f < 1 ? `rgba(150,92,40,${a})` : `rgba(60,210,70,${a})`; g.fillRect((i % CW) * 64, Math.floor(i / CW) * 64, 64, 64);
+  }
   for (const p of plants) {
     const cx = p.x + 0.5, cy = p.y + 0.5;
     if (p.tree) {
@@ -7278,6 +7852,13 @@ function drawThings(g, z) {
     }
     if (p.giant) { g.save(); g.translate(p.x + 0.5, p.y + 0.5); g.scale(4, 4); g.translate(-p.x - 0.5, -p.y - 0.5); drawPlant(g, p, z * 4); g.restore(); }
     else drawPlant(g, p, z);
+    // farms: a dashed ring in the farmer's colour; tended aphid trees get a ring of dots
+    if (p.farm !== undefined || p.tended !== undefined) {
+      const rgb = famRGB(p.tended !== undefined ? p.tendCi : p.farmCi), r = Math.max(7, 12 / z);
+      g.strokeStyle = `rgba(${rgb},0.85)`; g.lineWidth = Math.max(0.8, 1.6 / z);
+      if (p.tended !== undefined) { g.fillStyle = `rgb(${rgb})`; for (let k = 0; k < 8; k++) { const a = k / 8 * 6.283; g.beginPath(); g.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, Math.max(0.8, 1.6 / z), 0, 7); g.fill(); } }
+      else { g.setLineDash([3 / z, 3 / z]); g.beginPath(); g.arc(cx, cy, r, 0, 7); g.stroke(); g.setLineDash([]); }
+    }
   }
   for (const b of beasts) {
     const L = Math.max(5, 16 / z) * (b.size || 1), Wd = L * 0.62;
@@ -7291,10 +7872,12 @@ function drawThings(g, z) {
   const nr = Math.max(4, 8 / z);
   for (const c of colonies) {
     const rgb = FAM_OF(c), cx = c.x + .5, cy = c.y + .5;
-    g.fillStyle = `rgba(${rgb},0.18)`; g.beginPath(); g.arc(cx, cy, nr * 2, 0, 7); g.fill();
-    g.fillStyle = '#17120e'; g.beginPath(); g.arc(cx, cy, nr, 0, 7); g.fill();
-    g.lineWidth = nr * 0.2; g.strokeStyle = `rgb(${rgb})`; g.beginPath(); g.arc(cx, cy, nr, 0, 7); g.stroke();
-    drawIcon(g, nestIcon(c), cx, cy, nr * 0.62, `rgb(${rgb})`);
+    const t = tierOf(c), r = nr * (1 + 0.18 * (t - 1));
+    g.fillStyle = `rgba(${rgb},0.18)`; g.beginPath(); g.arc(cx, cy, r * 2, 0, 7); g.fill();
+    for (let k = 1; k < t; k++) { g.lineWidth = nr * 0.12; g.strokeStyle = `rgba(${rgb},0.5)`; g.beginPath(); g.arc(cx, cy, r * (1 + 0.28 * k), 0, 7); g.stroke(); } // one extra ring per level
+    g.fillStyle = '#17120e'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+    g.lineWidth = nr * 0.2; g.strokeStyle = `rgb(${rgb})`; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.stroke();
+    drawIcon(g, nestIcon(c), cx, cy, r * 0.62, `rgb(${rgb})`);
   }
 }
 // the casino: a little gold building, and when someone pays up, three wheels above it
@@ -7552,7 +8135,9 @@ function updateSheet(sh) {
   else {
     if (c.food <= 0.5 && bal < 0) chips.push(['bad', 'Starving']);
     else if (reserve < 1) chips.push(['warn', 'Hungry']);
-    else if (total >= P.nestMax) chips.push(['muted', 'Full, stockpiling food']);
+    else if (total >= nestCap(c)) chips.push(['muted', 'Full, stockpiling food']);
+    if (tierOf(c) > 1) chips.push(['good', `Level ${tierOf(c)} nest`]);
+    if (c.mergeInto) chips.push(['muted', 'Moving into a nearby nest']);
     else if (bal > 0 && reserve >= P.birthBuffer) chips.push(['good', 'Growing']);
     else chips.push(['muted', 'Holding steady']);
     if (simStep - c.redT < 600) chips.push(['bad', 'At war']);
@@ -7609,54 +8194,8 @@ function updateSheet(sh) {
 function drawAntPic(el, L, rgb) {
   const r = el.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
   const w = Math.max(20, Math.round(r.width * d)), h = Math.max(20, Math.round(r.height * d));
-  const key = w + ',' + h + ',' + rgb + ',' + L.map(v => v.toFixed(3)).join(',');
-  if (el._key === key) return; el._key = key; el.width = w; el.height = h;
-  const g = el.getContext('2d'), im = g.createImageData(w, h), D = im.data;
-  const base = rgb.split(',').map(v => +v / 255);
-  const [ll, lt, jw, ey, an, ab, shell, sc, hs, wl, sp, patF, gl, hair, th, shade] = L, pat = Math.round(patF);
-  const ell = (x, y, cx, cy, rx, ry) => Math.hypot((x - cx) / rx, (y - cy) / ry) - 1;
-  const seg = (x, y, ax, ay, bx, by) => { const px = x - ax, py = y - ay, qx = bx - ax, qy = by - ay, t = Math.min(1, Math.max(0, (px * qx + py * qy) / (qx * qx + qy * qy))); return Math.hypot(px - qx * t, py - qy * t); };
-  const fr = v => v - Math.floor(v);
-  const hcx = 8 + (hs - 1) * 1.8, hrx = 3 * hs, hry = 2.8 * hs, front = hcx + hrx;
-  const abx = -8 - (ab - 1) * 3 - wl, arx = 6 * ab, ary = 4.4 * ab;
-  const a0x = hcx + 1.5 * hs, a0y = 1.2 * hs, elx = a0x + 2.2 * an, ely = a0y + 2.6 * an;
-  const alt = shade > 0 ? base.map(v => v + (1 - v) * shade * 0.6) : base.map(v => v * (1 + shade) * 0.5);
-  // fit the whole ant: from the tail to the jaws, and the leg span
-  const x0 = Math.min(abx - arx, -5 * ll) - 1.5, x1 = Math.max(front + 3.2 * jw, elx + 2.6 * an, 3 + 5.5 * ll) + 1.5;
-  const yR = Math.max(ary, 8.5 * ll, 7.5 * ll, ely + 0.6 * an, 2.4 * th + 2.6 * sp) + 1.5;
-  const k = Math.min(w / (x1 - x0), h / (2 * yR)) * 0.92, ox = w / 2 - (x0 + x1) / 2 * k, oy = h / 2, aa = 1 / k;
-  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-    const px = (i + 0.5 - ox) / k, py0 = (j + 0.5 - oy) / k, py = Math.abs(py0);
-    const dAbd = ell(px, py0, abx, 0, arx, ary), dHead = ell(px, py0, hcx, 0, hrx, hry);
-    const dChest = Math.min(ell(px, py0, 1, 0, 3.8 * th, 2.4 * th), ell(px, py0, -3 - wl * 0.5, 0, 1 + wl * 0.45, 1));
-    const dBody = Math.min(dAbd, dChest, dHead);
-    let dL = Math.min(seg(px, py, -1.5, 1.5, -5 * ll, 7.5 * ll), seg(px, py, 0.8, 1.5, 1.5, 8.5 * ll), seg(px, py, 3, 1.5, 3 + 5.5 * ll, 7 * ll)) - lt;
-    dL = Math.min(dL, Math.min(seg(px, py, a0x, a0y, elx, ely), seg(px, py, elx, ely, elx + 2.6 * an, ely + 0.6 * an)) - 0.45);
-    dL = Math.min(dL, seg(px, py, front - 0.6, 1.4 * hs, front - 0.6 + 3.2 * jw, 0.35 * jw) - 0.35 - 0.35 * jw);
-    if (sp > 0.05) dL = Math.min(dL, seg(px, py, -0.5, 1.6 * th, -1.8 - 1.5 * sp, 2.4 * th + 2.6 * sp) - 0.3, seg(px, py, -3 - wl * 0.5, 0.8, -3.8 - wl * 0.5 - sp, 1.6 + 1.8 * sp) - 0.25);
-    const dEye = Math.hypot(px - hcx - hs, py - 1.5 * hs) - 0.85 * ey;
-    // body edges in tiles, measured like the limbs (the ellipse distance is scaled by its size)
-    let a = Math.min(1, Math.max(0, 0.5 - dBody * 3 / aa)), c = base.slice();
-    const qx = (px - abx) / arx, qy = py0 / ary, inA = dAbd < 0;
-    let m = false;
-    if (inA) m = (pat === 1 && fr(qx * 2.4 + 0.2) < 0.35) || (pat === 2 && Math.hypot(fr(qx * 2.2 + 0.5) - 0.5, fr(qy * 2.2 + 0.5) - 0.5) < 0.24) || (pat === 4 && qx < -0.45) || (pat === 5 && fr(qx * 2 + Math.abs(qy) * 1.3) < 0.3);
-    else m = pat === 3;
-    if (m) c = alt.slice();
-    const sh = 0.82 + 0.18 * Math.min(1, Math.max(0, -dBody / 2)); c = c.map(v => v * sh);
-    if (dBody > -shell) c = c.map(v => v * 0.55);
-    if (shell > 0.12 && inA && fr(qx * 3 + 0.5) < (shell - 0.08) * 0.6) c = c.map(v => v * 0.6);
-    if (gl > 0.02) {
-      const h1 = Math.hypot((px - abx - 1.5 * ab) / (arx * 0.32), (py0 + 1.6 * ab) / (ary * 0.32)), h2 = Math.hypot((px - hcx - 0.6 * hs) / (hrx * 0.35), (py0 + 0.9 * hs) / (hry * 0.35));
-      const t = gl * 0.55 * Math.max(Math.exp(-h1 * h1 * 2), Math.exp(-h2 * h2 * 2)); c = c.map(v => v + (1 - v) * t);
-    }
-    if (dEye < 0) c = base.map(v => (v + (1 - v) * 0.75) * 0.9);
-    if (hair > 0.02 && dBody > 0 && dBody < 0.06 + 0.14 * hair && fr(Math.sin(Math.floor(px * 3) * 12.9898 + Math.floor(py0 * 3) * 78.233) * 43758.5453) < 0.45) { a = Math.max(a, 0.6); c = base.map(v => v * 0.5); }
-    const aL = Math.min(1, Math.max(0, 0.5 - dL / aa)) * 0.95;
-    if (aL > a) { a = aL; c = base.map(v => v * 0.35); }
-    const o = (j * w + i) * 4;
-    D[o] = c[0] * 255; D[o + 1] = c[1] * 255; D[o + 2] = c[2] * 255; D[o + 3] = a * 255;
-  }
-  g.putImageData(im, 0, 0);
+  if (el.width !== w || el.height !== h) { el.width = w; el.height = h; }
+  drawAntPortrait(el, L, rgb.split(',').map(v => +v / 255), { fill: 0.94, tw: (performance.now() / 16) | 0 });
 }
 function radarChart(el, mine, avg, rgb) {
   const [g, w, h] = prepCanvas(el);
@@ -7701,13 +8240,15 @@ function updateGenes(sh) {
   // abilities: the ones it has, then the three it is closest to
   const at = P.abilityAt, have = [], near = [];
   for (let k = 0; k < 16; k++) { if (ABIL_LATER.has(k)) continue; if (hasAbil(c, k)) have.push(k); else near.push([k, (mine[k] - 1) / (at - 1)]); }
-  if (P.climate) for (let k = 16; k < 20; k++) { if (hasAbil(c, k)) have.push(k); else near.push([k, CLIM_ABIL[k][3](c)]); }
+  if (P.climate) for (let k = 16; k < 22; k++) { if (k >= 20 && !P.farming) continue; if (hasAbil(c, k)) have.push(k); else near.push([k, CLIM_ABIL[k][3](c)]); }
   near.sort((a, b) => b[1] - a[1]);
   // climate and diet
   const cT = v => Math.round(v * 50 - 10), ground = feltAt(c.x, c.y), cOff = climateOff(c, ground), up = climateUpkeep(c);
   const fit = !P.climate ? 'Climate is switched off' : cOff <= 0 ? 'Comfortable here' : `${ground > c.temp ? 'Too hot' : 'Too cold'} here: ants burn energy ${(1 + P.climCost * cOff).toFixed(1)}× as fast, the nest eats ${Math.round((up - 1) * 100)}% more`;
-  const lo = Math.max(0, c.temp - P.comfort - (hasAbil(c, 17) ? 0.15 : 0)), hi = Math.min(1, c.temp + P.comfort + (hasAbil(c, 16) ? 0.15 : 0));
-  K.gClim.innerHTML = `<div class="crow"><span><b>Likes ${cT(c.temp)}°C</b><em>nest ground ${cT(ground)}°C · ${fit}</em></span>
+  const lo = Math.max(0, c.temp - bandOf(c) - (hasAbil(c, 17) ? 0.15 : 0)), hi = Math.min(1, c.temp + bandOf(c) + (hasAbil(c, 16) ? 0.15 : 0));
+  const ls = lifestyle(c), pm = paceMul(c);
+  K.gClim.innerHTML = `<div class="crow"><span><b>${lifestyleTag(c)}</b><em>${LIFE_WHY[ls]}${P.paceCost ? ` · each ant eats ${Math.round(pm * 100)}% of the usual` : ''}</em></span></div>
+    <div class="crow"><span><b>Likes ${cT(c.temp)}°C${P.niche ? `, comfortable within ±${Math.round(bandOf(c) * 50)}°C` : ''}</b><em>nest ground ${cT(ground)}°C · ${fit}</em></span>
       <span class="cscale heat"><i class="band" style="left:${lo * 100}%;width:${(hi - lo) * 100}%"></i><i class="pin" style="left:${c.temp * 100}%;background:rgb(${rgb})"></i><i class="here" style="left:${ground * 100}%"></i></span><span class="cends"><em>cold</em><em>hot</em></span></div>
     <div class="crow"><span><b>${skillWord(c.skills)}</b><em>food skills share one budget: more of one means less of the others. Its ants ignore food they have almost no skill for</em></span></div>
     <div class="skills">${[0, 1, 2, 3, 4].map(g2 => { const rc = c.recent || [], tot = rc.slice(0, 5).reduce((a, b) => a + b, 0) || 1;
@@ -7730,7 +8271,9 @@ sideEmpty.innerHTML = `<div class="ovtabs" role="group" aria-label="Show or hide
   <div class="ov-scroll">
   <div class="ov-top" data-sec="genes"><div class="chart-h"><span>Genes by colour</span><b>averages</b></div>
     <canvas id="ovRadar" class="radar" role="img" aria-label="Radar chart comparing the average genes of every colour"></canvas>
-    <div class="ovleg" id="ovLegend"></div></div>
+    <div class="ovleg" id="ovLegend"></div>
+    <div class="chart-h"><span>Average ant of the biggest colours</span></div>
+    <div class="ovants" id="ovAnts"></div></div>
   <div class="ov-top" data-sec="clim"><div class="chart-h"><span>Climate and main food by colour</span><b>click a dot</b></div>
     <canvas id="ovClim" class="ovclim" role="img" aria-label="Chart of each colour's liked temperature against its diet"></canvas></div>
   <div class="ov-top" data-sec="size"><div class="chart-h"><span>Size of each colour</span><b>click a row</b></div>
@@ -7802,12 +8345,41 @@ function radarMulti(el, series) {
     g.fillText(GENE_SHORT[i], x, y);
   }
 }
+// how a colour lives, read from its biggest nest, plus what it eats: "thrifty, seed harvesters"
+function famLife(f) {
+  const big = f.nests.reduce((a, b) => b.inside + b.out > a.inside + a.out ? b : a), ls = lifestyle(big), diet = skillWord(f.skills).toLowerCase();
+  const life = LIFESTYLES[ls].toLowerCase();
+  return ls === 'general' ? diet : ['fungus', 'seed', 'aphid'].includes(ls) || diet.endsWith(life) ? life : `${life}, ${diet}`;
+}
+// the average ant of a colour: its nests' looks blended, weighted by ants (markings and metal from the biggest nest)
+function famLook(f) {
+  const L = new Float32Array(LOOKN); let w = 0;
+  for (const c of f.nests) { const k = c.inside + c.out + 1, l = antLooks(c); for (let i = 0; i < LOOKN; i++) L[i] += l[i] * k; w += k; }
+  for (let i = 0; i < LOOKN; i++) L[i] /= w;
+  const big = f.nests.slice().sort((a, b) => (b.inside + b.out) - (a.inside + a.out))[0], bl = antLooks(big);
+  L[LI.pattern] = bl[LI.pattern]; L[LI.metal] = bl[LI.metal]; L[LI.reach] = antReach(L);
+  return L;
+}
+function ovAntPics(top) {
+  const box = $('ovAnts'); if (!box) return;
+  const key = top.map(f => f.ci).join(',');
+  if (box.dataset.k !== key) {
+    box.dataset.k = key;
+    box.innerHTML = top.map(f => `<button data-ci="${f.ci}"><canvas></canvas><span class="nm">${famName(f.ci)}</span><span class="v"></span></button>`).join('') || '<div class="hint">No colonies.</div>';
+  }
+  [...box.querySelectorAll('button')].forEach((b, i) => {
+    const f = top[i]; if (!f) return;
+    b.querySelector('.v').textContent = `${f.ants.toLocaleString()} ants · ${lifestyleTag(f.nests[0])}`;
+    drawAntPic(b.querySelector('canvas'), famLook(f), famRGB(f.ci).join(','));
+  });
+}
 function updateOverview() {
   if (sideEmpty.hidden) return;
   const fams = [];
   for (const c of colonies) { let f = fams.find(f => f.ci === c.ci); if (!f) fams.push(f = { ci: c.ci, nests: [], ants: 0 }); f.nests.push(c); f.ants += c.inside + c.out; }
   fams.sort((a, b) => b.ants - a.ants);
   for (const ci of [...ovHL]) if (!fams.some(f => f.ci === ci)) ovHL.delete(ci);
+  if (OV_SHOW.genes) ovAntPics(fams.slice(0, 3));
   if (OV_SHOW.genes) radarMulti($('ovRadar'), fams.map(f => ({ rgb: famRGB(f.ci).join(','), hl: ovHL.has(f.ci), vals: GENES.map((_, k) => 1 + f.nests.reduce((s, c) => s + c.genes[k], 0) / f.nests.length / 100) })));
   // average climate and diet per colour, weighted by ants (every nest counts at least a little)
   for (const f of fams) { let wsum = 0, t = 0; const sk = [0, 0, 0, 0, 0]; for (const c of f.nests) { const wt = c.inside + c.out + 1; wsum += wt; t += c.temp * wt; for (let g = 0; g < 5; g++) sk[g] += c.skills[g] * wt; } f.temp = t / wsum; f.skills = sk.map(v => v / wsum); }
@@ -7819,7 +8391,7 @@ function updateOverview() {
         <span class="bars"><span class="bar"><i style="width:${f.ants / maxA * 100}%;background:rgb(${rgb})"></i></span><span class="bar thin"><i style="width:${f.nests.length / maxN * 100}%;background:rgba(${rgb},.55)"></i></span></span>
         <span class="v">${f.ants.toLocaleString()}<em>${f.nests.length} ${f.nests.length === 1 ? 'nest' : 'nests'}</em></span></button>`; }).join('') || '<div class="hint">No colonies.</div>';
   }
-  $('ovLegend').innerHTML = fams.map(f => `<button data-ci="${f.ci}" aria-pressed="${ovHL.has(f.ci)}" title="Likes ${Math.round(f.temp * 50 - 10)}°C · ${skillWord(f.skills)} · ${f.skills.map((v, g) => FOOD_GROUPS[g] + ' ' + Math.round(v * 100) + '%').join(', ')}"><i style="background:rgb(${famRGB(f.ci).join(',')})"></i>${famName(f.ci)}<em>${f.nests.length} ${f.nests.length === 1 ? 'nest' : 'nests'} · ${f.ants.toLocaleString()} ants · ${Math.round(f.temp * 50 - 10)}°C · ${skillWord(f.skills).toLowerCase()}</em></button>`).join('') || '<div class="hint">No colonies.</div>';
+  $('ovLegend').innerHTML = fams.map(f => `<button data-ci="${f.ci}" aria-pressed="${ovHL.has(f.ci)}" title="Likes ${Math.round(f.temp * 50 - 10)}°C · ${skillWord(f.skills)} · ${f.skills.map((v, g) => FOOD_GROUPS[g] + ' ' + Math.round(v * 100) + '%').join(', ')}"><i style="background:rgb(${famRGB(f.ci).join(',')})"></i>${famName(f.ci)}<em>${f.nests.length} ${f.nests.length === 1 ? 'nest' : 'nests'} · ${f.ants.toLocaleString()} ants · ${Math.round(f.temp * 50 - 10)}°C · ${famLife(f)}</em></button>`).join('') || '<div class="hint">No colonies.</div>';
   if (!OV_SHOW.log) return;
   const imp = EVENTS.filter(e => OV_KINDS.has(e.kind)).slice(-60).reverse();
   $('ovLog').innerHTML = imp.length ? imp.map(ev => `<button data-ev="${EVENTS.indexOf(ev)}"><span class="t">min ${Math.floor(ev.step / MINUTE)}</span><span>${evHTML(ev)}</span></button>`).join('') : '<div class="hint">Nothing has happened yet.</div>';
@@ -7841,6 +8413,11 @@ $('ovClim').addEventListener('mousemove', e => {
   e.currentTarget.title = !h ? 'Click a colour to open one of its nests' : h.f ? `${famName(h.f.ci)}: ${h.f.nests.length} ${h.f.nests.length === 1 ? 'nest' : 'nests'}. Click to open its biggest nest, again for the next` : `${h.c.name}: click to open`;
 });
 $('ovSize').addEventListener('click', e => {
+  const b = e.target.closest('button[data-ci]'); if (!b) return;
+  const ci = +b.dataset.ci, list = colonies.filter(c => c.ci === ci).sort((a, c2) => (c2.inside + c2.out) - (a.inside + a.out)); if (!list.length) return;
+  const k = ((ovCycle.get(ci) ?? -1) + 1) % list.length; ovCycle.set(ci, k); openNestFromChart(list[k]);
+});
+$('ovAnts').addEventListener('click', e => {
   const b = e.target.closest('button[data-ci]'); if (!b) return;
   const ci = +b.dataset.ci, list = colonies.filter(c => c.ci === ci).sort((a, c2) => (c2.inside + c2.out) - (a.inside + a.out)); if (!list.length) return;
   const k = ((ovCycle.get(ci) ?? -1) + 1) % list.length; ovCycle.set(ci, k); openNestFromChart(list[k]);
@@ -8117,7 +8694,7 @@ $('logCopy').addEventListener('click', async () => {
 const TUT_KEY = 'antsim.tutorialDone';
 const SC = { x: 100, y: 100, w: 300, h: 200 }; // the scene box on the map
 const TUT_RULES = { plantSpawn: 0, treeChance: 0, beastChance: 0, startColours: 0, prey: 0, insects: 0, carcass: 0, newFamily: 0, splitDrift: 300,
-  starveKill: 0, starveDmg: 0, splitAt: 1e9, climate: false, skills: false, mutStrength: 0, mutEvery: 1e9, nestMax: 30, maxColours: 24, maxNests: 65,
+  starveKill: 0, starveDmg: 0, splitAt: 1e9, climate: false, skills: false, mutStrength: 0, mutEvery: 1e9, nestMax: 30, maxColours: 24, maxNests: 65, merge: false,
   founderWalk: 110, nestGap: 55, settleTol: 0.3, tempPull: 0.1, shieldMin: 10, firstFounder: 0, foundersOn: false, founderFrom: -1, siegeRatio: 1e9, dig: false, rate: 1, sharing: false, clearTrails: false,
   fade: 4, scouts: 0.18, wander: 600, jitter: 0.08, wobble: 0.12, trailInc: 0.15, exploreInc: 0.03, deadFade: 0.6 }; // tuned in a maze whose walls change: clean routes that re-form quickly // tidier trails: old scent fades faster and ants walk straighter, so paths settle into clean lines
 let tut = null;
@@ -8341,7 +8918,29 @@ function labSnap() {
   return { min: Math.round(simStep / MINUTE), nests: colonies.length, colours: new Set(colonies.map(c => c.ci)).size, ants,
     foodPerNest: colonies.length ? Math.round(colonies.reduce((s, c) => s + c.food, 0) / colonies.length) : 0,
     hungry: colonies.filter(c => c.searchMul > 1.05).length, born: TOT.born, starved: TOT.starved, lost: TOT.lost, gathered: TOT.gathered,
-    plants: plants.filter(p => !p.tree).length, biggest: colonies.reduce((m, c) => Math.max(m, c.inside + c.out), 0), splits: EVENTS.filter(e => e.kind === 'split').length, deaths: EVENTS.filter(e => e.kind === 'death').length };
+    plants: plants.filter(p => !p.tree).length, biggest: colonies.reduce((m, c) => Math.max(m, c.inside + c.out), 0), splits: EVENTS.filter(e => e.kind === 'split').length, deaths: EVENTS.filter(e => e.kind === 'death').length, ...labNests(), ...labNiche() };
+}
+// how nests are spread: size levels, merges, and how close same-colour and any nests sit (in units of the nest spacing)
+function labNests() {
+  const n = colonies.length; let same = 0, sn = 0, any = 0, crowd = 0;
+  for (const c of colonies) {
+    let bs = 1e9, ba = 1e9; for (const o of colonies) if (o !== c) { const d = Math.hypot(o.x - c.x, o.y - c.y); if (d < ba) ba = d; if (o.fam === c.fam && d < bs) bs = d; }
+    if (bs < 1e9) { same += bs; sn++; } if (ba < 1e9) any += ba;
+    crowd = Math.max(crowd, colonies.filter(o => Math.hypot(o.x - c.x, o.y - c.y) < P.nestGap * P.crowdR).length);
+  }
+  return { levels: colonies.reduce((m, c) => m + tierOf(c), 0), topLevel: colonies.reduce((m, c) => Math.max(m, tierOf(c)), 1), merges: EVENTS.filter(e => /grew into a level/.test(e.text)).length,
+    nearSame: sn ? Math.round(same / sn / P.nestGap * 100) / 100 : 0, nearAny: n > 1 ? Math.round(any / n / P.nestGap * 100) / 100 : 0, mostInArea: crowd };
+}
+// how far the colours have spread into niches: ways of living, liked temperatures, diets, worn and rich soil
+function labNiche() {
+  const life = {}; for (const c of colonies) { const l = lifestyle(c); life[l] = (life[l] || 0) + 1; }
+  const byCol = new Map(); for (const c of colonies) { const a = byCol.get(c.ci) || []; a.push(c); byCol.set(c.ci, a); }
+  const temps = [...byCol.values()].map(a => a.reduce((s, c) => s + c.temp, 0) / a.length), mt = temps.reduce((a, b) => a + b, 0) / (temps.length || 1);
+  const tempSpread = temps.length > 1 ? Math.round(Math.sqrt(temps.reduce((s, t) => s + (t - mt) ** 2, 0) / temps.length) * 50 * 10) / 10 : 0; // in degrees
+  let ov = 0, on = 0;
+  for (const c of colonies) { let best = null, bd = 1e9; for (const o of colonies) if (o.ci !== c.ci) { const d = Math.hypot(o.x - c.x, o.y - c.y); if (d < bd) { bd = d; best = o; } } if (best) { ov += dietOverlap(c, best); on++; } }
+  let poor = 0, rich = 0; for (const v of fert) { if (v < 0.6) poor++; if (v > 1.2) rich++; }
+  return { lifestyles: Object.keys(life).length, life, tempSpread, overlap: on ? Math.round(ov / on * 100) / 100 : 0, poorSoil: Math.round(poor / NCH * 100), richSoil: Math.round(rich / NCH * 100), season: P.seasons ? seasonName() : '' };
 }
 // which genes the surviving nests ended up with, and which go with bigger nests (correlation with nest size, -1 to 1)
 function labGenes() {
@@ -8376,10 +8975,11 @@ async function runLab() {
   }
   setHyper(false);
   P.slow = keep.slow; P.dig = keep.dig; TERRAIN.mountains = keep.mountains;
-  const txt = JSON.stringify({ settings: captureSettings(), runs: lab.out });
+  const txt = JSON.stringify({ version: GAME_VERSION, settings: captureSettings(), runs: lab.out });
   // a readable summary next to the report
   $('labSum').innerHTML = lab.out.map(r => { const e = r.end, top = Object.entries(r.genes).sort((a, b) => b[1][1] - a[1][1]);
     return `<div class="trow ok"><b>${r.realSec}s</b><span>${r.run}<em>min ${e.min}: ${e.nests} nests, ${e.colours} colours, ${e.ants} ants, ${e.foodPerNest} food per nest, ${e.hungry} hungry · born ${e.born}, starved ${e.starved}, killed ${e.lost}, nests died ${e.deaths}, splits ${e.splits} · gathered ${e.gathered}</em>` +
+      `<em>nests: ${e.levels} levels in all, top level ${e.topLevel}, ${e.merges} merges · nearest same colour ${e.nearSame}× spacing, nearest any ${e.nearAny}× · most in one area ${e.mostInArea}</em>` + `<em>niches: ${e.lifestyles} ways of living (${Object.entries(e.life).map(([k, v]) => `${LIFESTYLES[k]} ${v}`).join(', ')}) · liked temperatures spread ±${e.tempSpread}°C · diet overlap with nearest rival ${e.overlap} · soil ${e.poorSoil}% worn, ${e.richSoil}% rich</em>` +
       `<em>samples (min: nests/colours/ants/biggest/starved/killed): ${r.samples.map(x => `${x.min}: ${x.nests}/${x.colours}/${x.ants}/${x.biggest}/${x.starved}/${x.lost}`).join(' · ')}</em>` +
       (top.length ? `<em>genes that go with big nests: ${top.slice(0, 3).map(([k, v]) => `${k} ${v[0]}% (${v[1]})`).join(', ')} · weakest: ${top.slice(-3).map(([k, v]) => `${k} ${v[0]}% (${v[1]})`).join(', ')}</em>` : '') + '</span></div>'; }).join('');
   $('labOut').value = txt; $('labOut').hidden = false; $('labCopy').hidden = false;
@@ -8389,6 +8989,19 @@ async function runLab() {
   doReset();
 }
 $('labBtn').addEventListener('click', runLab);
+// '#lab' in the address: run the balance test by itself and show progress and the summary on top of everything
+function labOverlay() {
+  if (document.getElementById('labBox')) return;
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;left:8px;top:8px;right:8px;max-height:94vh;overflow:auto;z-index:99999;background:rgba(14,10,7,.94);color:#efe6d8;font:13px/1.45 Inter,system-ui,sans-serif;padding:12px 14px;border:1px solid #3a2f26;border-radius:10px';
+  document.body.appendChild(box);
+  setInterval(() => { box.innerHTML = '<b>Balance test</b> · ' + $('labMsg').textContent + '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">' + $('labSum').innerHTML.replace(/<em>/g, '<div>').replace(/<\/em>/g, '</div>') + '</div>'; }, 1000);
+  box.id = 'labBox'; box.addEventListener('click', () => box.style.maxHeight = box.style.maxHeight === '60px' ? '94vh' : '60px');
+  const go = setInterval(() => { if (typeof loaded !== 'undefined' && loaded) { clearInterval(go); setTimeout(runLab, 1500); } }, 500);
+}
+if (/(^#|,)lab(,|$)/.test(location.hash)) labOverlay();
+// Ctrl+Shift+L: run the balance test with its summary shown on top of the map
+addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'l')) { e.preventDefault(); labOverlay(); } });
 $('labCopy').addEventListener('click', async () => {
   const el = $('labOut'); el.select();
   try { await navigator.clipboard.writeText(el.value); $('labMsg').textContent = 'Report copied.'; }
@@ -8572,13 +9185,27 @@ view.cx = W / 2; view.cy = H / 2; view.zoom = view.tz = fitZoom(); clampView();
 updatePanel();
 
 // ---------- main loop ----------
-let wdCount = 0;
+let wdCount = 0; const NOWD = /(^#|,)nowd(,|$)/.test(location.hash);
 let skippedDt = 0, capBoost = 1, lastDone = 0, perfLine = '', gpuMs = 16, gpuPerStep = 0.5, loaded = false, sheetMin = -1, ft = 16, stepCap = 64, acc = 0, last = performance.now(), lastDraw = 0, frames = 0, stepsDone = 0, statT = performance.now(), shownSps = 0;
 // timing for the speed readout: time spent in each frame's own work and in the nest bookkeeping
 let cpuMs = 0, cuMs = 0, cuN = 0;
 { const cu0 = colonyUpdate; colonyUpdate = function () { const t = performance.now(); cu0(); cuMs += performance.now() - t; cuN++; }; }
+// a hidden page gets about one animation frame a second; in hyperspeed keep the graphics card fed anyway with an unthrottled message loop
+let pumpOn = false;
+async function hiddenPump() {
+  if (pumpOn) return; pumpOn = true;
+  try {
+    while (document.hidden && hyper.on) {
+      const tf0 = performance.now();
+      try { frameBody(tf0); } finally { cpuMs = cpuMs * 0.9 + (performance.now() - tf0) * 0.1; }
+      if (inflight >= 3) await device.queue.onSubmittedWorkDone();
+      else await new Promise(r => { const ch = new MessageChannel(); ch.port1.onmessage = r; ch.port2.postMessage(0); });
+    }
+  } finally { pumpOn = false; }
+}
 function frame(now) {
   requestAnimationFrame(frame);
+  if (document.hidden && hyper.on && !pumpOn) hiddenPump();
   const tf0 = performance.now();
   try { frameBody(now); } finally { cpuMs = cpuMs * 0.9 + (performance.now() - tf0) * 0.1; }
 }
@@ -8592,7 +9219,7 @@ function frameBody(now) {
   if (inflight >= 6) {
     // some browsers only report finished work when something else wakes them up (after a pause, for example):
     // if no report came for a moment, stop waiting for it instead of freezing
-    if (now - doneT < 250) { skippedDt = Math.min(0.2, skippedDt + dt); return; }
+    if (now - doneT < 250 || NOWD) { skippedDt = Math.min(0.2, skippedDt + dt); return; }
     inflight = 0; doneT = now; wdCount++;
   }
   // real graphics card time from the timestamps, when the card offers them
@@ -8615,7 +9242,7 @@ function frameBody(now) {
   // graphics card time for this batch: from when it could start (submitted, and the previous batch done) until it finished
   if (steps && !HAS_TS) { const t0 = performance.now(), n = steps; device.queue.onSubmittedWorkDone().then(() => { const now2 = performance.now(), ms = now2 - Math.max(t0, lastDone); lastDone = now2; gpuMs = gpuMs * 0.7 + ms * 0.3; if (n >= 8) gpuPerStep = gpuPerStep * 0.7 + ms / n * 0.3; }); }
   // keep each batch of work on the graphics card short (Windows resets a graphics card that is busy for about 2 seconds straight)
-  const busy = Math.max(ft, gpuMs);
+  const busy = document.hidden ? gpuMs : Math.max(ft, gpuMs); // a hidden page only gets a frame a second: let hyperspeed size its batches by the graphics card alone
   if (steps && hyper.on) hyper.steps = Math.max(1, Math.min(HYPER_MAX, Math.floor(60 / Math.max(0.01, gpuPerStep)), Math.round(hyper.steps * Math.min(1.25, Math.max(0.7, 45 / busy)))));
   // normal speed: give the simulation most of each frame's time on the graphics card, whatever the screen's frame rate
   if (steps && !hyper.on) {
@@ -8646,7 +9273,7 @@ function frameBody(now) {
   }
 }
 requestAnimationFrame(frame);
-window.__antGpu = { dbg: () => ({ inflight, running, loaded, frames, gpuLost, editing, ft, stepCap, acc, skippedDt }), casinoNear: (d = 60) => { const c = colonies[0]; P.xCasino = true; casino = { x: Math.min(W - 5, c.x + d), y: c.y, open: true, at: simStep, paid: new Map(), spin: null }; return [casino.x, casino.y]; }, casinoSpin: k => { const c = colonies[0]; startSpin(c); casino.spin.out = CASINO_OUT[k]; }, casinoState: () => casino && { open: casino.open, paid: [...casino.paid], spin: casino.spin && { done: casino.spin.done, msg: casino.spin.msg } }, nests: () => colonies.map(c => [c.name, c.inside + c.out, c.ci]), P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
+window.__antGpu = { eco: () => { let lo = 9, hi = 0, sum = 0; for (const v of fert) { lo = Math.min(lo, v); hi = Math.max(hi, v); sum += v; } return { t: Math.floor(simStep / MINUTE), season: seasonName(), growth: +growth().toFixed(2), fert: [lo, hi, sum / NCH].map(v => +v.toFixed(2)), harvested: harv.reduce((a, b) => a + b, 0) | 0, dripped: drip.reduce((a, b) => a + b, 0) | 0, plants: plants.length, farms: plants.filter(p => p.farm !== undefined).length, tended: plants.filter(p => p.tended !== undefined).length, nests: colonies.map(c => [c.name.split(' ')[0], c.inside + c.out, lifestyleTag(c), +paceMul(c).toFixed(2), Math.round(c.temp * 50 - 10), +bandOf(c).toFixed(2)]) }; }, dbg: () => ({ inflight, running, loaded, frames, gpuLost, editing, ft, stepCap, acc, skippedDt, readSeq, readApplied, simStep, cap, busy: bufs.read.map(r => r.busy).join(''), wd: wdCount }), casinoNear: (d = 60) => { const c = colonies[0]; P.xCasino = true; casino = { x: Math.min(W - 5, c.x + d), y: c.y, open: true, at: simStep, paid: new Map(), spin: null }; return [casino.x, casino.y]; }, casinoSpin: k => { const c = colonies[0]; startSpin(c); casino.spin.out = CASINO_OUT[k]; }, casinoState: () => casino && { open: casino.open, paid: [...casino.paid], spin: casino.spin && { done: casino.spin.done, msg: casino.spin.msg } }, nests: () => colonies.map(c => [c.name, c.inside + c.out, c.ci]), P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
   async pngRoundTrip() { // test hook: export, read back, compare
     const px = new Uint8Array(N * 4); for (let i = 0; i < N; i++) { px[i * 4] = clT[i]; px[i * 4 + 1] = clH[i]; px[i * 4 + 2] = clW[i]; px[i * 4 + 3] = Math.min(254, terr[i]); }
     const blob = await encodePNG(W, H, px), img = await decodePNG(await blob.arrayBuffer()); let diff = 0; for (let i = 0; i < px.length; i++) if (px[i] !== img.data[i]) diff++;

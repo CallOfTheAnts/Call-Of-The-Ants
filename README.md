@@ -1,5 +1,7 @@
 # Call of the Ants
 
+**Version 2.0.1** · [What's new](CHANGELOG.md)
+
 An ant colony simulation that runs in your browser. Colonies lay scent trails, gather food, fight, send out queens to found new nests, and evolve over time as their genes mutate.
 
 **Play:** open the game page in a recent desktop browser (Chrome or Edge work best). The simulation runs on your graphics card through WebGPU; browsers without it get a slower fallback version.
