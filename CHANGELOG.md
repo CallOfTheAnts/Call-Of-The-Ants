@@ -8,6 +8,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.3 (test build)
+
+- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.
+
 ## 2.0.2 (test build)
 
 - The changelog can be read in the game: "What's new" at the bottom of the settings panel.
