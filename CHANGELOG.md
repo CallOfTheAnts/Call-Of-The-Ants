@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.12 (test build)
+
+Aphid herders won almost every run, and every colony ended up with the same long nectar straw.
+- Aphid herding is weaker: a nest looks after at most three trees (one, plus one per 80 ants) instead of every aphid tree in reach, plants new ones half as often, and a tended tree drips 35% more instead of 70% and lasts a third longer instead of twice as long.
+- The nectar straw is shorter and thinner, starts later (at 36% sweet food skill instead of 28%) and is only full length for real sweet specialists. The weevil snout comes later too.
+
 ## 2.0.11 (test build)
 
 - The family tree has its own "Family tree" section in the overview, and a "full screen" button that opens it in a big window (Esc or a click outside closes it).
