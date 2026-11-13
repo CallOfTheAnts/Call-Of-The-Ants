@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.11 (test build)
+
+- Rot takes everything in the end: over water (where nothing eats it) the last of the skin is gone by 60% of the rot and the last of the muscle by 95%, so a fully rotted body is bare bone.
+- Giants break down twice as fast: skin rots off in about 20 minutes to 1.5 sim hours and the muscle in about 40 minutes to 3 more; the bones start once it is picked clean (or after 4 sim hours) and are gone after 10 sim hours, standing as a wall for the first 7.
+
 ## 2.1.10 (test build)
 
 - Carcass rot spreads in smooth, soft-edged patches instead of blocky ones, both in how it looks and in which parts rot away first.
