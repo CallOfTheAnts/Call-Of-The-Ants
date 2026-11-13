@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.3 (test build)
+
+- Giants turn the way big animals do: by walking an arc no tighter than a circle about a third of their length across, so the whole body swings round its middle instead of pivoting on the snout. Around a nest they now prowl in wide loops.
+
 ## 2.1.2 (test build)
 
 - Giants are twice as big: about a fifth of the map long.
