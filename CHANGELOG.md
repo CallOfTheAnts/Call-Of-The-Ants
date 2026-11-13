@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.9 (test build)
+
+- Ants take up as much room as they look. How far apart ants keep now follows the size they are drawn at (their body size and their look's overall scale together), where before it left out the look's scale, so big-bodied species could overlap. Two ants now keep apart by both of their sizes: two big ants stand further apart than a big and a small one.
+
 ## 2.1.8 (test build)
 
 - Carcasses rot in stages. Skin rots first: it dulls to grey-green, then leathery brown, in mottled patches, and falls away bit by bit. The muscle under it lasts longer, darkening from red to maroon and then brown before it goes too.

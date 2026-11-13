@@ -1,6 +1,6 @@
 # Call of the Ants
 
-**Version 2.1.8** · [What's new](CHANGELOG.md)
+**Version 2.1.9** · [What's new](CHANGELOG.md)
 
 An ant colony simulation that runs in your browser. Colonies lay scent trails, gather food, fight, send out queens to found new nests, and evolve over time as their genes mutate.
 
