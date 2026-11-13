@@ -3,11 +3,20 @@
 Version numbers are **big release . stable build . test build**:
 
 - **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).
-- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.
+- **Stable build** (second number): a tested, balanced build. The latest is 2.2.0, the giants update.
 - **Test build** (third number): goes up with every update while things are still being tested and tuned.
 - **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
+
+## 2.2.0 (stable build): Giants
+
+Everything from the 2.1.x test builds, now finished and locked in as the new stable base.
+
+- **Three giants:** a monitor lizard, an anteater and a giant bird, each in three colour variants, with procedural walking and their own attacks. One walks onto the map now and then, and you can summon one from the World section or the settings.
+- **They hunt nests.** A giant prowls around nests eating ants, sometimes stops to tear a nest open, and leaves once the ant count has halved. A raided nest fights back with everything it has, to the death.
+- **They can be brought down.** Ants that fight together can kill a giant. Its body becomes skin, muscle and bone that ants strip layer by layer, rots in patches, and slowly sinks into the ground. The bones stand like a ridge only nimble ants can climb, grow over with whatever lives there, freeze over in the cold, and crumble into rich soil.
+- **Rock clusters** across the land, in the same weathered look as old bones, that only nimble ants can climb.
 
 ## 2.1.15 (test build)
 
