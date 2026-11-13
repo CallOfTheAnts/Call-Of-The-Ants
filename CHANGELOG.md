@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.15 (test build)
+
+- No more cap on colours: up to 61 colours can live at once (was 21), plus gold, silver and bronze from the casino. The "Most colours" slider in Limits now goes all the way to "no limit", which is the default. Colours past the first 24 also vary in lightness so they are easier to tell apart, and each gets its own name.
+- The four world choices at the start each have a small icon.
+
 ## 2.0.14 (test build)
 
 A big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.
