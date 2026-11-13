@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.4 (test build)
+
+- Watch the giants: when one arrives, the camera flies to it, zooms so it fills most of the view, and follows it around until it dies or leaves. Drag the map to look elsewhere, and "Watch the giant" in the World section of the overview to go back to it.
+
 ## 2.1.3 (test build)
 
 - Giants turn the way big animals do: by walking an arc no tighter than a circle about a third of their length across, so the whole body swings round its middle instead of pivoting on the snout. Around a nest they now prowl in wide loops.
