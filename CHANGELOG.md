@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.13.1 (fix)
+
+- **Bone shadows fade out.** The shadow and raised shading of the bones now fade slowly as they wear down, and are fully gone once 60% of the bones are left.
+
 ## 2.1.13 (test build)
 
 - **Bones sink into the ground.** As they wear away, the edges of the bones break up in patches and get covered by soil, so the outline no longer stays a clean cut-out. The bones also pick up the light and shade of the ground they lie on.
