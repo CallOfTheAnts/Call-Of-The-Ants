@@ -9,6 +9,14 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.5 (test build)
+
+- A giant's carcass is stripped layer by layer: ants only take the muscle once the skin all around it (up to 10 tiles away) is gone, so you can watch the skin peel back and the red muscle spread before it too is carried off.
+- Bones make a tighter wall: the ridge is a tile thicker on every side, ants can no longer slip diagonally between bones, and only really nimble ants (Traversal or Agility of 150% or more, was 135%) climb over. While there is still flesh on the carcass, ants walk onto it to eat; the bones become a wall once it is picked clean.
+- A giant that dies partly in water keeps its skin and muscle there too. Nothing can reach it over the water, so that part slowly rots away instead: skin first, then the muscle, then the bones show.
+- Giants no longer walk into water. They look further ahead (as far as they need to turn away in time), and if water is right in front of them anyway they stop and swing round their middle toward dry land.
+- Rotting is patchy: each part of a carcass, on land or in water, rots at its own pace, so it falls apart bit by bit instead of all at once.
+
 ## 2.1.4 (test build)
 
 - Watch the giants: when one arrives, the camera flies to it, zooms so it fills most of the view, and follows it around until it dies or leaves. Drag the map to look elsewhere, and "Watch the giant" in the World section of the overview to go back to it.
