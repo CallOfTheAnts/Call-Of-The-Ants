@@ -9,6 +9,13 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.12 (test build)
+
+- **Giants raid nests.** Now and then a giant stops at a nest and digs its head into it. Each bite swallows some of the ants inside and some of the stored food.
+- **The nest fights back with everything.** While it is being raided, the nest keeps calling every ant inside out to attack. Small nests that would normally hide or run away fight too.
+- **To the death.** The raid lasts until the nest or the giant is dead. The giant doesn't leave halfway through, even if it has already eaten its fill. If the nest is wiped out, the giant goes back to roaming.
+- **New setting: Nest raids** (under Giants). Sets how often a giant raids a nest it visits, from never to every time. The default is 35%.
+
 ## 2.1.11 (test build)
 
 - Rot takes everything in the end: over water (where nothing eats it) the last of the skin is gone by 60% of the rot and the last of the muscle by 95%, so a fully rotted body is bare bone.
