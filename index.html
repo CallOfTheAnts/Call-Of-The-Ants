@@ -298,7 +298,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
 .glegend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:.72rem;color:var(--muted)}
 .glegend span{display:flex;align-items:center;gap:6px}.glegend i{width:14px;height:0;display:inline-block}
 .glegend span span{display:inline}.glegend i{flex:none}.glegend i.me{height:3px}.glegend i.fam{height:2px;background:repeating-linear-gradient(90deg,#c9b9a3 0 4px,transparent 4px 7px)}.glegend i.base{height:1px;background:repeating-linear-gradient(90deg,var(--fg) 0 3px,transparent 3px 6px)}
-.glist{display:flex;flex-direction:column;gap:6px}
+.glist{display:flex;flex-direction:column;gap:6px}.nestcut{width:100%;height:380px;display:block;border-radius:10px;margin:4px 0 10px}.nlist{display:flex;flex-direction:column;gap:8px}.nrow{display:flex;gap:10px;align-items:flex-start}.nrow b{display:block;font-size:13px}.nrow span{font-size:12px;opacity:.75}.nsw{width:12px;height:12px;border-radius:4px;flex:none;margin-top:3px}.nsw.t1{background:#16100a;border:1px solid #7a5a3c}.nsw.t2{background:#e6c060}.nsw.t3{background:#ece4ce}.nsw.t4{background:#ffc440}.nsw.t5{background:#d8d2c0}.nsw.t6{background:#5a4a30}.nsw.t7{background:#7896c0}
 .ghead{font-size:.7rem;color:var(--muted);padding-top:6px}
 .grow{display:grid;grid-template-columns:100px 1fr 44px;gap:10px;align-items:center}
 .grow>span:first-child{display:flex;flex-direction:column;line-height:1.2;font-size:.8rem}.grow b{font-weight:500}.grow em{font-style:normal;font-size:.66rem;color:#8a7a66}
@@ -540,7 +540,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="hint" id="pMsg" aria-live="polite"></div>
             </div>
           </details>
-          <div class="hint verline">Version <b id="verNum">2.2.0</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
+          <div class="hint verline">Version <b id="verNum">2.2.1</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
           <div id="devTools" hidden>
           <details class="sec" open>
             <summary>Developer: speed check</summary>
@@ -632,7 +632,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <a id="cLink" class="dl" hidden>Download landscape image</a>
             <div class="ctl" data-tip="Shows the map in different ways. Only changes the picture.">
               <div class="row"><span class="lbl">Map view</span></div>
-              <div class="seg" role="group" aria-label="Map view"><button data-view="0" aria-pressed="true">Normal</button><button data-view="1" aria-pressed="false">Heat</button><button data-view="2" aria-pressed="false">Wetness</button><button data-view="3" aria-pressed="false">Rare</button><button data-view="4" aria-pressed="false">Height</button></div>
+              <div class="seg" role="group" aria-label="Map view"><button data-view="0" aria-pressed="true">Normal</button><button data-view="1" aria-pressed="false">Heat</button><button data-view="2" aria-pressed="false">Wetness</button><button data-view="3" aria-pressed="false">Rare</button><button data-view="4" aria-pressed="false">Height</button><button data-view="5" aria-pressed="false">Underground</button></div>
             </div>
             </div>
           </details>
@@ -679,7 +679,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
               <div class="row"><label for="regrow">Ground grows back</label><output id="regrowV">25% every 15 min</output></div>
               <input type="range" id="regrow" min="0" max="50" step="1" value="25">
             </div>
-            <label class="switch" for="chambersOn" data-tip="On: nests dig chambers over time: rooms in a ring around the nest, joined by corridors, and a store room beside their best food. Each finished chamber holds 10% more food."><span>Chambers</span><input type="checkbox" id="chambersOn" checked></label>
+            <label class="switch" for="chambersOn" data-tip="On: each nest digs its own underground of rooms joined by tunnels: a queen chamber, nurseries, food stores, fungus gardens, waste and winter rooms. Each kind of room helps the nest in its own way. See them with the Underground map view, or in a nest's Nest tab."><span>Underground nests</span><input type="checkbox" id="chambersOn" checked></label>
             </div>
           </details>
         </section>
@@ -3819,7 +3819,7 @@ function nestName() {
   for (let k = 0; k < 60; k++) { const n = NEST_A[(rnd() * NEST_A.length) | 0] + NEST_B[(rnd() * NEST_B.length) | 0]; if (!usedNestNames.has(n)) { usedNestNames.add(n); return n; } }
   let i = 2; while (usedNestNames.has('Nest ' + i)) i++; usedNestNames.add('Nest ' + i); return 'Nest ' + i;
 }
-const P = { trailView: 3, deadFade: 0.6, scouts: 0.15, wander: 600, vision: 4, wobble: 0.35, novelty: 0.3, turnMax: 26 * Math.PI / 180, jitter: 0.18, exploreInc: 0.05, trailInc: 0.15,
+const P = { trailView: 3, deadFade: 0.6, scouts: 0.1, wander: 600, vision: 4, wobble: 0.35, novelty: 0.3, turnMax: 26 * Math.PI / 180, jitter: 0.18, exploreInc: 0.05, trailInc: 0.15,
   fade: 1, space: 2.2, slow: 3, nestEnter: 3.5, restMin: 20, restVar: 120, stamina: 4000, hungryAt: 0.2, starveDmg: 0.04, hp: 30,
   dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.1, maxColours: 64, capFounderEvery: 3, firstFounder: 900, crowdNiche: true, regrow: 25, soilWilt: 0.25, rotFeed: 0.002, grazeWear: 0.00025, farmWear: 0.02, farmWither: 0.25, maxNests: 65, merge: true, mergeGap: 2.5, maxTier: 5, crowdR: 4, crowdMax: 6, storeMax: 1500, famThrottle: 12, xCasino: false, casinoEvery: 15, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
   treeChance: 0.2, treeMax: 2, treeFood: 20000, treeRadius: 10, treeScent: 140, treeDrop: 1.2,
@@ -3862,7 +3862,8 @@ function layout() {
   o.PREY_OFF = o.ROT_OFF + NCH;                 // per chunk: live prey caught there (for the prey stock)
   o.STAT_OFF = o.PREY_OFF + NCH;                // per chunk, from the CPU: prey stock (bits 0-7) and soil fertility (bits 8-15), so careful ants can leave worn-out ground alone
   o.GIANT_OFF = o.STAT_OFF + NCH;               // carcass pellets eaten, and rotted away
-  o.BONE_OFF = o.GIANT_OFF + 2;                 // giants' bones: a word saying whether any stand (then 7 spare), then one bit per map tile: bone that blocks the way
+  o.EXP_OFF = o.GIANT_OFF + 2;                 // per nest, from the CPU: the least share of ants that keep exploring, and the explorer weight
+  o.BONE_OFF = o.EXP_OFF + MAXCOL * 2;                 // giants' bones: a word saying whether any stand (then 7 spare), then one bit per map tile: bone that blocks the way
   o.POOL_OFF = Math.ceil((o.BONE_OFF + 8 + Math.ceil(N / 32)) / 64) * 64;
   o.WORDS = o.POOL_OFF + SLOTS * 4096;
   return o;
@@ -4026,7 +4027,7 @@ const NCOL: u32 = ${MAXCOL}u; const TABLE_HOME: u32 = ${TABLE_HOME}u; const PICK
 const W: i32 = ${W}; const H: i32 = ${H}; const CW: i32 = ${CW}; const NCH: u32 = ${NCH}u; const NT: u32 = ${N}u;
 const SLOTS: u32 = ${SLOTS}u; const FADE_EVERY: u32 = ${FADE_EVERY}u; const PENDING: u32 = 0xFFFFFFFFu; const NONE: u32 = 0xFFFFFFFFu;
 const TABLE_OFF: u32 = ${TABLE_OFF}u; const OWNER_OFF: u32 = ${OWNER_OFF}u; const FREE_OFF: u32 = ${LO.FREE_OFF}u;
-const GENE_OFF: u32 = ${LO.GENE_OFF}u; const HARV_OFF: u32 = ${LO.HARV_OFF}u; const ROT_OFF: u32 = ${LO.ROT_OFF}u; const PREY_OFF: u32 = ${LO.PREY_OFF}u; const STAT_OFF: u32 = ${LO.STAT_OFF}u; const GIANT_OFF: u32 = ${LO.GIANT_OFF}u; const BONE_OFF: u32 = ${LO.BONE_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
+const GENE_OFF: u32 = ${LO.GENE_OFF}u; const HARV_OFF: u32 = ${LO.HARV_OFF}u; const ROT_OFF: u32 = ${LO.ROT_OFF}u; const PREY_OFF: u32 = ${LO.PREY_OFF}u; const STAT_OFF: u32 = ${LO.STAT_OFF}u; const GIANT_OFF: u32 = ${LO.GIANT_OFF}u; const BONE_OFF: u32 = ${LO.BONE_OFF}u; const EXP_OFF: u32 = ${LO.EXP_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
 const CTR_OFF: u32 = ${LO.CTR_OFF}u; const KILL_OFF: u32 = ${LO.KILL_OFF}u; const SPAWN_OFF: u32 = ${LO.SPAWN_OFF}u;
 const CALL_OFF: u32 = ${LO.CALL_OFF}u; const BEAST_OFF: u32 = ${LO.BEAST_OFF}u; const FOUND_OFF: u32 = ${LO.FOUND_OFF}u; const DMG_OFF: u32 = ${LO.DMG_OFF}u; const HIT_OFF: u32 = ${LO.HIT_OFF}u;
 const DROP_OFF: u32 = ${LO.DROP_OFF}u; const AFREE_OFF: u32 = ${LO.AFREE_OFF}u; const POOL_OFF: u32 = ${LO.POOL_OFF}u;
@@ -4807,11 +4808,20 @@ fn antStep(i: u32) {
       a.energy = 1.0; a.hp = prm.hp * gene(a.col, G_HEALTH); a.ignore = 0u; a.flags = 0u; a.carry = 0u; a.decided = 0u; a.goal = NONE; a.tcol = 0u;
       let ang = rnd() * 2.0 * PI;
       pos = vec4f(nest.x + 0.5 + cos(ang), nest.y + 0.5 + sin(ang), ang, 0.0);
+      // explorers and fetchers: count the food trails leaving the nest (in 8 directions, close in and a little further out).
+      // No trail: everyone explores. One trail: about half go fetch and half explore; each extra trail sends more to fetch.
+      // Some always keep exploring (at least the nest's floor, more when it is hungry, fewer for farmers)
       let nx = i32(nest.x); let ny = i32(nest.y);
+      var trails = 0u; var pick = -1; var seen = 0.0;
       for (var k = 0; k < 8; k++) {
-        let px = nx + i32(round(cos(f32(k) * 0.785) * 4.0)); let py = ny + i32(round(sin(f32(k) * 0.785) * 4.0));
-        if (pdist(a.col, 1u, px, py) < INF) { a.flags |= 1u; break; }
+        var hit = -1;
+        for (var rr = 0; rr < 3; rr++) { let rad = 4.0 + f32(rr) * 4.0; let px = nx + i32(round(cos(f32(k) * 0.785) * rad)); let py = ny + i32(round(sin(f32(k) * 0.785) * rad)); if (pdist(a.col, 1u, px, py) < INF) { hit = rr; break; } }
+        if (hit >= 0) { trails += 1u; seen += 1.0; if (rnd() < 1.0 / seen) { pick = k; } }
       }
+      let floorE = bitcast<f32>(atomicLoad(&world[EXP_OFF + a.col * 2u])); let wE = bitcast<f32>(atomicLoad(&world[EXP_OFF + a.col * 2u + 1u]));
+      let shareE = select(clamp(wE / (f32(min(trails, 6u)) + 1.0), floorE, 1.0), 1.0, trails == 0u);
+      if (rnd() < shareE) { a.flags |= 8u; } // an explorer: ignores known food trails and looks for new food
+      else { a.flags |= 1u; let ta = f32(pick) * 0.785; pos = vec4f(nest.x + 0.5 + cos(ta), nest.y + 0.5 + sin(ta), ta, 0.0); } // a fetcher: sets off along one of the trails
     }
     a.rng = rs; ants[i] = a; posOut[i] = pos; return;
   }
@@ -5014,7 +5024,7 @@ fn antStep(i: u32) {
       }
       a.flags &= ~2u;
       // scouts: a share of the ants never follow food trails, so new food keeps being found while others work a known trail
-      let scout = f32((me * 2654435761u) >> 24u) / 256.0 < prm.scouts;
+      let scout = (a.flags & 8u) != 0u;
       // the casino's gold trail beats the orange one (and even scouts can't resist it)
       var tf = 1u;
       if (cz.z > 0.0 && gam > -0.35 && (pget(a.col, 4u, x, y) > 0.0 || pget(a.col, 4u, x + 3, y) > 0.0 || pget(a.col, 4u, x - 3, y) > 0.0 || pget(a.col, 4u, x, y + 3) > 0.0 || pget(a.col, 4u, x, y - 3) > 0.0)) { tf = 4u; }
@@ -5869,6 +5879,48 @@ fn carcassAt(sl: u32, x: i32, y: i32, wl: u32, cin: vec3f, bi: u32, hum: f32, te
   if (g.x != cin.x) { return vec4f(g, 0.5); }
   return vec4f(cin, 0.0);
 }
+// the nests' underground (laid out on the CPU): per tile the owner nest + 1 (2047: an old nest's empty tunnels), the room type and depth
+const UNDER0: u32 = ${64 + 2 * DECPOOL + Math.ceil(W * H / 8)}u; const UNDERF0: u32 = ${64 + 2 * DECPOOL + Math.ceil(W * H / 8) + W * H}u;
+fn underAt(x: i32, y: i32) -> u32 { if (x < 0 || y < 0 || x >= W || y >= H) { return 0u; } return decal[UNDER0 + u32(y * W + x)]; }
+fn underFill(o: u32, t: u32) -> f32 { return f32((decal[UNDERF0 + (o - 1u) * 2u + (t >> 2u)] >> ((t & 3u) * 8u)) & 255u) / 255.0; }
+// the Underground view: the surface fades to a faint outline in the soil, and the tunnels and rooms show in their nest's colour, darker the deeper they are
+fn underView(x: i32, y: i32, wf: vec2f, cin: vec3f, wl: u32) -> vec3f {
+  let pf = vec2f(f32(x), f32(y));
+  var c = (cin * 0.16 + vec3f(40.0, 30.0, 21.0) * 0.75) * (0.88 + 0.24 * vn(pf / 3.0));
+  if (wl == 3u) { c = vec3f(14.0, 24.0, 42.0); } else if (wl == 2u) { c = vec3f(58.0, 56.0, 54.0) * (0.85 + 0.15 * vn(pf / 2.0)); }
+  let u = underAt(x, y); let o = u & 2047u; if (o == 0u) { return c; }
+  let t = (u >> 11u) & 7u; let d = f32((u >> 14u) & 15u) / 15.0; let sh = 1.0 - 0.5 * d;
+  var col = vec3f(150.0, 140.0, 128.0); if (o != 2047u) { col = cam.colors[o - 1u].rgb * 255.0; }
+  var fl = mix(vec3f(150.0, 118.0, 84.0), col, 0.15);
+  if (t == 0u) { fl = mix(vec3f(116.0, 88.0, 62.0), col, 0.3); }
+  if (t == 1u) { fl = vec3f(60.0, 44.0, 30.0); }
+  let fr = fract(wf); let h = hash(u32(x) * 7u + 3u, u32(y) * 13u + 5u);
+  if (o != 2047u && t >= 2u) {
+    let f = underFill(o, t); let hp = vec2f(0.3 + 0.4 * hash(u32(x) * 3u, u32(y) * 11u), 0.3 + 0.4 * h);
+    if (t == 2u) { fl = mix(fl, vec3f(230.0, 192.0, 96.0), 0.2); }
+    else if (t == 3u && h < f * 0.55 && length((fr - hp) * vec2f(1.0, 1.6)) < 0.3) { fl = vec3f(236.0, 228.0, 206.0); } // young
+    else if (t == 4u && h < f * 0.65 && length(fr - hp) < 0.3) { fl = FOOD_COL[u32(hash(u32(x), u32(y) * 5u) * 3.99) * 2u % 7u] * 0.9; } // stored food
+    else if (t == 5u) { fl = mix(fl, vec3f(214.0, 208.0, 190.0), f * 0.8 * smoothstep(0.45, 0.7, vn(wf * 1.6))); } // fungus
+    else if (t == 6u && h < f * 0.5 && length(fr - hp) < 0.22) { fl = vec3f(50.0, 44.0, 30.0); } // rubbish
+    else if (t == 7u) { fl = mix(fl, vec3f(120.0, 150.0, 192.0), 0.2); }
+  }
+  fl *= sh;
+  // the walls: a rim in the nest's colour wherever the dug space ends
+  var same = 0u;
+  for (var k = 0u; k < 4u; k++) { let ox = select(select(0, 1, k == 1u), -1, k == 0u); let oy = select(select(0, 1, k == 3u), -1, k == 2u); if ((underAt(x + ox, y + oy) & 2047u) == o) { same += 1u; } }
+  if (same < 4u) { fl = mix(fl, col * 0.75 * sh, 0.6); }
+  if (o == 2047u) { return mix(fl, vec3f(64.0, 56.0, 48.0), 0.45); }
+  // ants going about inside: little dots that move from spot to spot
+  if (t != 1u) {
+    let ad = underFill(o, select(0u, 7u, t == 7u)); let tm = f32(cam.showTrails >> 16u) / 60.0; let ph = tm * 0.7 + h * 9.0; let k = u32(floor(ph));
+    if (hash(u32(x) * 31u + k * 17u, u32(y) * 19u + k) < ad * 0.5) {
+      let a = vec2f(hash(u32(x) + k * 7u, u32(y) * 3u + k), hash(u32(x) * 5u + k, u32(y) + k * 11u)); let b = vec2f(hash(u32(x) + k * 7u + 7u, u32(y) * 3u + k + 1u), hash(u32(x) * 5u + k + 1u, u32(y) + k * 11u + 11u));
+      let q = mix(a, b, smoothstep(0.0, 1.0, fract(ph))) * 0.7 + 0.15;
+      if (length(fr - q) < 0.2) { fl = col * 0.55; }
+    }
+  }
+  return fl;
+}
 @fragment fn mapFS(in: VOut) -> @location(0) vec4f {
   let px = in.uv * vec2f(cam.vw, cam.vh);
   let w = (px - vec2f(cam.ox, cam.oy)) / cam.scale;
@@ -5923,6 +5975,7 @@ fn carcassAt(sl: u32, x: i32, y: i32, wl: u32, cin: vec3f, bi: u32, hum: f32, te
   else if (vm == 2u) { let hm = f32((cl >> 8u) & 255u) / 255.0; c = mix(vec3f(180.0, 140.0, 80.0), vec3f(30.0, 140.0, 170.0), hm); }
   else if (vm == 3u) { let wd = f32((cl >> 16u) & 255u) / 255.0; c = mix(vec3f(30.0, 30.0, 34.0), vec3f(200.0, 90.0, 230.0), abs(wd * 2.0 - 1.0)); }
   else if (vm == 4u) { c = vec3f(ht * 255.0); }
+  if (vm == 5u) { return vec4f(clamp(underView(x, y, w, c, wl), vec3f(0.0), vec3f(255.0)) / 255.0, 1.0); }
   if (vm == 0u && wl == 0u) { let oc = outcrop(x, y); if (oc > 0.0) {
     let pf = vec2f(f32(x), f32(y)); let bury = 0.6 * vn(pf / 7.0 + 31.0) + 0.4 * vn(pf / 2.5 + 9.0);
     let up = select(0.0, 1.0, outcrop(x - 1, y - 1) < 0.5);
@@ -5931,6 +5984,9 @@ fn carcassAt(sl: u32, x: i32, y: i32, wl: u32, cin: vec3f, bi: u32, hum: f32, te
   // giants' carcasses lie in the ground: skin over muscle while there is carcass food there, then bone, which crumbles into soil
   var dec = false;
   if (vm == 0u) { for (var sl = 0u; sl < 4u; sl++) { let r = carcassAt(sl, x, y, wl, c, bi, f32((cl >> 8u) & 255u) / 255.0, temp, ht); if (r.w > 0.0) { c = r.xyz; } if (r.w >= 1.0) { dec = true; } } }
+  if (vm == 0u) { let uv = underAt(x, y); if ((uv & 2047u) != 0u && ((uv >> 11u) & 7u) == 1u) { // a nest entrance: a dark hole in the ground
+    var rim = 0u; for (var k = 0; k < 4; k++) { let ox = select(select(0, 1, k == 1), -1, k == 0); let oy = select(select(0, 1, k == 3), -1, k == 2); if (((underAt(x + ox, y + oy) >> 11u) & 7u) != 1u || (underAt(x + ox, y + oy) & 2047u) == 0u) { rim += 1u; } }
+    c = select(vec3f(14.0, 10.0, 7.0), mix(c, vec3f(30.0, 22.0, 15.0), 0.6), rim > 0u); } }
   if (vm > 0u && wl == 3u) { c *= 0.6; }
   else if (((fv >> 8u) & 255u) > 0u) { c = vec3f(201.0, 128.0, 82.0); }
   else if (((fv >> 16u) & 255u) > 0u) { c = vec3f(215.0, 124.0, 255.0); }
@@ -6019,12 +6075,14 @@ fn noise2(p: vec2f) -> f32 { return fract(sin(dot(floor(p), vec2f(12.9898, 78.23
   if (!queen && in.kind - select(0.0, 2.0, carry) > 0.5) { // far out: a coloured speck
     let q = max(abs(in.uv.x), abs(in.uv.y));
     if (q > 0.5) { discard; }
+    if (((cam.showTrails >> 8u) & 255u) == 5u) { return vec4f(in.col.rgb * in.col.a, in.col.a) * 0.3; }
     return vec4f(in.col.rgb * in.col.a, in.col.a);
   }
   var L: array<vec4f, 12>;
   for (var k = 0u; k < 12u; k++) { L[k] = look[in.ci * 12u + k]; }
   let r = antShade(in.uv * 32.0, L, in.col.rgb, queen, carry, in.iid, cam.showTrails >> 16u, pw);
   if (r.a <= 0.002) { discard; }
+  if (((cam.showTrails >> 8u) & 255u) == 5u) { return r * 0.3; } // underground view: the ants above are only faint
   return r;
 }
 `;
@@ -6036,7 +6094,7 @@ const STO = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.CO
 bufs.params = mk(240, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.nests = mk(MAXCOL * 48 + 208, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.cam = mk(32 + MAXCOL * 16 + MAXFAM * 16, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
-bufs.decal = mk((64 + 2 * DECPOOL + Math.ceil(W * H / 8)) * 4, STO); // plus the rock clusters, 4 bits a tile // a giant's carcass, drawn into the ground
+bufs.decal = mk((64 + 2 * DECPOOL + Math.ceil(W * H / 8) + W * H + 2 * MAXCOL) * 4, STO); // plus the rock clusters (4 bits a tile), the nests' tunnels (a word a tile) and how full each nest's rooms are // a giant's carcass, drawn into the ground
 bufs.look = mk(MAXCOL * LOOKN * 4, STO); const lookF = new Float32Array(MAXCOL * LOOKN);
 bufs.tiles = mk(N * 4, STO);
 bufs.occ = mk(N * 4, STO);
@@ -6167,8 +6225,8 @@ function famFeel(fam) {
 }
 const tierOf = c => c.tier || 1;
 const nestCap = c => Math.round(P.nestMax * (1 + 0.5 * (tierOf(c) - 1)));
-const storeCap = c => P.storeMax * (1 + 0.5 * (tierOf(c) - 1)) * (P.nestMax / 150) * (1 + 0.1 * chambersDone(c));
-const chambersDone = c => (c.chambers || []).filter(h => simStep - h.at > 5 * MINUTE).length;
+const storeCap = c => P.storeMax * (1 + 0.5 * (tierOf(c) - 1)) * (P.nestMax / 150) * storeMul(c);
+const chambersDone = c => c.net ? c.net.nodes.filter(n => n.t > 1 && n.g >= 1).length : 0;
 const famNests = fam => colonies.reduce((n, o) => n + (o.fam === fam ? 1 : 0), 0);
 const splitOf = c => P.splitAt * (1 + 0.6 * (tierOf(c) - 1)) * (P.merge ? 1 + famNests(c.fam) / P.famThrottle : 1);
 const nestsNear = (x, y, r) => colonies.filter(o => !o.mergeInto && (o.x - x) ** 2 + (o.y - y) ** 2 < r * r);
@@ -6239,41 +6297,196 @@ function mergeNests() {
     if (y.food > 0) { const got = removeFood(y, y.food); for (let g = 0; g < 6; g++) addFood(o, g, got[g]); }
   }
 }
-// chambers: a nest with enough ants plans a new room every few minutes (more for bigger and higher-level nests), mostly in a ring
-// around the nest joined to it by a corridor, sometimes a store room beside its best food. Ants carve them a little every update
-function digChambers() {
-  if (!P.chambers || !P.dig) return;
-  let budget = 2400;
-  for (const c of colonies) {
-    const n = c.inside + c.out; if (!c.chambers) c.chambers = [];
-    const want = Math.min(8, Math.floor(n / 30) + tierOf(c) - 1);
-    if (c.chambers.length < want && simStep - (c.chamberAt || c.foundedAt) > 3 * MINUTE) {
-      c.chamberAt = simStep;
-      const food = plants.filter(p => (p.farm === c.slot || p.tree || p.tended === c.slot) && Math.hypot(p.x - c.x, p.y - c.y) < 160).sort((a, b) => b.left - a.left)[0];
-      for (let k = 0; k < 12; k++) {
-        let x, y, r, link;
-        if (food && c.chambers.length >= 2 && !c.chambers.some(h => h.store) && k < 6) { const a = rnd() * 6.283; x = Math.round(food.x + Math.cos(a) * 9); y = Math.round(food.y + Math.sin(a) * 9); r = 4 + rnd() * 2; link = false; }
-        else { const a = rnd() * 6.283, d = 11 + rnd() * 7 + 2 * c.chambers.length; x = Math.round(c.x + Math.cos(a) * d); y = Math.round(c.y + Math.sin(a) * d); r = 3.5 + rnd() * 2.5 + 0.4 * tierOf(c); link = true; }
-        if (x < 6 || y < 6 || x >= W - 6 || y >= H - 6 || wall[y * W + x]) continue;
-        if (c.chambers.some(h => Math.hypot(h.x - x, h.y - y) < h.r + r + 2)) continue;
-        c.chambers.push({ x, y, r, at: simStep, link, store: !link }); break;
-      }
+// NESTNET-BEGIN
+// ---- each nest's underground: chambers joined by tunnels, dug over time by its own ants ----
+// The ants inside a nest are only counted, not moved one by one, so the network is kept here on the CPU. It shapes how the nest works
+// (stores hold food, nurseries raise young, gardens grow fungus, waste rooms keep sickness down, winter rooms shelter from cold and floods),
+// and it is drawn two ways: the Underground map view (seen from above, deeper is darker) and the side cut-away in each nest's panel.
+const NT = { tunnel: 0, entrance: 1, queen: 2, nursery: 3, store: 4, garden: 5, waste: 6, winter: 7 };
+const NT_INFO = [
+  ['Tunnel', 'Joins the rooms'],
+  ['Entrance', 'Where ants go in and out. The dug soil is piled up around it into a mound'],
+  ['Queen chamber', 'Where the queen lays her eggs, deep and safe'],
+  ['Nursery', 'Raises the young. More nurseries let the nest grow faster'],
+  ['Food store', 'Holds food. More stores let the nest keep more'],
+  ['Fungus garden', 'Fungus farmers grow food from leaves here. More gardens grow more'],
+  ['Waste chamber', 'Keeps rubbish and the dead away from the rest. Cuts the chance of disease'],
+  ['Winter chamber', 'A deep room to shelter in. Helps in the cold and keeps more ants alive in floods'],
+];
+const ABANDONED = 2047, UNDER0 = 64 + 2 * DECPOOL + Math.ceil(W * H / 8), UNDERF0 = UNDER0 + W * H;
+const under = new Uint32Array(W * H); // per tile: owner nest slot + 1 (11 bits, 2047 = an old nest's empty tunnels), room type (3 bits), depth 0 to 15 (4 bits)
+let underDirty = null, lastNetStep = 0, lastFillStep = -1e9;
+const own = v => v & 2047, typ = v => (v >>> 11) & 7, dep = v => (v >>> 14) & 15;
+function dirtyRows(y0, y1) { y0 = Math.max(0, y0 | 0); y1 = Math.min(H - 1, Math.ceil(y1)); if (!underDirty) underDirty = [y0, y1]; else { underDirty[0] = Math.min(underDirty[0], y0); underDirty[1] = Math.max(underDirty[1], y1); } }
+function flushUnder() {
+  if (!underDirty) return; const [a, b] = underDirty; underDirty = null;
+  device.queue.writeBuffer(bufs.decal, (UNDER0 + a * W) * 4, under, a * W, (b - a + 1) * W);
+}
+function resetNets() { under.fill(0); underDirty = [0, H - 1]; lastNetStep = simStep; lastFillStep = -1e9; }
+const nodesOf = (c, t) => c.net ? c.net.nodes.filter(n => n.t === t && n.g >= 1) : [];
+const roomsDone = (c, t) => nodesOf(c, t).length;
+// what the rooms do (all 1 when chambers are switched off)
+const netOn = () => P.chambers && P.dig;
+const storeMul = c => netOn() ? Math.min(2.3, 0.8 + 0.25 * roomsDone(c, NT.store)) : 1;
+const nurseryMul = c => netOn() ? 0.6 + 0.4 * Math.min(3, roomsDone(c, NT.nursery)) : 1;
+const gardenMul = c => netOn() ? 0.6 + 0.4 * Math.min(3, roomsDone(c, NT.garden)) : 1;
+const wasteMul = c => netOn() ? 1 / (1 + 0.8 * Math.min(2, roomsDone(c, NT.waste))) : 1; // disease
+const winterRoom = c => netOn() && roomsDone(c, NT.winter) > 0;
+// how a nest likes to dig: deep shafts in hot dry ground, wide shallow networks where it is wet, bigger rooms for strong diggers
+function netStyle(c) {
+  const i = (c.y | 0) * W + (c.x | 0), t = clT[i] / 255, h = clH[i] / 255, g = gmul(c, 15);
+  return { deep: Math.min(1, Math.max(0.15, 0.5 + (t - 0.5) * 0.7 - (h - 0.5) * 0.9 + (g - 1) * 0.5)), size: 0.85 + 0.3 * Math.min(2, g), seed: (rnd() * 1e9) | 0 };
+}
+function lumpR(n, a) { return n.r * (0.86 + 0.1 * Math.sin(2 * a + n.ph) + 0.06 * Math.sin(3 * a + n.ph * 1.7)); }
+function canDigAt(x, y) { if (x < 3 || y < 3 || x >= W - 3 || y >= H - 3) return false; const w = wall[(y | 0) * W + (x | 0)]; return w !== 3 && w !== 2; }
+// is there room for a new room here: dry diggable ground, not on another nest's rooms, not on top of this nest's other rooms
+function roomFits(c, x, y, r) {
+  if (!canDigAt(x, y)) return false;
+  for (const n of c.net.nodes) if (Math.hypot(n.x - x, n.y - y) < n.r + r + 2.5) return false;
+  const me = c.slot + 1;
+  for (let dy = -Math.ceil(r + 2); dy <= r + 2; dy += 2) for (let dx = -Math.ceil(r + 2); dx <= r + 2; dx += 2) {
+    const tx = Math.round(x + dx), ty = Math.round(y + dy); if (tx < 0 || ty < 0 || tx >= W || ty >= H) return false;
+    const v = under[ty * W + tx], o = own(v); if (o && o !== me && o !== ABANDONED) return false;
+    if (dx * dx + dy * dy <= r * r && !canDigAt(tx, ty)) return false;
+  }
+  return true;
+}
+// the depth band each kind of room sits in (0 = surface, 15 = deepest), squeezed for nests that like to stay shallow
+const DEPTH = { 1: [0, 0], 2: [7, 9], 3: [5, 7], 4: [2, 4], 5: [3, 5], 6: [1, 3], 7: [11, 14] };
+const RSIZE = { 1: [1.3, 1.6], 2: [3.4, 4.2], 3: [3.6, 5], 4: [3.6, 5.6], 5: [4.2, 6], 6: [2.8, 3.8], 7: [4.2, 5.6] };
+function newNet(c) {
+  const st = netStyle(c), net = { nodes: [], cur: -1, work: 0, style: st, spoil: 0 };
+  c.net = net;
+  net.nodes.push({ t: NT.entrance, x: c.x + 0.5, y: c.y + 0.5, d: 0, r: 1.5, g: 1, p: -1, path: null, ph: rnd() * 6.28, shown: -1 });
+  rasterNode(c, 0);
+}
+// pick what to dig next, from what the nest needs most right now
+function wantNext(c) {
+  const n = c.inside + c.out, cnt = t => c.net.nodes.filter(o => o.t === t).length;
+  if (!cnt(NT.queen)) return NT.queen;
+  if (!cnt(NT.nursery)) return NT.nursery;
+  if (!cnt(NT.store)) return NT.store;
+  if (cnt(NT.entrance) < Math.min(6, 1 + Math.floor(n / 120))) return NT.entrance;
+  if (c.food > 0.75 * storeCap(c) && cnt(NT.store) < 8) return NT.store;
+  if (cnt(NT.nursery) < Math.min(5, 1 + Math.floor(n / 150))) return NT.nursery;
+  if (hasAbil(c, 18) && cnt(NT.garden) < Math.min(4, 1 + Math.floor(n / 180))) return NT.garden;
+  if (n > 60 && cnt(NT.waste) < Math.min(3, 1 + Math.floor(n / 400))) return NT.waste;
+  if (n > 100 && !cnt(NT.winter) && (clT[(c.y | 0) * W + (c.x | 0)] < 115 || n > 300)) return NT.winter;
+  if (cnt(NT.store) < Math.min(8, 2 + Math.floor(n / 250))) return NT.store;
+  return -1;
+}
+function planRoom(c, t) {
+  const net = c.net, st = net.style, N = net.nodes, root = N[0];
+  const d = t === NT.entrance ? 0 : Math.max(1, Math.min(15, Math.round((DEPTH[t][0] + rnd() * (DEPTH[t][1] - DEPTH[t][0])) * (0.55 + 0.6 * st.deep))));
+  const r = (RSIZE[t][0] + rnd() * (RSIZE[t][1] - RSIZE[t][0])) * (t === NT.entrance ? 1 : st.size * (1 + 0.12 * (tierOf(c) - 1)));
+  const spread = 1.5 - 0.7 * st.deep;
+  for (let k = 0; k < 16; k++) {
+    let par, x, y;
+    if (t === NT.entrance) { // a new way in, some way out from the middle, joined to the shallowest room near it
+      const a = rnd() * 6.283, L = (5 + rnd() * 9 + 2 * N.filter(o => o.t === NT.entrance).length) * spread; x = root.x + Math.cos(a) * L; y = root.y + Math.sin(a) * L;
+      const rooms = N.map((o, i) => [o, i]).filter(([o]) => o.t !== NT.entrance && o.g > 0.3); if (!rooms.length) return null;
+      par = rooms.sort((A, B) => (A[0].d + Math.hypot(A[0].x - x, A[0].y - y) * 0.4) - (B[0].d + Math.hypot(B[0].x - x, B[0].y - y) * 0.4))[0][1];
+    } else {
+      // hang it off a dug room at a nearby depth (the waste room off the far side, away from the queen)
+      const cand = N.map((o, i) => [o, i]).filter(([o]) => o.g >= 1 || o.t === NT.entrance);
+      cand.sort((A, B) => Math.abs(A[0].d - d) - Math.abs(B[0].d - d) + (rnd() - 0.5) * 3);
+      par = cand[Math.min(cand.length - 1, Math.floor(rnd() * Math.min(3, cand.length)))][1];
+      const P0 = N[par], away = Math.hypot(P0.x - root.x, P0.y - root.y) > 1 ? Math.atan2(P0.y - root.y, P0.x - root.x) : rnd() * 6.283;
+      const a = (t === NT.queen ? rnd() * 6.283 : away + (rnd() - 0.5) * 2.4), L = t === NT.queen ? P0.r + r + 3 + rnd() * 3 : (P0.r + r + 3 + rnd() * 6) * spread * (t === NT.waste ? 1.6 : 1);
+      x = P0.x + Math.cos(a) * L; y = P0.y + Math.sin(a) * L;
     }
-    // carving: busier nests dig faster; a corridor first, then the room, with spoil thrown just outside it
-    const rate = Math.min(14, 1 + n / 15);
-    for (const h of c.chambers) {
-      if (simStep - h.at > 12 * MINUTE || budget <= 0) continue; // finished rooms are left alone
-      for (let k = 0; k < rate && budget > 0 && drops.length < MAXDROP - 8; k++, budget--) {
-        let x, y;
-        if (h.link && rnd() < 0.35) { const t = rnd(), j = (rnd() - 0.5) * 2.4; const dx = h.x - c.x, dy = h.y - c.y, L = Math.hypot(dx, dy) || 1; x = Math.round(c.x + dx * t - dy / L * j); y = Math.round(c.y + dy * t + dx / L * j); }
-        else { const a = rnd() * 6.283, d = Math.sqrt(rnd()) * h.r; x = Math.round(h.x + Math.cos(a) * d); y = Math.round(h.y + Math.sin(a) * d); }
-        if (x < 0 || y < 0 || x >= W || y >= H) continue;
-        drops.push((y * W + x) | (2 << 24) | (3 << 28));
-        if (rnd() < 0.5) { const a = rnd() * 6.283, d = h.r + 1.5 + rnd() * 2, sx = Math.round(h.x + Math.cos(a) * d), sy = Math.round(h.y + Math.sin(a) * d); if (sx >= 0 && sy >= 0 && sx < W && sy < H) drops.push((sy * W + sx) | (1 << 24) | (4 << 28)); }
+    if (!roomFits(c, x, y, r)) continue;
+    const P0 = N[par], mx = (P0.x + x) / 2 + (rnd() - 0.5) * 6, my = (P0.y + y) / 2 + (rnd() - 0.5) * 6;
+    const len = Math.hypot(mx - P0.x, my - P0.y) + Math.hypot(x - mx, y - my);
+    return { t, x, y, d, r, g: 0, p: par, path: [[P0.x, P0.y], [mx, my], [x, y]], len, ph: rnd() * 6.28, shown: -1, cost: (r * r * 2.2 + len * 0.9) * (1 + d * 0.05) };
+  }
+  return null;
+}
+// draw one room (and its tunnel) into the underground map, as far as it has been dug
+function rasterNode(c, i) {
+  const n = c.net.nodes[i], me = c.slot + 1, tg = n.p < 0 ? 1 : Math.min(1, n.g / 0.35), rg = n.p < 0 ? 1 : Math.max(0, (n.g - 0.35) / 0.65);
+  const put = (x, y, t, d) => {
+    if (x < 0 || y < 0 || x >= W || y >= H) return; const k = y * W + x; if (!canDigAt(x, y)) return;
+    const v = under[k], o = own(v); if (o && o !== me && o !== ABANDONED) return;
+    if (t === NT.tunnel && o === me && typ(v) !== NT.tunnel) return; // a tunnel never cuts through its own rooms
+    under[k] = me | (t << 11) | (d << 14);
+  };
+  let y0 = n.y, y1 = n.y;
+  if (n.path && tg > 0) { // the tunnel, from the parent room toward this one, two tiles wide
+    const P0 = c.net.nodes[n.p], pts = n.path, segs = [];
+    let tot = 0; for (let s = 0; s < pts.length - 1; s++) { const L = Math.hypot(pts[s + 1][0] - pts[s][0], pts[s + 1][1] - pts[s][1]); segs.push(L); tot += L; }
+    let run = 0; const upto = tot * tg;
+    outer: for (let s = 0; s < segs.length; s++) {
+      for (let u = 0; u <= segs[s]; u += 0.5) {
+        if (run + u > upto) break outer;
+        const f = u / segs[s], x = Math.round(pts[s][0] + (pts[s + 1][0] - pts[s][0]) * f), y = Math.round(pts[s][1] + (pts[s + 1][1] - pts[s][1]) * f), dd = Math.round(P0.d + (n.d - P0.d) * ((run + u) / tot));
+        put(x, y, NT.tunnel, dd); put(x + 1, y, NT.tunnel, dd); put(x, y + 1, NT.tunnel, dd);
+        y0 = Math.min(y0, y - 1); y1 = Math.max(y1, y + 2);
       }
+      run += segs[s];
     }
   }
+  if (rg > 0) { // the room itself, growing from the middle out as it is dug
+    const R = n.r * Math.sqrt(rg) + 0.5;
+    for (let dy = -Math.ceil(R * 1.2); dy <= R * 1.2; dy++) for (let dx = -Math.ceil(R * 1.2); dx <= R * 1.2; dx++) {
+      const a = Math.atan2(dy, dx); if (Math.hypot(dx, dy) <= lumpR({ r: R, ph: n.ph }, a)) put(Math.round(n.x + dx), Math.round(n.y + dy), n.t, n.d);
+    }
+    y0 = Math.min(y0, n.y - R * 1.3); y1 = Math.max(y1, n.y + R * 1.3);
+  }
+  dirtyRows(y0 - 1, y1 + 1);
 }
+// a nest that has died: its tunnels stay in the ground, empty
+function abandonNet(c) {
+  if (!c.net) return; const me = c.slot + 1; let y0 = H, y1 = -1;
+  for (const n of c.net.nodes) { y0 = Math.min(y0, n.y - 40); y1 = Math.max(y1, n.y + 40); }
+  for (let y = Math.max(0, y0 | 0); y <= Math.min(H - 1, y1 | 0); y++) for (let x = 0; x < W; x++) { const k = y * W + x; if (own(under[k]) === me) under[k] = (under[k] & ~2047) | ABANDONED; }
+  dirtyRows(y0, y1); c.net.dead = true;
+}
+const netsSeen = new Map();
+function stepNets() {
+  const dt = simStep - lastNetStep; lastNetStep = simStep;
+  for (const [slot, c] of netsSeen) if (!c.alive) { abandonNet(c); netsSeen.delete(slot); }
+  if (!netOn()) { flushUnder(); return; }
+  for (const c of colonies) {
+    if (!c.net) newNet(c);
+    netsSeen.set(c.slot, c);
+    const net = c.net, st = net.style;
+    if (net.cur < 0) { const t = wantNext(c); if (t >= 0 && simStep >= (net.retry || 0)) { const nd = planRoom(c, t); if (nd) { net.nodes.push(nd); net.cur = net.nodes.length - 1; } else net.retry = simStep + MINUTE; } }
+    if (net.cur < 0 || dt <= 0) continue;
+    // the diggers: a share of the ants at home, helped by the Digging gene; sand digs fast, rough ground slowly
+    const i = (c.y | 0) * W + (c.x | 0), soil = (biome[i] === 3 || biome[i] === 17 ? 1.35 : 1) * (1.25 - 0.5 * terr[i] / 255);
+    const work = Math.max(0.5, c.inside * 0.08) * gmul(c, 15) * soil * P.digRate * 2.5 * dt / MINUTE;
+    const nd = net.nodes[net.cur]; nd.g = Math.min(1, nd.g + work / nd.cost); net.spoil += work;
+    const sh = Math.floor(nd.g * 24); if (sh !== nd.shown) { nd.shown = sh; rasterNode(c, net.cur); }
+    if (nd.g >= 1) net.cur = -1;
+    // the dug soil goes up and out: piled around the entrances into a mound that grows with the nest
+    const ents = net.nodes.filter(o => o.t === NT.entrance && o.g >= 1);
+    while (net.spoil >= 0.6 && drops.length < MAXDROP - 8) {
+      net.spoil -= 0.6; const e = ents[(rnd() * ents.length) | 0], a = rnd() * 6.283, d = 1.6 + Math.pow(rnd(), 1.6) * (2.5 + Math.sqrt(c.inside + c.out) * 0.25);
+      const x = Math.round(e.x + Math.cos(a) * d), y = Math.round(e.y + Math.sin(a) * d);
+      if (x >= 0 && y >= 0 && x < W && y < H && !wall[y * W + x]) drops.push((y * W + x) | (1 << 24) | (4 << 28));
+    }
+  }
+  // how full each kind of room is, for drawing what is inside: one byte per room type, per nest
+  if (simStep - lastFillStep > 120) {
+    lastFillStep = simStep; const f = new Uint32Array(MAXCOL * 2);
+    for (const c of colonies) {
+      if (!c.net) continue; const n = c.inside + c.out, area = c.net.nodes.reduce((s, o) => s + (o.t === NT.entrance ? 2 : o.r * o.r * 3 * o.g + (o.len || 0) * 2 * Math.min(1, o.g / 0.35)), 1);
+      const v = [Math.min(1, c.inside / area * 1.4), 0, 1, Math.min(1, 0.25 + n / (150 * Math.max(1, roomsDone(c, NT.nursery)))), Math.min(1, c.food / storeCap(c)),
+        Math.min(1, 0.3 + (c.fungus || 0) / 40 + (hasAbil(c, 18) ? 0.3 : 0)), Math.min(1, 0.2 + n / 500 + (c.sick ? 0.4 : 0)), Math.min(1, c.inside / area * 2)];
+      for (let k = 0; k < 8; k++) f[c.slot * 2 + (k >> 2)] |= Math.round(v[k] * 255) << ((k & 3) * 8);
+    }
+    device.queue.writeBuffer(bufs.decal, UNDERF0 * 4, f);
+  }
+  flushUnder();
+}
+// for the nest panel: the rooms and how far along each is
+function netSummary(c) {
+  if (!c.net) return null; const N = c.net.nodes, cur = c.net.cur >= 0 ? N[c.net.cur] : null;
+  const by = [1, 2, 3, 4, 5, 6, 7].map(t => ({ t, done: N.filter(o => o.t === t && o.g >= 1).length }));
+  return { nodes: N, by, cur: cur ? { t: cur.t, g: cur.g } : null };
+}
+// NESTNET-END
 // once per update: decide which nests send out founders
 // a colony that found an enemy nest and is clearly stronger keeps sending fighters until that nest falls.
 // Same-colour nests close to the target join in. Fighters returning from the target lay the red route stronger
@@ -6348,7 +6561,7 @@ function climateOff(c, t) {
 function climateUpkeep(c) {
   if (!P.climate) return 1;
   const t = feltAt(c.x, c.y);
-  return (1 + P.climCost * 0.25 * climateOff(c, t)) * (hasAbil(c, 17) && t < 0.35 ? 0.8 : 1) * (P.niche ? 1 + 1.5 * (bandOf(c) - 0.1) : 1); // a wide comfort band costs a little food all the time
+  return (1 + P.climCost * 0.25 * climateOff(c, t)) * (hasAbil(c, 17) && t < 0.35 ? 0.8 : 1) * (t < 0.35 && winterRoom(c) ? 0.85 : 1) * (P.niche ? 1 + 1.5 * (bandOf(c) - 0.1) : 1); // a wide comfort band costs a little food all the time
 }
 const ABIL_LATER = new Set([10, 15]); // these two arrive with the rock update
 const hasAbil = (c, k) => k >= 16 ? P.climate && ((c.cab || 0) & (1 << k)) !== 0 : !ABIL_LATER.has(k) && gmul(c, k) >= P.abilityAt;
@@ -6446,7 +6659,7 @@ function writeGenes() {
   const g = new Float32Array(MAXCOL * GSTRIDE).fill(1);
   const gu = new Uint32Array(g.buffer);
   for (const c of colonies) {
-    const o = c.slot * GSTRIDE; for (let k = 0; k < 16; k++) g[o + k] = gmul(c, k); g[o + 16] = antSize(c) * (antLooks(c)[LI.scale] || 1); // the size it is drawn at, so ants take up as much room as they look g[o + 18] = c.temp; for (let k = 0; k < 5; k++) g[o + 19 + k] = c.skills[k]; g[o + 24] = bandOf(c); const lk = likesOf(c); for (let k = 0; k < 4; k++) g[o + 25 + k] = lk[k]; g[o + 29] = P.likes ? Math.max(0, lk[4]) : 0;
+    const o = c.slot * GSTRIDE; for (let k = 0; k < 16; k++) g[o + k] = gmul(c, k); g[o + 16] = antSize(c) * (antLooks(c)[LI.scale] || 1); g[o + 18] = c.temp; for (let k = 0; k < 5; k++) g[o + 19 + k] = c.skills[k]; g[o + 24] = bandOf(c); const lk = likesOf(c); for (let k = 0; k < 4; k++) g[o + 25 + k] = lk[k]; g[o + 29] = P.likes ? Math.max(0, lk[4]) : 0; // [16]: the size it is drawn at, so ants take up as much room as they look
     const m = abilMask(c); gu[o + 17] = m;
     // newly unlocked abilities make the news (not at founding, where they come from the parent)
     const fresh = m & ~(c.abil ?? m);
@@ -6687,7 +6900,7 @@ function stepFarms() {
   for (const c of colonies) {
     const n = c.inside + c.out; if (n < 8) continue;
     if (hasAbil(c, 20)) {
-      const mine = plants.filter(p => p.farm === c.slot).length;
+      const mine = plants.filter(p => p.farm === c.slot).length; c.farming = mine > 0;
       if (mine < 1 + Math.floor(n / 50) && rnd() < 0.25 * gr) farmPlant(c, 'grass', 22, 55, 0.35);
     }
     if (hasAbil(c, 21)) {
@@ -7107,7 +7320,7 @@ function stepHazards() {
       for (let i = 0; i < NCH; i++) if (waterN[i] > 0.05) { const cx = i % CW, cy = (i / CW) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const a = cx + dx, b = cy + dy; if (a < 0 || b < 0 || a >= CW || b >= CW) continue; const j = b * CW + a; hz.flood.set(j, simStep); if (P.fert) fert[j] = Math.min(1.6, fert[j] + 0.35); } }
       for (const c of colonies) {
         const d = waterDist(c.x, c.y, 45); if (d > 45) continue;
-        const sh = 0.45 * (1 - d / 50), n = Math.round(c.inside * sh); if (n > 0) kills[c.slot * 2] += n;
+        const sh = 0.45 * (1 - d / 50) * (winterRoom(c) ? 0.5 : 1), n = Math.round(c.inside * sh); if (n > 0) kills[c.slot * 2] += n; // a deep winter room keeps more of them dry
         removeFood(c, c.food * sh * 0.6); hit++;
       }
       emit('hazard', `Spring flood: the water rose${hit ? ` and swamped ${hit} nest${hit > 1 ? 's' : ''} near the shore` : ''}. The silt left behind makes the shore fertile`, W / 2, H / 2);
@@ -7140,9 +7353,9 @@ function stepHazards() {
       if (!c.sick) {
         const crowd = kin.length + n / 120; // big nests packed with relatives catch it
         const caught = kin.some(o => o.sick) ? 0.18 : colonies.some(o => o.sick && o.fam !== c.fam && Math.hypot(o.x - c.x, o.y - c.y) < 160) ? 0.03 : 0;
-        if (rnd() < (0.0015 * crowd * crowd + caught) / hp) { c.sick = simStep; emit('hazard', `${c.name} caught a fungus disease`, c.x, c.y, [c]); }
+        if (rnd() < (0.0015 * crowd * crowd + caught) / hp * wasteMul(c)) { c.sick = simStep; emit('hazard', `${c.name} caught a fungus disease`, c.x, c.y, [c]); }
       } else {
-        const k = Math.round(n * 0.03 / Math.pow(hp, 1.5)); if (k > 0) kills[c.slot * 2 + 1] += k;
+        const k = Math.round(n * 0.03 / Math.pow(hp, 1.5) * (0.5 + 0.5 * wasteMul(c))); if (k > 0) kills[c.slot * 2 + 1] += k;
         if (rnd() < 0.1 * hp) { c.sick = 0; emit('hazard', `${c.name} recovered from the disease`, c.x, c.y, [c]); }
       }
     }
@@ -7981,7 +8194,7 @@ function colonyUpdate() {
     const lv = d(CTR.leaves); c.fungus += lv; c.leaves += lv; c.leafRecent = (c.leafRecent || 0) * 0.995 + lv; c.incRecent = (c.incRecent || 0) + lv;
     if (c.fungus > 0) { // leaves turn into fungus food over about a minute (Fungus farmers: twice as fast and half as much again)
       const ff = hasAbil(c, 18), fl = ff && P.farming, grown = Math.min(c.fungus, c.fungus * BATCH / (MINUTE * P.fungusMin) * (fl ? 0.35 : ff ? 2 : 1) + 0.05), got = grown * (fl ? 2.2 : ff ? 1.5 : 1); // with farming on, a garden holds leaves for a long time and feeds the nest slowly through lean months // fungus counts as plant food
-      c.fungus -= grown; addFood(c, 1, got); c.gathered += got; TOT.gathered += got; c.incAcc += got;
+      c.fungus -= grown; addFood(c, 1, got * (ff ? gardenMul(c) : 1)); c.gathered += got; TOT.gathered += got; c.incAcc += got;
     }
     const sent = d(CTR.sent), back = d(CTR.escortBack);
     takeFood(c, sent); c.sent += sent; c.received += d(CTR.received);
@@ -8002,7 +8215,7 @@ function colonyUpdate() {
     let n = c.inside + c.out;
     for (let bi = 0; bi < Math.min(batches, 50); bi++) {
       // breed while the store covers the buffer; a rich nest breeds a few at once
-      for (let k = 0; k < P.birthBurst; k++) {
+      for (let k = 0, kb = Math.max(1, Math.round(P.birthBurst * nurseryMul(c))); k < kb; k++) { // more nurseries, more young at once
         const br = gmul(c, 7), need = n * eatOf(c) * P.birthBuffer / br * (k ? 2 : 1) + P.birthCost / br;
         if (eff(c) < need || n >= nestCap(c) || free <= 0 || c.mergeInto) break;
         removeFood(c, P.birthCost / br / nut(c)); n++; c.born++; TOT.born++; free--; spawns.push(c.slot);
@@ -8032,7 +8245,7 @@ function colonyUpdate() {
   }
   settleFounders();
   mergeNests();
-  digChambers();
+  stepNets();
   for (const c of colonies) { const cap = storeCap(c); if (c.food > cap) removeFood(c, c.food - cap); } // a full store: extra food is left to rot
   checkSplits();
   sendFounders();
@@ -8065,6 +8278,10 @@ function wildQueens() {
 const nestLimit = () => P.maxNests >= 65 ? MAXCOL : Math.min(MAXCOL, P.maxNests);
 const nColUsed = () => Math.max(1, ...colonies.map(c => c.slot + 1));
 // small colonies lay low and only defend themselves
+// how many of a nest's ants keep exploring once it knows food trails: at least the Scouts setting (10%), more when it is hungry,
+// and a weight that sets the share with one trail (about half), lower for farmers whose food grows at home, higher for curious nests
+const exploreFloor = c => Math.min(0.6, P.scouts + 0.06 * Math.max(0, (c.searchMul || 1) - 1) + (c.food < 1 ? 0.1 : 0));
+const exploreWeight = c => (hasAbil(c, 18) || c.farming ? 0.6 : 1) * Math.sqrt(gmul(c, 4)) * (c.food > 0.9 * storeCap(c) ? 0.75 : 1);
 const peaceful = c => !c.raidBy && ((c.inside + c.out) < P.peaceBelow / gmul(c, 8) || (c.food < 1 && c.searchMul > 1.5)); // a nest a giant is tearing open fights with everything it has
 function writeNests() {
   const reach = Math.max(P.nestEnter, P.space + 1.5), buf = new ArrayBuffer(MAXCOL * 48 + 208), nb = new Float32Array(buf), nu = new Uint32Array(buf);
@@ -8083,6 +8300,7 @@ function writeNests() {
   if (casino && casino.open) { const o = MAXCOL * 12 + 48; nb[o] = casino.x; nb[o + 1] = casino.y; nb[o + 2] = 1; }
   plants.filter(p => p.tree).slice(0, 4).forEach((p, k) => { const o = MAXCOL * 8 + 32 + k * 4; nb[o] = p.x; nb[o + 1] = p.y; nb[o + 2] = P.treeScent; nb[o + 3] = 1; });
   device.queue.writeBuffer(bufs.nests, 0, buf);
+  { const e = new Float32Array(MAXCOL * 2); for (const c of colonies) { e[c.slot * 2] = exploreFloor(c); e[c.slot * 2 + 1] = exploreWeight(c); } device.queue.writeBuffer(bufs.world, LO.EXP_OFF * 4, e); }
   // nest lookup grid: every chunk lists the nests whose pass-through zone or 70 tiles reach it
   const ng = new Uint32Array(NCH * 25);
   for (const c of colonies) {
@@ -8130,7 +8348,7 @@ function setup(newCap, opt = {}) {
   else if (opt.climate !== 'keep') { terrSeed = (Math.random() * 1e6) | 0; buildHeight(terrSeed); }
   if (opt.climate === 'flat' || opt.climate === 'keep') for (let i = 0; i < N; i++) height[i] = heightAt(clT[i] / 255, clH[i] / 255, clW[i] / 255, i % W, (i / W) | 0);
   if (opt.empty) placeNoStarts(); else placeStarts(opt.climate !== 'keep');
-  measureChunks(); pickHazards(); GIANT.reset();
+  measureChunks(); pickHazards(); GIANT.reset(); resetNets(); netsSeen.clear();
   const tiles = new Uint32Array(N); for (let i = 0; i < N; i++) tiles[i] = packTile(i);
   setupBuffers(tiles, !opt.empty);
 }
@@ -8636,9 +8854,14 @@ bindRange('cWeird', v => { TERRAIN.weird = v; $('cWeirdV').textContent = pct(v);
 bindRange('cWater', v => { TERRAIN.water = v; $('cWaterV').textContent = v ? pct(v) : 'none'; terrainChanged(); });
 $('cNew').addEventListener('click', () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); });
 let mapView = 0;
-document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => {
-  mapView = +b.dataset.view; document.querySelectorAll('[data-view]').forEach(o => o.setAttribute('aria-pressed', o === b));
-}));
+function setMapView(v) { mapView = v; document.querySelectorAll('[data-view]').forEach(o => o.setAttribute('aria-pressed', +o.dataset.view === v)); const u = $('zUnder'); if (u) u.setAttribute('aria-pressed', v === 5); }
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setMapView(+b.dataset.view)));
+// a map button for the underground: look down into the nests' tunnels and rooms, and back up again
+{ const b = document.createElement('button'); b.id = 'zUnder'; b.setAttribute('aria-label', 'Underground view'); b.title = 'Underground view (U)'; b.setAttribute('aria-pressed', 'false');
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h20"/><path d="M7 8v5a2 2 0 0 0 2 2h1"/><circle cx="13" cy="15" r="2.5"/><path d="M15.5 15H18v4"/><circle cx="18" cy="20" r="1.2"/></svg>';
+  b.addEventListener('click', () => setMapView(mapView === 5 ? 0 : 5));
+  const r = $('zRand'); if (r) r.parentNode.insertBefore(b, r);
+  addEventListener('keydown', e => { if ((e.key === 'u' || e.key === 'U') && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement && document.activeElement.tagName)) setMapView(mapView === 5 ? 0 : 5); }); }
 
 // ---------- terrain PNG: red = temperature, green = humidity, blue = weirdness, alpha = ground roughness as the ants left it ----------
 // written and read by hand (not through a canvas), so colours under a low alpha are never rounded away
@@ -9080,10 +9303,10 @@ if (/(^#|,)dev(,|$)/.test(location.hash)) $('devTools').hidden = false;
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) { e.preventDefault(); $('devTools').hidden = !$('devTools').hidden; } });
 const settingInputs = () => [...document.querySelectorAll('.settings input[type=range], .settings input[type=checkbox]')].filter(el => el.id && !el.closest('.nopreset'));
 // version: big release . stable build . test build (see CHANGELOG.md on GitHub)
-const GAME_VERSION = '2.2.0';
+const GAME_VERSION = '2.2.1';
 if ($('verNum')) $('verNum').textContent = GAME_VERSION;
 // the changelog, built into the page from CHANGELOG.md, shown in a window over the game
-const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The latest is 2.2.0, the giants update.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.2.0 (stable build): Giants\n\nEverything from the 2.1.x test builds, now finished and locked in as the new stable base.\n\n- **Three giants:** a monitor lizard, an anteater and a giant bird, each in three colour variants, with procedural walking and their own attacks. One walks onto the map now and then, and you can summon one from the World section or the settings.\n- **They hunt nests.** A giant prowls around nests eating ants, sometimes stops to tear a nest open, and leaves once the ant count has halved. A raided nest fights back with everything it has, to the death.\n- **They can be brought down.** Ants that fight together can kill a giant. Its body becomes skin, muscle and bone that ants strip layer by layer, rots in patches, and slowly sinks into the ground. The bones stand like a ridge only nimble ants can climb, grow over with whatever lives there, freeze over in the cold, and crumble into rich soil.\n- **Rock clusters** across the land, in the same weathered look as old bones, that only nimble ants can climb.\n\n## 2.1.15 (test build)\n\n- **Rock clusters instead of scattered rocks.** The many small rocks spread over the map are gone. Each map now has 10 to 20 rock clusters. Each cluster has one big rock, 3 to 5 medium rocks around it, and 2 to 5 small rocks around those. They keep the old-bone look from 2.1.14, stay in the same places when you keep a map, and are never placed on top of nests or water.\n- **Rocks are solid.** Ants can't walk over the rock clusters, the same as with standing bones. Only ants that have evolved high Traversal or Agility can climb over them. New nests are never founded inside or right against a rock.\n\n## 2.1.14 (test build)\n\n- **Rock outcrops.** Small pale rock formations now lie scattered in patches over the land. They have the same colour and look as old, worn-down bones: weathered grey, partly grown over with grass, moss, lichen or sand, and frosted and snowed over in the cold. A skeleton in its last stages now sits among them like part of the landscape. They're only for looks, so ants walk over them.\n- **Bone shadows fully gone.** Fixed a leftover shadow under old bones in the Giant Creature Lab.\n\n## 2.1.13.1 (fix)\n\n- **Bone shadows fade out.** The shadow and raised shading of the bones now fade slowly as they wear down, and are fully gone once 60% of the bones are left.\n\n## 2.1.13 (test build)\n\n- **Bones sink into the ground.** As they wear away, the edges of the bones break up in patches and get covered by soil, so the outline no longer stays a clean cut-out. The bones also pick up the light and shade of the ground they lie on.\n- **Rich soil around the bones.** A dark stain of rich soil spreads out around a skeleton as it breaks down, greener where the ground is damp.\n- **Bones freeze in the cold.** In snowy places like mountains and frozen biomes, bones frost over straight away. Snow then piles up on the sides facing the light, fills the gaps, and drifts around the skeleton until it is half buried. Rotting meat gets a light frost too.\n\n## 2.1.12 (test build)\n\n- **Giants raid nests.** Now and then a giant stops at a nest and digs its head into it. Each bite swallows some of the ants inside and some of the stored food.\n- **The nest fights back with everything.** While it is being raided, the nest keeps calling every ant inside out to attack. Small nests that would normally hide or run away fight too.\n- **To the death.** The raid lasts until the nest or the giant is dead. The giant doesn't leave halfway through, even if it has already eaten its fill. If the nest is wiped out, the giant goes back to roaming.\n- **New setting: Nest raids** (under Giants). Sets how often a giant raids a nest it visits, from never to every time. The default is 35%.\n\n## 2.1.11 (test build)\n\n- Rot takes everything in the end: over water (where nothing eats it) the last of the skin is gone by 60% of the rot and the last of the muscle by 95%, so a fully rotted body is bare bone.\n- Giants break down twice as fast: skin rots off in about 20 minutes to 1.5 sim hours and the muscle in about 40 minutes to 3 more; the bones start once it is picked clean (or after 4 sim hours) and are gone after 10 sim hours, standing as a wall for the first 7.\n\n## 2.1.10 (test build)\n\n- Carcass rot spreads in smooth, soft-edged patches instead of blocky ones, both in how it looks and in which parts rot away first.\n- Rotting colours are stronger: skin turns a clearer grey-green and then brown sooner, and muscle a deeper maroon before browning.\n- Overgrowth on old bones is lighter: grass, moss, lichen or sand covers fewer patches and lets the bone show through.\n\n## 2.1.9 (test build)\n\n- Ants take up as much room as they look. How far apart ants keep now follows the size they are drawn at (their body size and their look's overall scale together), where before it left out the look's scale, so big-bodied species could overlap. Two ants now keep apart by both of their sizes: two big ants stand further apart than a big and a small one.\n\n## 2.1.8 (test build)\n\n- Carcasses rot in stages. Skin rots first: it dulls to grey-green, then leathery brown, in mottled patches, and falls away bit by bit. The muscle under it lasts longer, darkening from red to maroon and then brown before it goes too.\n- Bones change fast at first and then slowly: within the first few hours they pale and start to look like part of the ground, then they take most of their 20 hours to fade away fully. They still only start once the flesh is mostly gone.\n- Whatever grows in that place grows over the bones: grass in meadows, deep moss where it is damp, grey-green lichen in the cold, and sand drifting over them in deserts, spreading in patches until they blend into the land.\n- Ants wait for the skin twice as far around (20 tiles instead of 10) before they start on the muscle, so the skin peels back further before the red shows through.\n\n## 2.1.7 (test build)\n\n- Giants find their way properly instead of feeling ahead: they plan a route over a coarse map of the ground (cells of 16 tiles) around lakes and rivers, keeping about half their body width away from big water, and follow it. They plan again every few seconds and whenever their goal changes.\n- Small puddles and thin streams no longer stop them: a patch only counts as water for a giant when most of a 16-tile cell is water, so they step over puddles.\n- If a giant still gets boxed in for a few seconds, it gives up on that spot and heads for another nest.\n\n## 2.1.6 (test build)\n\n- Several carcasses can lie on the map at once (up to four). A new giant dying no longer wipes out the one before; only when a fifth falls does the oldest go.\n- Giants keep to the middle 80% of the map. They walk in from the edge, but once on the map they treat the outer tenth on every side like water: they turn back before it, and every place they head for (nests, prowling spots) lies inside it. Only when leaving do they head out over the edge.\n- A new switch under \"Trails in colony colours\": \"Nest and farm markers\". Turn it off to hide the nest markers with their ant symbols, the dashed rings around farms and the dotted rings around tended aphid trees.\n\n## 2.1.5 (test build)\n\n- A giant's carcass is stripped layer by layer: ants only take the muscle once the skin all around it (up to 10 tiles away) is gone, so you can watch the skin peel back and the red muscle spread before it too is carried off.\n- Bones make a tighter wall: the ridge is a tile thicker on every side, ants can no longer slip diagonally between bones, and only really nimble ants (Traversal or Agility of 150% or more, was 135%) climb over. While there is still flesh on the carcass, ants walk onto it to eat; the bones become a wall once it is picked clean.\n- A giant that dies partly in water keeps its skin and muscle there too. Nothing can reach it over the water, so that part slowly rots away instead: skin first, then the muscle, then the bones show.\n- Giants no longer walk into water. They look further ahead (as far as they need to turn away in time), and if water is right in front of them anyway they stop and swing round their middle toward dry land.\n- Rotting is patchy: each part of a carcass, on land or in water, rots at its own pace, so it falls apart bit by bit instead of all at once.\n\n## 2.1.4 (test build)\n\n- Watch the giants: when one arrives, the camera flies to it, zooms so it fills most of the view, and follows it around until it dies or leaves. Drag the map to look elsewhere, and \"Watch the giant\" in the World section of the overview to go back to it.\n\n## 2.1.3 (test build)\n\n- Giants turn the way big animals do: by walking an arc no tighter than a circle about a third of their length across, so the whole body swings round its middle instead of pivoting on the snout. Around a nest they now prowl in wide loops.\n\n## 2.1.2 (test build)\n\n- Giants are twice as big: about a fifth of the map long.\n- Giants are much harder to kill. Their thick hide makes each ant bite count for little, so it takes a big fight to bring one down, and they bite back harder. A \"Giant toughness\" slider in Settings sets how hard.\n- Every ant eats from a carcass now, not only scavengers, and there is one bite of skin and one of muscle per 2x2 block of tiles instead of per tile, so a carcass is stripped much faster.\n- Bones stand like a small mountain ridge: once the carcass is picked clean, ants can't walk through them, except nimble ones (Traversal or Agility of 135% or more), which climb over. The bones are lit and cast a shadow. When only 30% of their wearing away is left, they are low enough for every ant to cross again.\n- Summon a giant three ways: the \"Summon a giant\" button in the World section of the overview, the Giant tap tool in Experimental (it walks in toward where you tap), or the lizard, anteater and bird buttons under Food skills.\n\n## 2.1.1 (test build)\n\nGiant creatures, the first test of what will become 2.2.0.\n- Very rarely, a giant walks onto the map: a monitor lizard, an anteater or a bird, each about a tenth of the map long, in one of three colourings (olive, teal or yellow lizards; grey, golden-vest or russet anteaters; hornbills, vultures or eagles). On average one comes every 10 sim hours, anywhere from 5 to 15.\n- It walks on from the edge nearest a big nest, crosses anything except water, and prowls from nest to nest eating ants. It bites whatever ants it reaches and attacks now and then: the lizard whips its tail, the anteater lashes out its tongue, the bird pecks.\n- Ants can fight back. It takes a lot of ants a long time to bring one down, and a health bar shows how it is going.\n- It leaves when the ants on the map have dropped to half of what they were when it came, walking off the nearest edge.\n- When it dies it falls over and its body becomes the ground: every tile of it is carcass food, skin on top and muscle underneath, which scavengers carry off one bite at a time, and its weight presses a hollow into the ground the shape of its body. What nobody eats rots slowly.\n- Once it is picked clean (or after 8 sim hours) the bones stay as part of the ground for 20 sim hours. They pale to grey, crumble outward and sink into the soil, which grows richer under the carcass the whole time.\n- Settings, under Food skills: switch giants on or off, set how often they come, and summon a lizard, anteater or bird right away to try it.\n\n## 2.1.0 (stable build)\n\nThe balance from the 2.0 test builds is locked in: the food web, careful colonies, world events, adapted starting nests and uncapped colours from 2.0.14 and 2.0.15 are now the stable base. Same game as 2.0.15.\n\n## 2.0.15 (test build)\n\n- No more cap on colours: up to 61 colours can live at once (was 21), plus gold, silver and bronze from the casino. The \"Most colours\" slider in Limits now goes all the way to \"no limit\", which is the default. Colours past the first 24 also vary in lightness so they are easier to tell apart, and each gets its own name.\n- The four world choices at the start each have a small icon.\n\n## 2.0.14 (test build)\n\nA big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.\n\n**Prey that can run out (the fox and rabbit cycle)**\n- Live prey now breeds where plants grow and gets scarce where hunters catch most of it. A hunter colony that takes everything around it empties its own hunting ground, goes hungry and shrinks, and the prey comes back once the pressure is off.\n- Prey also grazes a little on wild plants where it is plentiful, so gatherers that strip the land bare also starve the prey that hunters live on.\n- The overview shows how much prey the land holds on average.\n\n**Careful colonies**\n- A new taste next to the other likes: care. Careful colonies leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out, so the land can recover.\n- Care grows over generations in colonies whose own food is running out, and fades where food is plentiful. Shows up as \"careful\" on a nest's page.\n\n**Starting nests fit their home**\n- The first colonies of a world lean toward the food that grows around them, cope with a wider range of temperatures, get extra food on poor land, and get small gene nudges for cold or hot homes. Fewer early collapses, and different realms start out different.\n- When the ground gets warmer or colder than a nest likes (seasons, droughts, the temperature setting), its liked temperature now follows much faster, so species re-adapt to a changed climate.\n\n**World events: one or two per world**\nEach new world picks one or two of these at random. Each one exists to push evolution somewhere:\n- \ud83d\udd77 Spiders spin webs near food. Brave, strong-biting colonies tear them down and eat the spider; ants with good eyes walk around them; careless ones get caught.\n- \u23f3 Antlions hide pits in sand, desert and beaches. Only ants with good eyes see them in time.\n- \ud83d\udc26 Birds hunt ants on open ground and can't be fought. Rough ground and rock give cover.\n- \ud83d\udc1f Fish get stranded on the shore: rich food for hunters that settle near water.\n- \ud83c\udf0a Floods in some springs hit nests close to water, then leave the shore extra fertile.\n- \ud83d\udd25 Wildfires sweep across hot, dry land in summer. The ash makes the soil rich afterwards.\n- \ud83e\udda0 Disease spreads between big, crowded nests of the same colour. Health resists it, so no single species can fill the map.\n- \ud83e\udd97 Locust swarms cross the map, stripping plants and leaving a feast of dead locusts for hunters and scavengers.\n- \ud83d\udc1e Ladybugs eat aphids. Unguarded aphid trees dry up; herders with strong Bite and Courage chase them off.\n- \u2600 Drought years: green plants and fruit wilt while seeds, cactus and lichen hold on, and the ground feels hotter.\n- The new \"World\" section of the overview lists this world's events, what each one is for, what is happening right now, and how many ants live each way of life.\n- Settings, under Food skills: switches for prey that can run out, adapted starting nests and world events, plus \"Always include\" to make sure the next world has a certain event.\n- The map can now hold eight beasts, webs, pits and birds at once (was four).\n\n**Four realms test map**\n- \"Four realms\" is now a choice when you pick a new world: a mountain cross splits the map into cold and dry, hot and dry, cold and damp, and hot and damp land, with six passes between them.\n- The balance test (Ctrl+Shift+L) now runs the four realms first, then two random worlds, and reports the world events, the prey, and which ways of living each quarter of the map ended up with.\n\n## 2.0.13.1 (fix)\n\n- Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.\n\n## 2.0.13 (test build)\n\n- No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.\n- Ground grows back faster: 5% of the way every 15 minutes by default (it was 1%, which brings back only about a third in 10 hours). The slider now goes up to 20%.\n- More visible evolution: mutations after births are half the founding size instead of a third, and come every 150 births instead of 200. Body parts start to show from 105% (were 112%), are fully grown at 135% (were 160%), and reach their extreme form near 200% (were 250%), so drifting colours look different much sooner.\n\n## 2.0.12 (test build)\n\nAphid herders won almost every run, and every colony ended up with the same long nectar straw.\n- Aphid herding is weaker: a nest looks after at most three trees (one, plus one per 80 ants) instead of every aphid tree in reach, plants new ones half as often, and a tended tree drips 35% more instead of 70% and lasts a third longer instead of twice as long.\n- The nectar straw is shorter and thinner, starts later (at 36% sweet food skill instead of 28%) and is only full length for real sweet specialists. The weevil snout comes later too.\n\n## 2.0.11 (test build)\n\n- The family tree has its own \"Family tree\" section in the overview, and a \"full screen\" button that opens it in a big window (Esc or a click outside closes it).\n- The tree stays readable as it grows: a colour that died out, along with its whole line, is folded away. Sister colours that all died out share one small \"+N died out\" chip under their parent; click it to show them, and \"fold\" to hide them again. A dead colour that still has living descendants stays visible, as a smaller card.\n- New colours appear even less often: 10% of new nests start a new colour, down from 20%.\n\n## 2.0.10 (test build)\n\n- Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.\n- The History section is now a real family tree: each colour is a card with a picture of its ant (as it looked at its biggest), joined by lines to the colour it came from and the colours that came from it. Hover a card for its details; dead colours are faded with a dashed border, metal ones glow. Wide trees scroll sideways.\n\n## 2.0.9 (test build)\n\n- Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: \"Ground grows back\".\n- From the 2.0.8 balance test, where all three worlds shrank to 2 or 3 nests: ground roughness is back near its natural level (the 1/4 slowdown stays, so tunnels still pay off), since the rougher ground of 2.0.5 slowed every trip by about a third.\n- Queens are less picky about mountains and water: they give up on their taste sooner and settle, instead of walking far and dying on the way.\n\n## 2.0.8 (test build)\n\n- New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.\n- Metal colonies (gold, silver, bronze) keep their colour when they spread. They only become a new colour by drifting too far from their family, and then they keep their metal shine in the new colour, and so do their descendants.\n- History: a new section in the overview with a family tree of every colour that ever lived, under the colour it came from. Each shows when it lived, its biggest size and way of living, and how it began (first colours, a queen on new ground, breaking away, or the casino). Colours that died out are crossed out; clicking a living one opens its biggest nest.\n\n## 2.0.7 (test build)\n\nFrom the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.\n- Plants only wither on really worn-out soil now (below 70% fertility instead of 90%), so lightly grazed ground near a nest keeps its plants. Below 80%, plants still use themselves up faster.\n- Grazing wears the soil a bit more slowly.\n\n## 2.0.6 (test build)\n\nFixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.\n- Crowded niches are measured against the map's own mix. Before, when nearly every nest lived the same way, every nest lost a third of its food at once. Now the average nest keeps 100%, and only ways of living more common than usual lose out (down to 70%), while rarer ones gain (up to 125%).\n- Rough ground is a bit easier: 1/4 speed at its worst instead of 1/6, and a little less rough overall. Tunnels still pay off clearly.\n- A new nest starts in a small dug-out hollow, so it isn't stuck in rough ground before its tunnels exist.\n\n## 2.0.5.1 (fix)\n\n- Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.\n\n## 2.0.5 (test build)\n\n### Tunnels and chambers\n- Rough ground is rougher and slows ants much more (1/6 speed at its worst instead of 1/3), so a tunnel makes a real difference.\n- Ants dig twice as much per scrape and dig most on their runs between nest and food, so their routes sink into tunnels that speed up gathering. The earth is piled up beside the tunnel.\n- Tunnels are drawn as dark sunken channels with soft, lit walls, and the dug-out earth shows as pale heaps.\n- Chambers: nests with enough ants dig rooms over time, in a ring around the nest and joined to it by corridors, plus a store room beside their best food (a farm, tended tree or food tree). Bigger and higher-level nests dig more. Each finished chamber holds 10% more food.\n- New setting: \"Chambers\". \"Ants dig roads\" is now \"Ants dig tunnels\".\n\n### Worn-out soil\n- Plants on worn-out soil wither within a few minutes, and use themselves up faster while they last. Farmers have to keep planting or spread their farms onto fresh ground.\n\n### Experimental\n- Tap tools in the Experimental tab: place a casino, or a metal nest, where you tap.\n\n### Likes and dislikes\n- Every nest has its own tastes, passed on to its new nests with a little change (a new colour changes them more):\n- Mountains: some settle close to rock and lean their scouting toward it, others prefer open ground.\n- Water: some settle near water, others keep away from it.\n- Gambling: some spot the casino from much further away, others never go in or follow its gold trail.\n- Company: some queens settle closer to other nests and sooner, others walk further and keep their distance.\n- Each colour has one friend it never lays siege to, and one foe it attacks sooner.\n- The nest panel lists a nest's strong likes and dislikes, its friend and its foe. New setting: \"Likes and dislikes\".\n\n## 2.0.4 (test build)\n\n### More ways of living, and none can take over\n- Three new ways of living: **Raiders** (take food from rival nests: strong Courage and Bite, or a habit of plundering), **Scavengers** (live off the dead and what others leave behind) and **Gatherers** (live off wild plants without farming). They join Runners, Thrifty, Hunters, the three kinds of farmers and Generalists.\n- Crowded niches: a way of living that many ants share gets less out of its food (down to 65%), and a rare one gets more (up to 125%). So when farmers spread everywhere, every farmer nest feels it, and hunters, raiders or scavengers nearby get their chance. Worked out once a minute from all the ants on the map.\n- The nest panel shows when a nest lives a crowded or a rare way of life, and how much its food is worth because of it.\n- New setting: \"Crowded niches\", next to \"Niches\".\n\n## 2.0.3.1 (fix)\n\n### Casino: metal colonies get a fair start\n- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.\n- The casino explosion reaches further (340 tiles instead of 260).\n- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.\n- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.\n\n### Overview\n- The average ants of the three biggest colours have their own \"Ants\" section.\n- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
+const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The latest is 2.2.0, the giants update.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.2.1 (test build)\n\nFirst test of underground nests.\n\n- **Nests dig a real underground.** Each nest now digs its own network of rooms joined by tunnels, a room at a time. The rooms near the nest that did nothing are gone. A share of the ants at home do the digging, faster with a high Digging gene and in sand, slower in rough ground. Rooms can't be dug under water or rock, or into another nest's tunnels.\n- **Every nest digs differently.** Nests in hot, dry ground dig deep. Nests in wet ground stay shallow and spread out. Strong diggers make bigger rooms.\n- **Rooms have jobs:**\n  - **Queen chamber:** dug first, deep down.\n  - **Nurseries:** more nurseries mean more young at once.\n  - **Food stores:** set how much food the nest can keep. A new nest holds less until it digs its first store; many stores hold more than before.\n  - **Fungus gardens:** fungus farmers grow more food with more gardens.\n  - **Waste chambers:** make disease less likely and less deadly.\n  - **Winter chamber:** cuts the food cost of the cold, and halves the ants lost in floods.\n  - **Entrances:** more are added as the nest grows. The dug soil is piled around them into a mound.\n- **What it digs next depends on what it needs:** another store when the stores are nearly full, another nursery as it grows, and so on.\n- **Underground view.** A new map button (or the U key, or Map view \u2192 Underground) fades the surface and shows every nest's tunnels and rooms in its colour, darker the deeper they are. Inside you can see stored food, young, fungus, rubbish, ants moving about, and each queen. Room names show when zoomed in. When a nest dies, its empty tunnels stay in the ground.\n- **Nest tab.** Each nest's panel has a new Nest tab with a side view of its underground: the mound and entrances at the top, tunnels with ants walking them, and every room with what's in it. Below it is a list of the rooms and what each one is doing for the nest right now.\n- **Nests on the map.** Zoomed in, a nest now shows as its mound and entrance holes, with a thin ring in its colour instead of the big icon. Zoomed out, the icons are still there.\n- **Explorers and fetchers.** Ants leaving the nest now count the food trails leading away from it. With no trail, everyone explores. With one trail, about half go fetch along it and half keep exploring. Each extra trail sends more ants to fetch. At least 10% always explore (the Scouts setting). Hungry nests send out more explorers, and farmers and nests with full stores send fewer. Curious nests explore more.\n- **Fixed:** since 2.1.9, each nest's temperature, food skills, comfort range and likes and dislikes weren't reaching the ants. Ants now follow their nest's preferences again, which should bring back clear trails.\n\n## 2.2.0 (stable build): Giants\n\nEverything from the 2.1.x test builds, now finished and locked in as the new stable base.\n\n- **Three giants:** a monitor lizard, an anteater and a giant bird, each in three colour variants, with procedural walking and their own attacks. One walks onto the map now and then, and you can summon one from the World section or the settings.\n- **They hunt nests.** A giant prowls around nests eating ants, sometimes stops to tear a nest open, and leaves once the ant count has halved. A raided nest fights back with everything it has, to the death.\n- **They can be brought down.** Ants that fight together can kill a giant. Its body becomes skin, muscle and bone that ants strip layer by layer, rots in patches, and slowly sinks into the ground. The bones stand like a ridge only nimble ants can climb, grow over with whatever lives there, freeze over in the cold, and crumble into rich soil.\n- **Rock clusters** across the land, in the same weathered look as old bones, that only nimble ants can climb.\n\n## 2.1.15 (test build)\n\n- **Rock clusters instead of scattered rocks.** The many small rocks spread over the map are gone. Each map now has 10 to 20 rock clusters. Each cluster has one big rock, 3 to 5 medium rocks around it, and 2 to 5 small rocks around those. They keep the old-bone look from 2.1.14, stay in the same places when you keep a map, and are never placed on top of nests or water.\n- **Rocks are solid.** Ants can't walk over the rock clusters, the same as with standing bones. Only ants that have evolved high Traversal or Agility can climb over them. New nests are never founded inside or right against a rock.\n\n## 2.1.14 (test build)\n\n- **Rock outcrops.** Small pale rock formations now lie scattered in patches over the land. They have the same colour and look as old, worn-down bones: weathered grey, partly grown over with grass, moss, lichen or sand, and frosted and snowed over in the cold. A skeleton in its last stages now sits among them like part of the landscape. They're only for looks, so ants walk over them.\n- **Bone shadows fully gone.** Fixed a leftover shadow under old bones in the Giant Creature Lab.\n\n## 2.1.13.1 (fix)\n\n- **Bone shadows fade out.** The shadow and raised shading of the bones now fade slowly as they wear down, and are fully gone once 60% of the bones are left.\n\n## 2.1.13 (test build)\n\n- **Bones sink into the ground.** As they wear away, the edges of the bones break up in patches and get covered by soil, so the outline no longer stays a clean cut-out. The bones also pick up the light and shade of the ground they lie on.\n- **Rich soil around the bones.** A dark stain of rich soil spreads out around a skeleton as it breaks down, greener where the ground is damp.\n- **Bones freeze in the cold.** In snowy places like mountains and frozen biomes, bones frost over straight away. Snow then piles up on the sides facing the light, fills the gaps, and drifts around the skeleton until it is half buried. Rotting meat gets a light frost too.\n\n## 2.1.12 (test build)\n\n- **Giants raid nests.** Now and then a giant stops at a nest and digs its head into it. Each bite swallows some of the ants inside and some of the stored food.\n- **The nest fights back with everything.** While it is being raided, the nest keeps calling every ant inside out to attack. Small nests that would normally hide or run away fight too.\n- **To the death.** The raid lasts until the nest or the giant is dead. The giant doesn't leave halfway through, even if it has already eaten its fill. If the nest is wiped out, the giant goes back to roaming.\n- **New setting: Nest raids** (under Giants). Sets how often a giant raids a nest it visits, from never to every time. The default is 35%.\n\n## 2.1.11 (test build)\n\n- Rot takes everything in the end: over water (where nothing eats it) the last of the skin is gone by 60% of the rot and the last of the muscle by 95%, so a fully rotted body is bare bone.\n- Giants break down twice as fast: skin rots off in about 20 minutes to 1.5 sim hours and the muscle in about 40 minutes to 3 more; the bones start once it is picked clean (or after 4 sim hours) and are gone after 10 sim hours, standing as a wall for the first 7.\n\n## 2.1.10 (test build)\n\n- Carcass rot spreads in smooth, soft-edged patches instead of blocky ones, both in how it looks and in which parts rot away first.\n- Rotting colours are stronger: skin turns a clearer grey-green and then brown sooner, and muscle a deeper maroon before browning.\n- Overgrowth on old bones is lighter: grass, moss, lichen or sand covers fewer patches and lets the bone show through.\n\n## 2.1.9 (test build)\n\n- Ants take up as much room as they look. How far apart ants keep now follows the size they are drawn at (their body size and their look's overall scale together), where before it left out the look's scale, so big-bodied species could overlap. Two ants now keep apart by both of their sizes: two big ants stand further apart than a big and a small one.\n\n## 2.1.8 (test build)\n\n- Carcasses rot in stages. Skin rots first: it dulls to grey-green, then leathery brown, in mottled patches, and falls away bit by bit. The muscle under it lasts longer, darkening from red to maroon and then brown before it goes too.\n- Bones change fast at first and then slowly: within the first few hours they pale and start to look like part of the ground, then they take most of their 20 hours to fade away fully. They still only start once the flesh is mostly gone.\n- Whatever grows in that place grows over the bones: grass in meadows, deep moss where it is damp, grey-green lichen in the cold, and sand drifting over them in deserts, spreading in patches until they blend into the land.\n- Ants wait for the skin twice as far around (20 tiles instead of 10) before they start on the muscle, so the skin peels back further before the red shows through.\n\n## 2.1.7 (test build)\n\n- Giants find their way properly instead of feeling ahead: they plan a route over a coarse map of the ground (cells of 16 tiles) around lakes and rivers, keeping about half their body width away from big water, and follow it. They plan again every few seconds and whenever their goal changes.\n- Small puddles and thin streams no longer stop them: a patch only counts as water for a giant when most of a 16-tile cell is water, so they step over puddles.\n- If a giant still gets boxed in for a few seconds, it gives up on that spot and heads for another nest.\n\n## 2.1.6 (test build)\n\n- Several carcasses can lie on the map at once (up to four). A new giant dying no longer wipes out the one before; only when a fifth falls does the oldest go.\n- Giants keep to the middle 80% of the map. They walk in from the edge, but once on the map they treat the outer tenth on every side like water: they turn back before it, and every place they head for (nests, prowling spots) lies inside it. Only when leaving do they head out over the edge.\n- A new switch under \"Trails in colony colours\": \"Nest and farm markers\". Turn it off to hide the nest markers with their ant symbols, the dashed rings around farms and the dotted rings around tended aphid trees.\n\n## 2.1.5 (test build)\n\n- A giant's carcass is stripped layer by layer: ants only take the muscle once the skin all around it (up to 10 tiles away) is gone, so you can watch the skin peel back and the red muscle spread before it too is carried off.\n- Bones make a tighter wall: the ridge is a tile thicker on every side, ants can no longer slip diagonally between bones, and only really nimble ants (Traversal or Agility of 150% or more, was 135%) climb over. While there is still flesh on the carcass, ants walk onto it to eat; the bones become a wall once it is picked clean.\n- A giant that dies partly in water keeps its skin and muscle there too. Nothing can reach it over the water, so that part slowly rots away instead: skin first, then the muscle, then the bones show.\n- Giants no longer walk into water. They look further ahead (as far as they need to turn away in time), and if water is right in front of them anyway they stop and swing round their middle toward dry land.\n- Rotting is patchy: each part of a carcass, on land or in water, rots at its own pace, so it falls apart bit by bit instead of all at once.\n\n## 2.1.4 (test build)\n\n- Watch the giants: when one arrives, the camera flies to it, zooms so it fills most of the view, and follows it around until it dies or leaves. Drag the map to look elsewhere, and \"Watch the giant\" in the World section of the overview to go back to it.\n\n## 2.1.3 (test build)\n\n- Giants turn the way big animals do: by walking an arc no tighter than a circle about a third of their length across, so the whole body swings round its middle instead of pivoting on the snout. Around a nest they now prowl in wide loops.\n\n## 2.1.2 (test build)\n\n- Giants are twice as big: about a fifth of the map long.\n- Giants are much harder to kill. Their thick hide makes each ant bite count for little, so it takes a big fight to bring one down, and they bite back harder. A \"Giant toughness\" slider in Settings sets how hard.\n- Every ant eats from a carcass now, not only scavengers, and there is one bite of skin and one of muscle per 2x2 block of tiles instead of per tile, so a carcass is stripped much faster.\n- Bones stand like a small mountain ridge: once the carcass is picked clean, ants can't walk through them, except nimble ones (Traversal or Agility of 135% or more), which climb over. The bones are lit and cast a shadow. When only 30% of their wearing away is left, they are low enough for every ant to cross again.\n- Summon a giant three ways: the \"Summon a giant\" button in the World section of the overview, the Giant tap tool in Experimental (it walks in toward where you tap), or the lizard, anteater and bird buttons under Food skills.\n\n## 2.1.1 (test build)\n\nGiant creatures, the first test of what will become 2.2.0.\n- Very rarely, a giant walks onto the map: a monitor lizard, an anteater or a bird, each about a tenth of the map long, in one of three colourings (olive, teal or yellow lizards; grey, golden-vest or russet anteaters; hornbills, vultures or eagles). On average one comes every 10 sim hours, anywhere from 5 to 15.\n- It walks on from the edge nearest a big nest, crosses anything except water, and prowls from nest to nest eating ants. It bites whatever ants it reaches and attacks now and then: the lizard whips its tail, the anteater lashes out its tongue, the bird pecks.\n- Ants can fight back. It takes a lot of ants a long time to bring one down, and a health bar shows how it is going.\n- It leaves when the ants on the map have dropped to half of what they were when it came, walking off the nearest edge.\n- When it dies it falls over and its body becomes the ground: every tile of it is carcass food, skin on top and muscle underneath, which scavengers carry off one bite at a time, and its weight presses a hollow into the ground the shape of its body. What nobody eats rots slowly.\n- Once it is picked clean (or after 8 sim hours) the bones stay as part of the ground for 20 sim hours. They pale to grey, crumble outward and sink into the soil, which grows richer under the carcass the whole time.\n- Settings, under Food skills: switch giants on or off, set how often they come, and summon a lizard, anteater or bird right away to try it.\n\n## 2.1.0 (stable build)\n\nThe balance from the 2.0 test builds is locked in: the food web, careful colonies, world events, adapted starting nests and uncapped colours from 2.0.14 and 2.0.15 are now the stable base. Same game as 2.0.15.\n\n## 2.0.15 (test build)\n\n- No more cap on colours: up to 61 colours can live at once (was 21), plus gold, silver and bronze from the casino. The \"Most colours\" slider in Limits now goes all the way to \"no limit\", which is the default. Colours past the first 24 also vary in lightness so they are easier to tell apart, and each gets its own name.\n- The four world choices at the start each have a small icon.\n\n## 2.0.14 (test build)\n\nA big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.\n\n**Prey that can run out (the fox and rabbit cycle)**\n- Live prey now breeds where plants grow and gets scarce where hunters catch most of it. A hunter colony that takes everything around it empties its own hunting ground, goes hungry and shrinks, and the prey comes back once the pressure is off.\n- Prey also grazes a little on wild plants where it is plentiful, so gatherers that strip the land bare also starve the prey that hunters live on.\n- The overview shows how much prey the land holds on average.\n\n**Careful colonies**\n- A new taste next to the other likes: care. Careful colonies leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out, so the land can recover.\n- Care grows over generations in colonies whose own food is running out, and fades where food is plentiful. Shows up as \"careful\" on a nest's page.\n\n**Starting nests fit their home**\n- The first colonies of a world lean toward the food that grows around them, cope with a wider range of temperatures, get extra food on poor land, and get small gene nudges for cold or hot homes. Fewer early collapses, and different realms start out different.\n- When the ground gets warmer or colder than a nest likes (seasons, droughts, the temperature setting), its liked temperature now follows much faster, so species re-adapt to a changed climate.\n\n**World events: one or two per world**\nEach new world picks one or two of these at random. Each one exists to push evolution somewhere:\n- \ud83d\udd77 Spiders spin webs near food. Brave, strong-biting colonies tear them down and eat the spider; ants with good eyes walk around them; careless ones get caught.\n- \u23f3 Antlions hide pits in sand, desert and beaches. Only ants with good eyes see them in time.\n- \ud83d\udc26 Birds hunt ants on open ground and can't be fought. Rough ground and rock give cover.\n- \ud83d\udc1f Fish get stranded on the shore: rich food for hunters that settle near water.\n- \ud83c\udf0a Floods in some springs hit nests close to water, then leave the shore extra fertile.\n- \ud83d\udd25 Wildfires sweep across hot, dry land in summer. The ash makes the soil rich afterwards.\n- \ud83e\udda0 Disease spreads between big, crowded nests of the same colour. Health resists it, so no single species can fill the map.\n- \ud83e\udd97 Locust swarms cross the map, stripping plants and leaving a feast of dead locusts for hunters and scavengers.\n- \ud83d\udc1e Ladybugs eat aphids. Unguarded aphid trees dry up; herders with strong Bite and Courage chase them off.\n- \u2600 Drought years: green plants and fruit wilt while seeds, cactus and lichen hold on, and the ground feels hotter.\n- The new \"World\" section of the overview lists this world's events, what each one is for, what is happening right now, and how many ants live each way of life.\n- Settings, under Food skills: switches for prey that can run out, adapted starting nests and world events, plus \"Always include\" to make sure the next world has a certain event.\n- The map can now hold eight beasts, webs, pits and birds at once (was four).\n\n**Four realms test map**\n- \"Four realms\" is now a choice when you pick a new world: a mountain cross splits the map into cold and dry, hot and dry, cold and damp, and hot and damp land, with six passes between them.\n- The balance test (Ctrl+Shift+L) now runs the four realms first, then two random worlds, and reports the world events, the prey, and which ways of living each quarter of the map ended up with.\n\n## 2.0.13.1 (fix)\n\n- Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.\n\n## 2.0.13 (test build)\n\n- No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.\n- Ground grows back faster: 5% of the way every 15 minutes by default (it was 1%, which brings back only about a third in 10 hours). The slider now goes up to 20%.\n- More visible evolution: mutations after births are half the founding size instead of a third, and come every 150 births instead of 200. Body parts start to show from 105% (were 112%), are fully grown at 135% (were 160%), and reach their extreme form near 200% (were 250%), so drifting colours look different much sooner.\n\n## 2.0.12 (test build)\n\nAphid herders won almost every run, and every colony ended up with the same long nectar straw.\n- Aphid herding is weaker: a nest looks after at most three trees (one, plus one per 80 ants) instead of every aphid tree in reach, plants new ones half as often, and a tended tree drips 35% more instead of 70% and lasts a third longer instead of twice as long.\n- The nectar straw is shorter and thinner, starts later (at 36% sweet food skill instead of 28%) and is only full length for real sweet specialists. The weevil snout comes later too.\n\n## 2.0.11 (test build)\n\n- The family tree has its own \"Family tree\" section in the overview, and a \"full screen\" button that opens it in a big window (Esc or a click outside closes it).\n- The tree stays readable as it grows: a colour that died out, along with its whole line, is folded away. Sister colours that all died out share one small \"+N died out\" chip under their parent; click it to show them, and \"fold\" to hide them again. A dead colour that still has living descendants stays visible, as a smaller card.\n- New colours appear even less often: 10% of new nests start a new colour, down from 20%.\n\n## 2.0.10 (test build)\n\n- Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.\n- The History section is now a real family tree: each colour is a card with a picture of its ant (as it looked at its biggest), joined by lines to the colour it came from and the colours that came from it. Hover a card for its details; dead colours are faded with a dashed border, metal ones glow. Wide trees scroll sideways.\n\n## 2.0.9 (test build)\n\n- Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: \"Ground grows back\".\n- From the 2.0.8 balance test, where all three worlds shrank to 2 or 3 nests: ground roughness is back near its natural level (the 1/4 slowdown stays, so tunnels still pay off), since the rougher ground of 2.0.5 slowed every trip by about a third.\n- Queens are less picky about mountains and water: they give up on their taste sooner and settle, instead of walking far and dying on the way.\n\n## 2.0.8 (test build)\n\n- New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.\n- Metal colonies (gold, silver, bronze) keep their colour when they spread. They only become a new colour by drifting too far from their family, and then they keep their metal shine in the new colour, and so do their descendants.\n- History: a new section in the overview with a family tree of every colour that ever lived, under the colour it came from. Each shows when it lived, its biggest size and way of living, and how it began (first colours, a queen on new ground, breaking away, or the casino). Colours that died out are crossed out; clicking a living one opens its biggest nest.\n\n## 2.0.7 (test build)\n\nFrom the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.\n- Plants only wither on really worn-out soil now (below 70% fertility instead of 90%), so lightly grazed ground near a nest keeps its plants. Below 80%, plants still use themselves up faster.\n- Grazing wears the soil a bit more slowly.\n\n## 2.0.6 (test build)\n\nFixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.\n- Crowded niches are measured against the map's own mix. Before, when nearly every nest lived the same way, every nest lost a third of its food at once. Now the average nest keeps 100%, and only ways of living more common than usual lose out (down to 70%), while rarer ones gain (up to 125%).\n- Rough ground is a bit easier: 1/4 speed at its worst instead of 1/6, and a little less rough overall. Tunnels still pay off clearly.\n- A new nest starts in a small dug-out hollow, so it isn't stuck in rough ground before its tunnels exist.\n\n## 2.0.5.1 (fix)\n\n- Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.\n\n## 2.0.5 (test build)\n\n### Tunnels and chambers\n- Rough ground is rougher and slows ants much more (1/6 speed at its worst instead of 1/3), so a tunnel makes a real difference.\n- Ants dig twice as much per scrape and dig most on their runs between nest and food, so their routes sink into tunnels that speed up gathering. The earth is piled up beside the tunnel.\n- Tunnels are drawn as dark sunken channels with soft, lit walls, and the dug-out earth shows as pale heaps.\n- Chambers: nests with enough ants dig rooms over time, in a ring around the nest and joined to it by corridors, plus a store room beside their best food (a farm, tended tree or food tree). Bigger and higher-level nests dig more. Each finished chamber holds 10% more food.\n- New setting: \"Chambers\". \"Ants dig roads\" is now \"Ants dig tunnels\".\n\n### Worn-out soil\n- Plants on worn-out soil wither within a few minutes, and use themselves up faster while they last. Farmers have to keep planting or spread their farms onto fresh ground.\n\n### Experimental\n- Tap tools in the Experimental tab: place a casino, or a metal nest, where you tap.\n\n### Likes and dislikes\n- Every nest has its own tastes, passed on to its new nests with a little change (a new colour changes them more):\n- Mountains: some settle close to rock and lean their scouting toward it, others prefer open ground.\n- Water: some settle near water, others keep away from it.\n- Gambling: some spot the casino from much further away, others never go in or follow its gold trail.\n- Company: some queens settle closer to other nests and sooner, others walk further and keep their distance.\n- Each colour has one friend it never lays siege to, and one foe it attacks sooner.\n- The nest panel lists a nest's strong likes and dislikes, its friend and its foe. New setting: \"Likes and dislikes\".\n\n## 2.0.4 (test build)\n\n### More ways of living, and none can take over\n- Three new ways of living: **Raiders** (take food from rival nests: strong Courage and Bite, or a habit of plundering), **Scavengers** (live off the dead and what others leave behind) and **Gatherers** (live off wild plants without farming). They join Runners, Thrifty, Hunters, the three kinds of farmers and Generalists.\n- Crowded niches: a way of living that many ants share gets less out of its food (down to 65%), and a rare one gets more (up to 125%). So when farmers spread everywhere, every farmer nest feels it, and hunters, raiders or scavengers nearby get their chance. Worked out once a minute from all the ants on the map.\n- The nest panel shows when a nest lives a crowded or a rare way of life, and how much its food is worth because of it.\n- New setting: \"Crowded niches\", next to \"Niches\".\n\n## 2.0.3.1 (fix)\n\n### Casino: metal colonies get a fair start\n- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.\n- The casino explosion reaches further (340 tiles instead of 260).\n- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.\n- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.\n\n### Overview\n- The average ants of the three biggest colours have their own \"Ants\" section.\n- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
 function mdHTML(md) {
   const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const inl = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
@@ -9311,14 +9534,41 @@ function drawThings(g, z) {
   for (const b of beasts) if (b.kind !== 4) drawBeast(g, b, z);
   if (casino) drawCasino(g, z);
   const nr = Math.max(4, 8 / z);
+  if (mapView === 5) drawUnder(g, z);
+  const close = mapView === 5 ? 1 : Math.min(1, Math.max(0, (z - 2.5) / 2)); // zoomed in, the nest shows as its mound and entrances; the marker shrinks to a thin ring
   if (showMarks) for (const c of colonies) {
     const rgb = FAM_OF(c), cx = c.x + .5, cy = c.y + .5;
     const t = tierOf(c), r = nr * (1 + 0.18 * (t - 1));
+    if (close >= 1) { g.lineWidth = Math.max(0.6, 1.5 / z); g.strokeStyle = `rgba(${rgb},0.7)`; g.setLineDash([2 / z, 2 / z]); g.beginPath(); g.arc(cx, cy, Math.max(6, 10 / z), 0, 7); g.stroke(); g.setLineDash([]); continue; }
+    g.save(); g.globalAlpha = 1 - close;
     g.fillStyle = `rgba(${rgb},0.18)`; g.beginPath(); g.arc(cx, cy, r * 2, 0, 7); g.fill();
     for (let k = 1; k < t; k++) { g.lineWidth = nr * 0.12; g.strokeStyle = `rgba(${rgb},0.5)`; g.beginPath(); g.arc(cx, cy, r * (1 + 0.28 * k), 0, 7); g.stroke(); } // one extra ring per level
     g.fillStyle = '#17120e'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
     g.lineWidth = nr * 0.2; g.strokeStyle = `rgb(${rgb})`; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.stroke();
     drawIcon(g, nestIcon(c), cx, cy, r * 0.62, `rgb(${rgb})`);
+    g.restore();
+  }
+}
+// the underground view, on top of the map: each queen in her chamber, and the rooms' names when zoomed in
+function drawUnder(g, z) {
+  const sz = Math.max(0.6, 1 / z);
+  for (const c of colonies) {
+    if (!c.net) continue; const rgb = famRGB(c.ci);
+    for (const n of c.net.nodes) {
+      if (n.g < 1) continue;
+      if (n.t === NT.queen) { // the queen: a big ant with a long body, in the nest's colour, with a gold ring
+        const s = Math.max(1.6, n.r * 0.45), a = n.ph;
+        g.save(); g.translate(n.x, n.y); g.rotate(a);
+        g.fillStyle = `rgb(${rgb.map(v => Math.round(v * 0.75)).join(',')})`;
+        g.beginPath(); g.ellipse(-s * 0.9, 0, s * 0.9, s * 0.55, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(s * 0.2, 0, s * 0.35, s * 0.3, 0, 0, 7); g.fill(); g.beginPath(); g.arc(s * 0.75, 0, s * 0.28, 0, 7); g.fill();
+        g.strokeStyle = 'rgba(255,214,120,0.9)'; g.lineWidth = Math.max(0.25, 1.2 / z); g.beginPath(); g.ellipse(-s * 0.2, 0, s * 1.9, s * 1.1, 0, 0, 7); g.stroke();
+        g.restore();
+      }
+      if (z >= 2.2 && n.t !== NT.entrance) {
+        g.font = `600 ${Math.max(1.2, 10 / z)}px Instrument Sans, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = 'rgba(0,0,0,0.55)'; g.fillText(NT_INFO[n.t][0], n.x + 0.15 * sz, n.y - n.r - 3 / z + 0.15 * sz); g.fillStyle = 'rgba(245,235,215,0.9)'; g.fillText(NT_INFO[n.t][0], n.x, n.y - n.r - 3 / z);
+      }
+    }
   }
 }
 // the casino: a little gold building, and when someone pays up, three wheels above it
@@ -9420,7 +9670,7 @@ const SHEET_HTML = `<div class="sheet-head">
   <button class="sheet-x" data-k="sClose" aria-label="Close colony stats">✕</button>
 </div>
 <div class="stabs" role="tablist" aria-label="Colony stats">
-  <button role="tab" data-st="over" aria-selected="true">Overview</button><button role="tab" data-st="genes" aria-selected="false">Genes</button><button role="tab" data-st="act" aria-selected="false">Activity</button>
+  <button role="tab" data-st="over" aria-selected="true">Overview</button><button role="tab" data-st="genes" aria-selected="false">Genes</button><button role="tab" data-st="act" aria-selected="false">Activity</button><button role="tab" data-st="nest" aria-selected="false">Nest</button>
 </div>
 <div class="sheet-body spanel" data-p="over">
   <div class="chips" data-k="sChips"></div>
@@ -9454,6 +9704,11 @@ const SHEET_HTML = `<div class="sheet-head">
 <div class="sheet-body spanel" data-p="act" hidden>
   <div class="group" style="gap:8px"><p class="h">What the ants are doing</p><div class="jobs-bar" data-k="jBar"></div><div class="jobs" data-k="jList"></div></div>
   <div class="group" style="gap:8px"><p class="h">Lifetime</p><div class="life" data-k="sLife"></div></div>
+</div>
+<div class="sheet-body spanel" data-p="nest" hidden>
+  <div class="chart-h"><span>Underground</span><b data-k="nDig"></b></div>
+  <canvas class="nestcut" data-k="nCut" role="img" aria-label="Side view of this nest's tunnels and rooms"></canvas>
+  <div class="nlist" data-k="nList"></div>
 </div>`;
 const sideEl = $('side'), sideEmpty = $('sideEmpty');
 // on a phone the stats column slides up from the bottom; this button shows and hides it
@@ -9461,6 +9716,110 @@ const statsBtn = document.createElement('button'); statsBtn.id = 'statsBtn'; sta
 tray.append(statsBtn);
 function showSide(on) { document.body.classList.toggle('side-open', on); statsBtn.textContent = on ? 'Hide stats' : 'Stats'; requestAnimationFrame(() => { sheets.forEach(updateSheet); updateOverview(); }); }
 statsBtn.addEventListener('click', () => showSide(!document.body.classList.contains('side-open')));
+// ---------- the Nest tab: a side cut-away of the nest's tunnels and rooms, with ants going about inside ----------
+const ROOM_TXT = c => ({
+  2: () => 'Home of the queen, deep and safe',
+  3: () => `Young are raised ${Math.round(nurseryMul(c) * 100)}% as fast as a nest with one nursery`,
+  4: () => storeMul(c) >= 1 ? `Holds ${Math.round((storeMul(c) - 1) * 100)}% more food` : `Holds ${Math.round((1 - storeMul(c)) * 100)}% less food until a store is dug`,
+  5: () => hasAbil(c, 18) ? `Fungus grows at ${Math.round(gardenMul(c) * 100)}%` : 'Only useful to fungus farmers',
+  6: () => `Disease ${Math.round((1 - wasteMul(c)) * 100)}% less likely`,
+  7: () => 'Shelter from the cold, and half as many ants drown in floods',
+  1: () => 'Ways in and out, with the dug soil piled around them',
+});
+function updateNestList(sh) {
+  const c = sh.c, K = sh.k, S = netSummary(c);
+  if (!P.chambers || !P.dig || !S) { K.nDig.textContent = ''; K.nList.innerHTML = '<div class="hint">Underground nests are switched off in the settings.</div>'; return; }
+  K.nDig.textContent = S.cur ? `Digging: ${NT_INFO[S.cur.t][0].toLowerCase()} ${Math.round(S.cur.g * 100)}%` : 'Not digging right now';
+  const txt = ROOM_TXT(c), rows = [];
+  for (const t of [2, 3, 4, 5, 6, 7, 1]) { const n = S.by.find(b => b.t === t).done; if (!n && t !== 4 && t !== 3) continue;
+    rows.push(`<div class="nrow"><i class="nsw t${t}"></i><div><b>${NT_INFO[t][0]}${n > 1 ? ` ×${n}` : n ? '' : ' (none yet)'}</b><span>${txt[t]()}</span></div></div>`); }
+  const html = rows.join(''); if (K.nList.innerHTML !== html) K.nList.innerHTML = html;
+}
+function cutLayout(sh, w, h) {
+  const c = sh.c, N = c.net.nodes, key = N.length + ':' + N.filter(n => n.g >= 1).length + ':' + w + ':' + h;
+  if (sh.cutKey === key) return sh.cut; sh.cutKey = key;
+  let mx = 0, my = 0; for (const n of N) { mx += n.x; my += n.y; } mx /= N.length; my /= N.length;
+  let sxx = 0, syy = 0, sxy = 0; for (const n of N) { const dx = n.x - mx, dy = n.y - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+  const th = 0.5 * Math.atan2(2 * sxy, sxx - syy), ca = Math.cos(th), sa = Math.sin(th);
+  const u = N.map(n => (n.x - mx) * ca + (n.y - my) * sa), span = Math.max(12, ...N.map((n, i) => Math.abs(u[i]) + n.r));
+  const yS = h * 0.17, sx = Math.min(w * 0.44 / span, 9), maxD = Math.max(4, ...N.map(n => n.d)), P2 = N.map((n, i) => {
+    const rx = Math.max(n.t === NT.entrance ? 4 : 14, n.r * sx * 1.15), ry = n.t === NT.entrance ? 3 : Math.max(7, Math.min(rx * 0.5, 15));
+    return { x: w / 2 + u[i] * sx, y: n.t === NT.entrance ? yS : yS + 28 + n.d / maxD * (h - yS - 58), rx, ry, n };
+  });
+  for (let it = 0; it < 40; it++) for (let a = 0; a < P2.length; a++) for (let b = a + 1; b < P2.length; b++) { // nudge rooms apart that would overlap in the side view
+    const A = P2[a], B = P2[b]; if (A.n.t === NT.entrance || B.n.t === NT.entrance) continue;
+    if (Math.abs(A.y - B.y) < A.ry + B.ry + 4) { const need = A.rx + B.rx + 8 - Math.abs(A.x - B.x); if (need > 0) { const d = A.x <= B.x ? -1 : 1; A.x += d * need / 2; B.x -= d * need / 2; } }
+  }
+  for (const q of P2) q.x = Math.min(w - q.rx - 4, Math.max(q.rx + 4, q.x));
+  const edges = P2.map((q, i) => q.n.p >= 0 ? { a: P2[q.n.p], b: q, i, mx: (P2[q.n.p].x + q.x) / 2 + (hashS(i) - 0.5) * 30, my: (P2[q.n.p].y + q.y) / 2 + (hashS(i + 9) - 0.5) * 14 } : null).filter(Boolean);
+  // a few stones in the soil, the same for this nest every time
+  const stones = []; for (let k = 0; k < 40; k++) stones.push([hashS(k * 3 + c.slot) * w, yS + 8 + hashS(k * 3 + 1 + c.slot) * (h - yS), 1 + hashS(k * 3 + 2) * 3]);
+  sh.cut = { P2, edges, yS, stones }; sh.cutAnts = null; return sh.cut;
+}
+const hashS = k => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const qpt = (e, t) => { const a = e.a, b = e.b, it = 1 - t; return [it * it * a.x + 2 * it * t * e.mx + t * t * b.x, it * it * a.y + 2 * it * t * e.my + t * t * b.y]; };
+function drawCut(sh, dt) {
+  const c = sh.c, el = sh.k.nCut; if (!el.isConnected || !c.net) return;
+  const [g, w, h] = prepCanvas(el), L = cutLayout(sh, w, h), rgb = famRGB(c.ci), col = `rgb(${rgb})`, dark = `rgb(${rgb.map(v => Math.round(v * 0.45)).join(',')})`;
+  const fill = [Math.min(1, c.inside / 200), 0, 1, Math.min(1, 0.25 + (c.inside + c.out) / 300), Math.min(1, c.food / storeCap(c)), Math.min(1, 0.3 + (c.fungus || 0) / 40), Math.min(1, 0.2 + (c.inside + c.out) / 500 + (c.sick ? 0.4 : 0)), 1];
+  // sky, ground and soil
+  let gr = g.createLinearGradient(0, 0, 0, L.yS); gr.addColorStop(0, '#1d2733'); gr.addColorStop(1, '#3a4756'); g.fillStyle = gr; g.fillRect(0, 0, w, L.yS);
+  gr = g.createLinearGradient(0, L.yS, 0, h); gr.addColorStop(0, '#6b5038'); gr.addColorStop(0.25, '#4d3826'); gr.addColorStop(1, '#241a12'); g.fillStyle = gr; g.fillRect(0, L.yS, w, h - L.yS);
+  g.fillStyle = 'rgba(0,0,0,0.18)'; for (const [x, y, r] of L.stones) { g.beginPath(); g.ellipse(x, y, r * 1.4, r, 0, 0, 7); g.fill(); }
+  g.fillStyle = '#4f6b2e'; g.fillRect(0, L.yS - 2, w, 3); g.strokeStyle = '#5f7f36'; g.lineWidth = 1;
+  for (let k = 0; k < w / 7; k++) { const x = k * 7 + hashS(k) * 5; g.beginPath(); g.moveTo(x, L.yS - 1); g.lineTo(x + (hashS(k + 50) - 0.5) * 3, L.yS - 4 - hashS(k + 90) * 4); g.stroke(); }
+  // mounds of dug soil around the entrances
+  const mh = Math.min(16, 3 + Math.sqrt(c.inside + c.out) * 0.5);
+  for (const q of L.P2) if (q.n.t === NT.entrance && q.n.g >= 1) { g.fillStyle = '#7a5a3c'; g.beginPath(); g.ellipse(q.x, L.yS, mh * 1.9, mh * 0.8, 0, Math.PI, 0); g.fill(); g.fillStyle = '#16100a'; g.beginPath(); g.ellipse(q.x, L.yS - 0.5, 3, 2, 0, 0, 7); g.fill(); }
+  // tunnels: a dark wall with a lighter floor
+  const part = e => Math.min(1, e.b.n.g / 0.35);
+  for (const [lw, st] of [[8, '#1a120b'], [5, '#5c4430']]) { g.lineWidth = lw; g.strokeStyle = st; g.lineCap = 'round';
+    for (const e of L.edges) { const f = part(e); if (f <= 0) continue; g.beginPath(); g.moveTo(e.a.x, e.a.y); for (let t = 0.1; t <= f + 1e-6; t += 0.1) { const [x, y] = qpt(e, Math.min(t, f)); g.lineTo(x, y); } g.stroke(); } }
+  // rooms, as far as they are dug, and what is in them
+  for (const q of L.P2) {
+    const n = q.n; if (n.t === NT.entrance) continue; const gr2 = Math.max(0, (n.g - 0.35) / 0.65); if (gr2 <= 0) continue;
+    const rx = q.rx * Math.sqrt(gr2), ry = q.ry * Math.sqrt(gr2);
+    g.fillStyle = '#1a120b'; g.beginPath(); g.ellipse(q.x, q.y, rx + 2.5, ry + 2.5, 0, 0, 7); g.fill();
+    g.fillStyle = n.t === NT.winter ? '#4f5866' : n.t === NT.queen ? '#6e5532' : '#5c4430'; g.beginPath(); g.ellipse(q.x, q.y, rx, ry, 0, 0, 7); g.fill();
+    g.strokeStyle = `rgba(${rgb},0.55)`; g.lineWidth = 1.2; g.stroke();
+    if (n.g < 1) continue;
+    const f = fill[n.t], cnt = Math.round(f * rx * 0.6), seed = n.ph * 100;
+    g.save(); g.beginPath(); g.ellipse(q.x, q.y, rx - 1, ry - 1, 0, 0, 7); g.clip();
+    for (let k = 0; k < cnt; k++) {
+      const px = q.x + (hashS(seed + k) - 0.5) * rx * 1.7, py = q.y + ry * (0.15 + 0.7 * hashS(seed + k + 40)) - ry * 0.3;
+      if (n.t === NT.store) { g.fillStyle = ['#f1dc86', '#d6b270', '#ffc440', '#c86e5a'][k % 4]; g.beginPath(); g.arc(px, py, 1.8, 0, 7); g.fill(); }
+      else if (n.t === NT.nursery) { g.fillStyle = '#ece4ce'; g.beginPath(); g.ellipse(px, py, 2.4, 1.5, hashS(seed + k + 7) * 3, 0, 7); g.fill(); }
+      else if (n.t === NT.garden) { g.fillStyle = 'rgba(222,216,198,0.85)'; g.beginPath(); g.arc(px, py, 2 + hashS(seed + k + 3) * 2.5, 0, 7); g.fill(); }
+      else if (n.t === NT.waste) { g.fillStyle = '#2e2618'; g.beginPath(); g.arc(px, py + 2, 1.3, 0, 7); g.fill(); }
+    }
+    if (n.t === NT.queen) { // the queen, with a few eggs
+      g.fillStyle = '#efe8d6'; for (let k = 0; k < 6; k++) { g.beginPath(); g.ellipse(q.x - rx * 0.5 + k * 3, q.y + ry * 0.5, 1.3, 0.9, 0, 0, 7); g.fill(); }
+      const s = Math.min(9, ry * 0.7); g.fillStyle = dark; g.beginPath(); g.ellipse(q.x - s * 0.7, q.y, s, s * 0.55, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(q.x + s * 0.5, q.y - 0.5, s * 0.4, s * 0.32, 0, 0, 7); g.fill(); g.beginPath(); g.arc(q.x + s * 1.05, q.y - 1, s * 0.3, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(255,214,120,0.8)'; g.lineWidth = 1; g.beginPath(); g.ellipse(q.x - s * 0.7, q.y, s, s * 0.55, 0, 0, 7); g.stroke();
+    }
+    g.restore();
+  }
+  // ants walking the tunnels
+  const want = Math.min(70, 3 + Math.round(c.inside / 6));
+  if (!sh.cutAnts) sh.cutAnts = [];
+  const done = L.edges.filter(e => e.b.n.g >= 1);
+  while (sh.cutAnts.length < want && done.length) sh.cutAnts.push({ e: done[(Math.random() * done.length) | 0], t: Math.random(), v: (0.25 + Math.random() * 0.35) * (Math.random() < 0.5 ? 1 : -1), rest: 0 });
+  sh.cutAnts.length = Math.min(sh.cutAnts.length, want);
+  g.fillStyle = dark;
+  for (const a of sh.cutAnts) {
+    if (!done.includes(a.e)) a.e = done[(Math.random() * done.length) | 0];
+    if (a.rest > 0) a.rest -= dt; else { a.t += a.v * dt; if (a.t > 1 || a.t < 0) { // reached a room: wait a moment, then take another tunnel from here
+      const at = a.t > 1 ? a.e.b : a.e.a, next = done.filter(e => e.a === at || e.b === at), e = next[(Math.random() * next.length) | 0] || a.e;
+      a.e = e; a.t = e.a === at ? 0 : 1; a.v = Math.abs(a.v) * (e.a === at ? 1 : -1); a.rest = Math.random() * 1.2; } }
+    if (!a.e) continue; const [x, y] = qpt(a.e, Math.min(1, Math.max(0, a.t))), [x2, y2] = qpt(a.e, Math.min(1, Math.max(0, a.t + 0.02 * Math.sign(a.v)))), an = Math.atan2(y2 - y, x2 - x);
+    g.save(); g.translate(x, y); g.rotate(an); g.beginPath(); g.ellipse(-1.6, 0, 1.6, 1.1, 0, 0, 7); g.fill(); g.beginPath(); g.arc(1.2, 0, 1, 0, 7); g.fill(); g.restore();
+  }
+  // names
+  g.font = '600 10px Instrument Sans, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top';
+  const taken = [];
+  for (const q of [...L.P2].sort((A, B) => (B.n.t === NT.queen) - (A.n.t === NT.queen))) { const n = q.n; if (n.t === NT.entrance || n.g < 0.35) continue; const lw = g.measureText(NT_INFO[n.t][0]).width + 6, box = [q.x - lw / 2, q.y + q.ry + 2, lw, 12];
+    if (taken.some(B => box[0] < B[0] + B[2] && B[0] < box[0] + box[2] && box[1] < B[1] + B[3] && B[1] < box[1] + box[3])) continue; taken.push(box); const lab = n.g < 1 ? `${NT_INFO[n.t][0]} ${Math.round(n.g * 100)}%` : NT_INFO[n.t][0]; g.fillStyle = 'rgba(0,0,0,0.6)'; g.fillText(lab, q.x + 0.5, q.y + q.ry + 3.5); g.fillStyle = n.g < 1 ? 'rgba(240,225,200,0.65)' : 'rgba(240,225,200,0.95)'; g.fillText(lab, q.x, q.y + q.ry + 3); }
+}
 function openSheet(c) {
   if (matchMedia('(max-width:760px)').matches) showSide(true);
   let sh = sheets.find(o => o.c === c);
@@ -9578,7 +9937,7 @@ function updateSheet(sh) {
     else if (reserve < 1) chips.push(['warn', 'Hungry']);
     else if (total >= nestCap(c)) chips.push(['muted', 'Full, stockpiling food']);
     if (tierOf(c) > 1) chips.push(['good', `Level ${tierOf(c)} nest`]);
-    if (P.chambers && (c.chambers || []).length) chips.push(['muted', `${chambersDone(c)} of ${c.chambers.length} chambers dug`]);
+    if (P.chambers && c.net) chips.push(['muted', `${chambersDone(c)} rooms dug`]);
     if (P.likes) { const lk = likesOf(c); lk.forEach((v, k) => { if (Math.abs(v) > 0.35) chips.push(['muted', LIKE_NAMES[k][v > 0 ? 0 : 1]]); });
       const F = famFeel(c.fam); if (F && F.friend >= 0) chips.push(['good', `friends with ${famName(F.friend)}`]); if (F && F.foe >= 0) chips.push(['bad', `hates ${famName(F.foe)}`]); }
     if (P.crowdNiche && (c.nicheMul ?? 1) < 0.9) chips.push(['warn', `Crowded way of living: food worth ${Math.round(c.nicheMul * 100)}%`]);
@@ -9612,6 +9971,7 @@ function updateSheet(sh) {
   K.kResS.textContent = reserve >= P.birthBuffer ? 'enough to keep breeding' : reserve < 1 ? (c.food <= 0.5 ? 'store is empty' : 'running low') : 'not enough to breed';
   const Hs = c.hist;
   if (sh.tab === 'genes') updateGenes(sh);
+  if (sh.tab === 'nest') { updateNestList(sh); if (!sh.cutLoop) { sh.cutLoop = true; let last = performance.now(); const tick = now => { if (sh.tab !== 'nest' || !sheets.includes(sh)) { sh.cutLoop = false; return; } drawCut(sh, Math.min(0.1, (now - last) / 1000)); last = now; requestAnimationFrame(tick); }; requestAnimationFrame(tick); } }
   if (sh.tab === 'over') {
   lineChart(K.cPop, Hs.map(h => h.ants), rgb);
   K.cPopV.textContent = `${total} ants`;
@@ -10838,7 +11198,7 @@ function frameBody(now) {
   }
 }
 requestAnimationFrame(frame);
-window.__antGpu = { carcN: () => GIANT.carcasses(), giantBones: () => GIANT.forceBones(), boneHead: async () => { const b = device.createBuffer({ size: 64, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ }), enc = device.createCommandEncoder(); enc.copyBufferToBuffer(bufs.world, LO.BONE_OFF * 4, b, 0, 64); device.queue.submit([enc.finish()]); await b.mapAsync(GPUMapMode.READ); const u = [...new Int32Array(b.getMappedRange())]; b.unmap(); return u; }, giant: k => GIANT.spawn(k), giantHurt: v => GIANT.hurt(v), giantRaid: () => GIANT.raid(), giantD: d => GIANT.testD(d), rocks: async () => { const n = Math.ceil(W * H / 8) * 4, b = device.createBuffer({ size: n, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ }), enc = device.createCommandEncoder(); enc.copyBufferToBuffer(bufs.decal, (64 + 2 * DECPOOL) * 4, b, 0, n); device.queue.submit([enc.finish()]); await b.mapAsync(GPUMapMode.READ); const u = Array.from(new Uint32Array(b.getMappedRange())); b.unmap(); return { W, H, u }; }, giantStatus: () => ({ s: GIANT.status(), c: GIANT.carcass() && { flesh: GIANT.carcass().flesh, boneAt: GIANT.carcass().boneAt }, words: [...giantWords], beasts: beasts.map(b => [b.kind, Math.round(b.fx), Math.round(b.fy), +(b.size || 1).toFixed(1)]) }), quad: () => quadWorld(), reset: () => doReset(), haz: l => { worldHaz = l; }, eco2: () => { let s = 0, n = 0, lo = 9, hi = 0; for (let i = 0; i < NCH; i++) if (landN[i] > 0.3) { s += preyS[i]; n++; lo = Math.min(lo, preyS[i]); hi = Math.max(hi, preyS[i]); }
+window.__antGpu = { carcN: () => GIANT.carcasses(), giantBones: () => GIANT.forceBones(), boneHead: async () => { const b = device.createBuffer({ size: 64, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ }), enc = device.createCommandEncoder(); enc.copyBufferToBuffer(bufs.world, LO.BONE_OFF * 4, b, 0, 64); device.queue.submit([enc.finish()]); await b.mapAsync(GPUMapMode.READ); const u = [...new Int32Array(b.getMappedRange())]; b.unmap(); return u; }, giant: k => GIANT.spawn(k), giantHurt: v => GIANT.hurt(v), giantRaid: () => GIANT.raid(), giantD: d => GIANT.testD(d), netTest: k => { for (let i = 0; i < k; i++) { simStep += 225; for (const c of colonies) { c.inside = Math.min(500, c.inside * 1.01 + 2); c.out = c.inside; } stepNets(); } openSheet(colonies[0]); const sh = sheets[0]; sh.el.querySelector('[data-st="nest"]').click(); return colonies.map(c => c.net && c.net.nodes.length); }, rocks: async () => { const n = Math.ceil(W * H / 8) * 4, b = device.createBuffer({ size: n, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ }), enc = device.createCommandEncoder(); enc.copyBufferToBuffer(bufs.decal, (64 + 2 * DECPOOL) * 4, b, 0, n); device.queue.submit([enc.finish()]); await b.mapAsync(GPUMapMode.READ); const u = Array.from(new Uint32Array(b.getMappedRange())); b.unmap(); return { W, H, u }; }, giantStatus: () => ({ s: GIANT.status(), c: GIANT.carcass() && { flesh: GIANT.carcass().flesh, boneAt: GIANT.carcass().boneAt }, words: [...giantWords], beasts: beasts.map(b => [b.kind, Math.round(b.fx), Math.round(b.fy), +(b.size || 1).toFixed(1)]) }), quad: () => quadWorld(), reset: () => doReset(), haz: l => { worldHaz = l; }, eco2: () => { let s = 0, n = 0, lo = 9, hi = 0; for (let i = 0; i < NCH; i++) if (landN[i] > 0.3) { s += preyS[i]; n++; lo = Math.min(lo, preyS[i]); hi = Math.max(hi, preyS[i]); }
   const life = {}; for (const c of colonies) { const l = lifestyle(c); life[l] = (life[l] || 0) + c.inside + c.out; }
   return { t: Math.floor(simStep / MINUTE), haz: worldHaz.join('+'), prey: [s / Math.max(1, n), lo, hi].map(v => +v.toFixed(2)), beasts: beasts.map(b => b.kind || 0).join(''), life, quads: labQuads(), ants: colonies.reduce((a, c) => a + c.inside + c.out, 0), nests: colonies.length, colours: new Set(colonies.map(c => c.ci)).size, sick: colonies.filter(c => c.sick).length, careful: colonies.filter(c => likesOf(c)[4] > 0.3).length, plants: plants.length, ev: EVENTS.filter(e => e.kind === 'hazard' || e.kind === 'slain' || e.kind === 'death').slice(-6).map(e => Math.round(e.step / MINUTE) + ' ' + e.text) }; }, eco: () => { let lo = 9, hi = 0, sum = 0; for (const v of fert) { lo = Math.min(lo, v); hi = Math.max(hi, v); sum += v; } return { t: Math.floor(simStep / MINUTE), season: seasonName(), growth: +growth().toFixed(2), fert: [lo, hi, sum / NCH].map(v => +v.toFixed(2)), harvested: harv.reduce((a, b) => a + b, 0) | 0, dripped: drip.reduce((a, b) => a + b, 0) | 0, plants: plants.length, farms: plants.filter(p => p.farm !== undefined).length, tended: plants.filter(p => p.tended !== undefined).length, nests: colonies.map(c => [c.name.split(' ')[0], c.inside + c.out, lifestyleTag(c), +paceMul(c).toFixed(2), Math.round(c.temp * 50 - 10), +bandOf(c).toFixed(2)]) }; }, dbg: () => ({ inflight, running, loaded, frames, gpuLost, editing, ft, stepCap, acc, skippedDt, readSeq, readApplied, simStep, cap, busy: bufs.read.map(r => r.busy).join(''), wd: wdCount }), casinoNear: (d = 60) => { const c = colonies[0]; P.xCasino = true; casino = { x: Math.min(W - 5, c.x + d), y: c.y, open: true, at: simStep, paid: new Map(), spin: null }; return [casino.x, casino.y]; }, casinoSpin: k => { const c = colonies[0]; startSpin(c); casino.spin.out = CASINO_OUT[k]; }, casinoState: () => casino && { open: casino.open, paid: [...casino.paid], spin: casino.spin && { done: casino.spin.done, msg: casino.spin.msg } }, nests: () => colonies.map(c => [c.name, c.inside + c.out, c.ci]), P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
   async pngRoundTrip() { // test hook: export, read back, compare

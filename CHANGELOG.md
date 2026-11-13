@@ -9,6 +9,27 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.1 (test build)
+
+First test of underground nests.
+
+- **Nests dig a real underground.** Each nest now digs its own network of rooms joined by tunnels, a room at a time. The rooms near the nest that did nothing are gone. A share of the ants at home do the digging, faster with a high Digging gene and in sand, slower in rough ground. Rooms can't be dug under water or rock, or into another nest's tunnels.
+- **Every nest digs differently.** Nests in hot, dry ground dig deep. Nests in wet ground stay shallow and spread out. Strong diggers make bigger rooms.
+- **Rooms have jobs:**
+  - **Queen chamber:** dug first, deep down.
+  - **Nurseries:** more nurseries mean more young at once.
+  - **Food stores:** set how much food the nest can keep. A new nest holds less until it digs its first store; many stores hold more than before.
+  - **Fungus gardens:** fungus farmers grow more food with more gardens.
+  - **Waste chambers:** make disease less likely and less deadly.
+  - **Winter chamber:** cuts the food cost of the cold, and halves the ants lost in floods.
+  - **Entrances:** more are added as the nest grows. The dug soil is piled around them into a mound.
+- **What it digs next depends on what it needs:** another store when the stores are nearly full, another nursery as it grows, and so on.
+- **Underground view.** A new map button (or the U key, or Map view → Underground) fades the surface and shows every nest's tunnels and rooms in its colour, darker the deeper they are. Inside you can see stored food, young, fungus, rubbish, ants moving about, and each queen. Room names show when zoomed in. When a nest dies, its empty tunnels stay in the ground.
+- **Nest tab.** Each nest's panel has a new Nest tab with a side view of its underground: the mound and entrances at the top, tunnels with ants walking them, and every room with what's in it. Below it is a list of the rooms and what each one is doing for the nest right now.
+- **Nests on the map.** Zoomed in, a nest now shows as its mound and entrance holes, with a thin ring in its colour instead of the big icon. Zoomed out, the icons are still there.
+- **Explorers and fetchers.** Ants leaving the nest now count the food trails leading away from it. With no trail, everyone explores. With one trail, about half go fetch along it and half keep exploring. Each extra trail sends more ants to fetch. At least 10% always explore (the Scouts setting). Hungry nests send out more explorers, and farmers and nests with full stores send fewer. Curious nests explore more.
+- **Fixed:** since 2.1.9, each nest's temperature, food skills, comfort range and likes and dislikes weren't reaching the ants. Ants now follow their nest's preferences again, which should bring back clear trails.
+
 ## 2.2.0 (stable build): Giants
 
 Everything from the 2.1.x test builds, now finished and locked in as the new stable base.
