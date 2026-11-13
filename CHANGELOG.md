@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.2 (test build)
+
+- **Nests are built like the Raspberry Pi ant farm.** Each nest now digs a side-on grid of soil, cell by cell, the same way the Pi version does. Rooms are flat-bottomed and sit at the depths real ants use. The queen starts in a small room near the top and moves down to a deep royal chamber once the nest is big enough, and her first room becomes a nursery. Each new room is joined to the nearest tunnel by a winding passage, and small hubs form where tunnels meet. Buried stones (and the rock and water above) make the tunnels go around them.
+- **Nest tab redrawn.** The side view now uses the Pi farm's look: soft rounded soil that gets darker deeper down, stones, the mound of dug soil with grass (and snow in the cold) at the top, and the colony's ants walking the tunnels. Rooms show what they hold: food on the floor of the stores, eggs, larvae and pupae in the nurseries, fungus in the gardens, rubbish in the waste rooms, and the queen in her chamber. Point at a room to see its name.
+- **The Underground map view** shows the same tunnels and rooms from above.
+
 ## 2.2.1 (test build)
 
 First test of underground nests.
