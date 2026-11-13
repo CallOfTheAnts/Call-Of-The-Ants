@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.6 (test build)
+
+- Several carcasses can lie on the map at once (up to four). A new giant dying no longer wipes out the one before; only when a fifth falls does the oldest go.
+- Giants keep to the middle 80% of the map. They walk in from the edge, but once on the map they treat the outer tenth on every side like water: they turn back before it, and every place they head for (nests, prowling spots) lies inside it. Only when leaving do they head out over the edge.
+- A new switch under "Trails in colony colours": "Nest and farm markers". Turn it off to hide the nest markers with their ant symbols, the dashed rings around farms and the dotted rings around tended aphid trees.
+
 ## 2.1.5 (test build)
 
 - A giant's carcass is stripped layer by layer: ants only take the muscle once the skin all around it (up to 10 tiles away) is gone, so you can watch the skin peel back and the red muscle spread before it too is carried off.
