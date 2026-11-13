@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.10 (test build)
+
+- Carcass rot spreads in smooth, soft-edged patches instead of blocky ones, both in how it looks and in which parts rot away first.
+- Rotting colours are stronger: skin turns a clearer grey-green and then brown sooner, and muscle a deeper maroon before browning.
+- Overgrowth on old bones is lighter: grass, moss, lichen or sand covers fewer patches and lets the bone show through.
+
 ## 2.1.9 (test build)
 
 - Ants take up as much room as they look. How far apart ants keep now follows the size they are drawn at (their body size and their look's overall scale together), where before it left out the look's scale, so big-bodied species could overlap. Two ants now keep apart by both of their sizes: two big ants stand further apart than a big and a small one.
