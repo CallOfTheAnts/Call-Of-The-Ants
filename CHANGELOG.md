@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.7 (test build)
+
+- Giants find their way properly instead of feeling ahead: they plan a route over a coarse map of the ground (cells of 16 tiles) around lakes and rivers, keeping about half their body width away from big water, and follow it. They plan again every few seconds and whenever their goal changes.
+- Small puddles and thin streams no longer stop them: a patch only counts as water for a giant when most of a 16-tile cell is water, so they step over puddles.
+- If a giant still gets boxed in for a few seconds, it gives up on that spot and heads for another nest.
+
 ## 2.1.6 (test build)
 
 - Several carcasses can lie on the map at once (up to four). A new giant dying no longer wipes out the one before; only when a fifth falls does the oldest go.
