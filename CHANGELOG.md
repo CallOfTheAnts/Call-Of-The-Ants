@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.15 (test build)
+
+- **Rock clusters instead of scattered rocks.** The many small rocks spread over the map are gone. Each map now has 10 to 20 rock clusters. Each cluster has one big rock, 3 to 5 medium rocks around it, and 2 to 5 small rocks around those. They keep the old-bone look from 2.1.14, stay in the same places when you keep a map, and are never placed on top of nests or water.
+- **Rocks are solid.** Ants can't walk over the rock clusters, the same as with standing bones. Only ants that have evolved high Traversal or Agility can climb over them. New nests are never founded inside or right against a rock.
+
 ## 2.1.14 (test build)
 
 - **Rock outcrops.** Small pale rock formations now lie scattered in patches over the land. They have the same colour and look as old, worn-down bones: weathered grey, partly grown over with grass, moss, lichen or sand, and frosted and snowed over in the cold. A skeleton in its last stages now sits among them like part of the landscape. They're only for looks, so ants walk over them.
