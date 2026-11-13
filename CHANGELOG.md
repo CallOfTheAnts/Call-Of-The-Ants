@@ -9,6 +9,13 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.8 (test build)
+
+- Carcasses rot in stages. Skin rots first: it dulls to grey-green, then leathery brown, in mottled patches, and falls away bit by bit. The muscle under it lasts longer, darkening from red to maroon and then brown before it goes too.
+- Bones change fast at first and then slowly: within the first few hours they pale and start to look like part of the ground, then they take most of their 20 hours to fade away fully. They still only start once the flesh is mostly gone.
+- Whatever grows in that place grows over the bones: grass in meadows, deep moss where it is damp, grey-green lichen in the cold, and sand drifting over them in deserts, spreading in patches until they blend into the land.
+- Ants wait for the skin twice as far around (20 tiles instead of 10) before they start on the muscle, so the skin peels back further before the red shows through.
+
 ## 2.1.7 (test build)
 
 - Giants find their way properly instead of feeling ahead: they plan a route over a coarse map of the ground (cells of 16 tiles) around lakes and rivers, keeping about half their body width away from big water, and follow it. They plan again every few seconds and whenever their goal changes.
