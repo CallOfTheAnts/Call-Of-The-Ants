@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.14 (test build)
+
+- **Rock outcrops.** Small pale rock formations now lie scattered in patches over the land. They have the same colour and look as old, worn-down bones: weathered grey, partly grown over with grass, moss, lichen or sand, and frosted and snowed over in the cold. A skeleton in its last stages now sits among them like part of the landscape. They're only for looks, so ants walk over them.
+- **Bone shadows fully gone.** Fixed a leftover shadow under old bones in the Giant Creature Lab.
+
 ## 2.1.13.1 (fix)
 
 - **Bone shadows fade out.** The shadow and raised shading of the bones now fade slowly as they wear down, and are fully gone once 60% of the bones are left.
