@@ -9,6 +9,43 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.0.14 (test build)
+
+A big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.
+
+**Prey that can run out (the fox and rabbit cycle)**
+- Live prey now breeds where plants grow and gets scarce where hunters catch most of it. A hunter colony that takes everything around it empties its own hunting ground, goes hungry and shrinks, and the prey comes back once the pressure is off.
+- Prey also grazes a little on wild plants where it is plentiful, so gatherers that strip the land bare also starve the prey that hunters live on.
+- The overview shows how much prey the land holds on average.
+
+**Careful colonies**
+- A new taste next to the other likes: care. Careful colonies leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out, so the land can recover.
+- Care grows over generations in colonies whose own food is running out, and fades where food is plentiful. Shows up as "careful" on a nest's page.
+
+**Starting nests fit their home**
+- The first colonies of a world lean toward the food that grows around them, cope with a wider range of temperatures, get extra food on poor land, and get small gene nudges for cold or hot homes. Fewer early collapses, and different realms start out different.
+- When the ground gets warmer or colder than a nest likes (seasons, droughts, the temperature setting), its liked temperature now follows much faster, so species re-adapt to a changed climate.
+
+**World events: one or two per world**
+Each new world picks one or two of these at random. Each one exists to push evolution somewhere:
+- 🕷 Spiders spin webs near food. Brave, strong-biting colonies tear them down and eat the spider; ants with good eyes walk around them; careless ones get caught.
+- ⏳ Antlions hide pits in sand, desert and beaches. Only ants with good eyes see them in time.
+- 🐦 Birds hunt ants on open ground and can't be fought. Rough ground and rock give cover.
+- 🐟 Fish get stranded on the shore: rich food for hunters that settle near water.
+- 🌊 Floods in some springs hit nests close to water, then leave the shore extra fertile.
+- 🔥 Wildfires sweep across hot, dry land in summer. The ash makes the soil rich afterwards.
+- 🦠 Disease spreads between big, crowded nests of the same colour. Health resists it, so no single species can fill the map.
+- 🦗 Locust swarms cross the map, stripping plants and leaving a feast of dead locusts for hunters and scavengers.
+- 🐞 Ladybugs eat aphids. Unguarded aphid trees dry up; herders with strong Bite and Courage chase them off.
+- ☀ Drought years: green plants and fruit wilt while seeds, cactus and lichen hold on, and the ground feels hotter.
+- The new "World" section of the overview lists this world's events, what each one is for, what is happening right now, and how many ants live each way of life.
+- Settings, under Food skills: switches for prey that can run out, adapted starting nests and world events, plus "Always include" to make sure the next world has a certain event.
+- The map can now hold eight beasts, webs, pits and birds at once (was four).
+
+**Four realms test map**
+- "Four realms" is now a choice when you pick a new world: a mountain cross splits the map into cold and dry, hot and dry, cold and damp, and hot and damp land, with six passes between them.
+- The balance test (Ctrl+Shift+L) now runs the four realms first, then two random worlds, and reports the world events, the prey, and which ways of living each quarter of the map ended up with.
+
 ## 2.0.13.1 (fix)
 
 - Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.
