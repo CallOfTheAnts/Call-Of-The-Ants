@@ -9,6 +9,14 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.2 (test build)
+
+- Giants are twice as big: about a fifth of the map long.
+- Giants are much harder to kill. Their thick hide makes each ant bite count for little, so it takes a big fight to bring one down, and they bite back harder. A "Giant toughness" slider in Settings sets how hard.
+- Every ant eats from a carcass now, not only scavengers, and there is one bite of skin and one of muscle per 2x2 block of tiles instead of per tile, so a carcass is stripped much faster.
+- Bones stand like a small mountain ridge: once the carcass is picked clean, ants can't walk through them, except nimble ones (Traversal or Agility of 135% or more), which climb over. The bones are lit and cast a shadow. When only 30% of their wearing away is left, they are low enough for every ant to cross again.
+- Summon a giant three ways: the "Summon a giant" button in the World section of the overview, the Giant tap tool in Experimental (it walks in toward where you tap), or the lizard, anteater and bird buttons under Food skills.
+
 ## 2.1.1 (test build)
 
 Giant creatures, the first test of what will become 2.2.0.
