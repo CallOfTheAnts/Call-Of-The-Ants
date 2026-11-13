@@ -9,6 +9,17 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.1 (test build)
+
+Giant creatures, the first test of what will become 2.2.0.
+- Very rarely, a giant walks onto the map: a monitor lizard, an anteater or a bird, each about a tenth of the map long, in one of three colourings (olive, teal or yellow lizards; grey, golden-vest or russet anteaters; hornbills, vultures or eagles). On average one comes every 10 sim hours, anywhere from 5 to 15.
+- It walks on from the edge nearest a big nest, crosses anything except water, and prowls from nest to nest eating ants. It bites whatever ants it reaches and attacks now and then: the lizard whips its tail, the anteater lashes out its tongue, the bird pecks.
+- Ants can fight back. It takes a lot of ants a long time to bring one down, and a health bar shows how it is going.
+- It leaves when the ants on the map have dropped to half of what they were when it came, walking off the nearest edge.
+- When it dies it falls over and its body becomes the ground: every tile of it is carcass food, skin on top and muscle underneath, which scavengers carry off one bite at a time, and its weight presses a hollow into the ground the shape of its body. What nobody eats rots slowly.
+- Once it is picked clean (or after 8 sim hours) the bones stay as part of the ground for 20 sim hours. They pale to grey, crumble outward and sink into the soil, which grows richer under the carcass the whole time.
+- Settings, under Food skills: switch giants on or off, set how often they come, and summon a lizard, anteater or bird right away to try it.
+
 ## 2.1.0 (stable build)
 
 The balance from the 2.0 test builds is locked in: the food web, careful colonies, world events, adapted starting nests and uncapped colours from 2.0.14 and 2.0.15 are now the stable base. Same game as 2.0.15.

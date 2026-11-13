@@ -539,7 +539,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="hint" id="pMsg" aria-live="polite"></div>
             </div>
           </details>
-          <div class="hint verline">Version <b id="verNum">2.1.0</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
+          <div class="hint verline">Version <b id="verNum">2.1.1</b> · <button type="button" id="verLog" class="linkbtn">What's new</button></div>
           <div id="devTools" hidden>
           <details class="sec" open>
             <summary>Developer: speed check</summary>
@@ -1029,6 +1029,15 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <label class="switch" for="preyCycleOn" data-tip="On: live prey breeds where plants grow and gets scarce where hunters catch most of it. A colony that over-hunts empties its own hunting ground, goes hungry, and the prey comes back once the hunters are gone, like foxes and rabbits."><span>Prey can run out</span><input type="checkbox" id="preyCycleOn" checked></label>
             <label class="switch" for="startAdaptOn" data-tip="On: the first colonies of a world lean toward the food that grows at home, cope with a wider range of temperatures, and get extra food where the land is poor. Takes effect on the next new world."><span>Starting nests fit their home</span><input type="checkbox" id="startAdaptOn" checked></label>
             <label class="switch" for="hazardsOn" data-tip="On: every new world gets one or two world events, picked at random: spiders, antlions, birds, fish, floods, wildfires, disease, locusts, ladybugs or droughts. Each one rewards different genes and ways of living. Takes effect on the next new world."><span>World events</span><input type="checkbox" id="hazardsOn" checked></label>
+            <label class="switch" for="giantsOn" data-tip="On: now and then a giant lizard, anteater or bird walks onto the map to eat ants. Ants can bring it down together, and its body then feeds them for a long time."><span>Giant creatures</span><input type="checkbox" id="giantsOn" checked></label>
+            <div class="ctl" data-tip="How often a giant comes, on average. Each time it is anywhere from half to one and a half times this.">
+              <div class="row"><label for="giantEvery">A giant every</label><output id="giantEveryV">10 h</output></div>
+              <input type="range" id="giantEvery" min="2" max="40" step="1" value="10">
+            </div>
+            <div class="ctl" data-tip="Bring one onto the map right now, to see it.">
+              <div class="row"><label>Summon a giant</label></div>
+              <div class="btns"><button type="button" id="giantNow-lizard">Lizard</button><button type="button" id="giantNow-anteater">Anteater</button><button type="button" id="giantNow-bird">Bird</button></div>
+            </div>
             <div class="ctl" data-tip="Make sure the next new world has this event (a second one may still be picked at random).">
               <div class="row"><label for="hazardPick">Always include</label></div>
               <select id="hazardPick"><option value="">nothing, all random</option><option value="spiders">Spiders</option><option value="antlions">Antlions</option><option value="birds">Birds</option><option value="fish">Fish</option><option value="floods">Floods</option><option value="fire">Wildfires</option><option value="disease">Disease</option><option value="locusts">Locusts</option><option value="ladybugs">Ladybugs</option><option value="drought">Droughts</option></select>
@@ -3806,11 +3815,12 @@ const P = { trailView: 3, deadFade: 0.6, scouts: 0.15, wander: 600, vision: 4, w
   treeChance: 0.2, treeMax: 2, treeFood: 20000, treeRadius: 10, treeScent: 140, treeDrop: 1.2,
   beastChance: 0.25, beastMax: 3, beastHp: 300, beastDmg: 4, beastBiteEvery: 6, beastFood: 400, beastSpeed: 0.35, beastReach: 2.6, beastLife: 6, dig: true, digRate: 0.4, chambers: true, likes: true, rate: 1, eat: 0.9, birthBuffer: 2, birthCost: 1, birthBurst: 3, starveKill: 1, startAnts: 10, startFood: 80, nestMax: 150,
   foodLife: 8, graceMin: 8, shieldMin: 10, founderStock: 4, abilityAt: 1.6, mutStrength: 12, mutEvery: 150, mutLean: false, splitDrift: 120, plantMin: 1500, plantVar: 1500, plantDensity: 0.85, plantDecay: 1, plantSpawn: 1, dropDiv: 4, plantNestGap: 70, fert: true, seasons: true, yearMin: 40, seasonAmp: 1, paceCost: true, farming: true, adaptive: true, niche: true,
-  hazards: true, hazardPick: '', preyCycle: true, startAdapt: true, comfort: 0.12, climCost: 4, skills: true, tempPull: 0.1, minSkill: 0.06, skillPower: 3.5, prey: 1, settleTol: 0.03, nestGap: 90, climate: true, spine: 3, insects: 1, carcass: 1, fungusMin: 1, biomeFood: true };
+  giants: true, giantEvery: 10, giantHp: 600000, giantBite: 1, hazards: true, hazardPick: '', preyCycle: true, startAdapt: true, comfort: 0.12, climCost: 4, skills: true, tempPull: 0.1, minSkill: 0.06, skillPower: 3.5, prey: 1, settleTol: 0.03, nestGap: 90, climate: true, spine: 3, insects: 1, carcass: 1, fungusMin: 1, biomeFood: true };
 
 
 // ---------- layout of the shared "world" buffer (all in 32-bit words) ----------
 const FADE_EVERY = 32; // each trail chunk fades (and empty ones are freed) once every 32 steps, a 32nd of them per step
+const DECMAX = 720; // the largest carcass picture, in tiles
 const GSTRIDE = 30, CAPMAX = 500000, MAXSPAWN = 8192, MAXDROP = 16384;
 // per-colony counters: delivered, trips, starved, inside, out, carrying, kills, lost, food raided from it, killed inside it, last red step, food raided by it
 const CTR = { delivered: 0, trips: 1, starved: 2, inside: 3, out: 4, carrying: 5, kills: 6, lost: 7, raidedFrom: 8, lostInside: 9, redStep: 10, plundered: 11, sent: 12, founders: 13, escortBack: 14, received: 15, warTarget: 16, warStep: 17, leaves: 18, meat: 19, jobs: 20, groups: 32, casino: 38 }, CTRN = 40; // groups: food delivered per food group (seeds, greens, sweets, hunting, scavenging, nest food)
@@ -3841,7 +3851,8 @@ function layout() {
   o.ROT_OFF = o.HARV_OFF + NCH;                  // per chunk: food that rotted there (feeds the soil)
   o.PREY_OFF = o.ROT_OFF + NCH;                 // per chunk: live prey caught there (for the prey stock)
   o.STAT_OFF = o.PREY_OFF + NCH;                // per chunk, from the CPU: prey stock (bits 0-7) and soil fertility (bits 8-15), so careful ants can leave worn-out ground alone
-  o.POOL_OFF = Math.ceil((o.STAT_OFF + NCH) / 64) * 64;
+  o.GIANT_OFF = o.STAT_OFF + NCH;               // carcass pellets eaten, and rotted away
+  o.POOL_OFF = Math.ceil((o.GIANT_OFF + 2) / 64) * 64;
   o.WORDS = o.POOL_OFF + SLOTS * 4096;
   return o;
 }
@@ -4004,7 +4015,7 @@ const NCOL: u32 = ${MAXCOL}u; const TABLE_HOME: u32 = ${TABLE_HOME}u; const PICK
 const W: i32 = ${W}; const H: i32 = ${H}; const CW: i32 = ${CW}; const NCH: u32 = ${NCH}u; const NT: u32 = ${N}u;
 const SLOTS: u32 = ${SLOTS}u; const FADE_EVERY: u32 = ${FADE_EVERY}u; const PENDING: u32 = 0xFFFFFFFFu; const NONE: u32 = 0xFFFFFFFFu;
 const TABLE_OFF: u32 = ${TABLE_OFF}u; const OWNER_OFF: u32 = ${OWNER_OFF}u; const FREE_OFF: u32 = ${LO.FREE_OFF}u;
-const GENE_OFF: u32 = ${LO.GENE_OFF}u; const HARV_OFF: u32 = ${LO.HARV_OFF}u; const ROT_OFF: u32 = ${LO.ROT_OFF}u; const PREY_OFF: u32 = ${LO.PREY_OFF}u; const STAT_OFF: u32 = ${LO.STAT_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
+const GENE_OFF: u32 = ${LO.GENE_OFF}u; const HARV_OFF: u32 = ${LO.HARV_OFF}u; const ROT_OFF: u32 = ${LO.ROT_OFF}u; const PREY_OFF: u32 = ${LO.PREY_OFF}u; const STAT_OFF: u32 = ${LO.STAT_OFF}u; const GIANT_OFF: u32 = ${LO.GIANT_OFF}u; const GSTRIDE: u32 = ${GSTRIDE}u;
 const CTR_OFF: u32 = ${LO.CTR_OFF}u; const KILL_OFF: u32 = ${LO.KILL_OFF}u; const SPAWN_OFF: u32 = ${LO.SPAWN_OFF}u;
 const CALL_OFF: u32 = ${LO.CALL_OFF}u; const BEAST_OFF: u32 = ${LO.BEAST_OFF}u; const FOUND_OFF: u32 = ${LO.FOUND_OFF}u; const DMG_OFF: u32 = ${LO.DMG_OFF}u; const HIT_OFF: u32 = ${LO.HIT_OFF}u;
 const DROP_OFF: u32 = ${LO.DROP_OFF}u; const AFREE_OFF: u32 = ${LO.AFREE_OFF}u; const POOL_OFF: u32 = ${LO.POOL_OFF}u;
@@ -4014,10 +4025,10 @@ const S_EXPLORE: u32 = 0u; const S_RETURN: u32 = 1u; const S_INSIDE: u32 = 2u; c
 // why an ant carries or recruits
 const W_CASINO: u32 = 8u; const W_PLANT: u32 = 0u; const W_CORPSE: u32 = 1u; const W_CACHE: u32 = 2u; const W_RAID: u32 = 3u; const W_STOLEN: u32 = 4u; const W_HURT: u32 = 5u; const W_NEST: u32 = 6u; const W_ALLY: u32 = 7u;
 // food types lying on a tile (bits 24..27 of the food word): what an ant picked up is W_FOOD + type
-const W_FOOD: u32 = 16u; const F_SEED: u32 = 1u; const F_CACTUS: u32 = 2u; const F_HONEY: u32 = 3u; const F_LEAF: u32 = 4u; const F_FRUIT: u32 = 5u; const F_NECTAR: u32 = 6u; const F_INSECT: u32 = 7u; const F_FROZEN: u32 = 8u; const F_PREY: u32 = 9u;
-const FOOD_VALUE = array<u32, 10>(1u, 1u, 2u, 1u, 2u, 2u, 1u, 3u, 3u, 4u);
+const W_FOOD: u32 = 16u; const F_SEED: u32 = 1u; const F_CACTUS: u32 = 2u; const F_HONEY: u32 = 3u; const F_LEAF: u32 = 4u; const F_FRUIT: u32 = 5u; const F_NECTAR: u32 = 6u; const F_INSECT: u32 = 7u; const F_FROZEN: u32 = 8u; const F_PREY: u32 = 9u; const F_CARCASS: u32 = 10u;
+const FOOD_VALUE = array<u32, 11>(1u, 1u, 2u, 1u, 2u, 2u, 1u, 3u, 3u, 4u, 3u);
 // food groups: 0 seeds, 1 greens, 2 sweets, 3 hunting (live prey), 4 scavenging (dead things), 5 fallen nest food (anyone)
-const FT_GROUP = array<u32, 10>(1u, 0u, 1u, 2u, 1u, 2u, 2u, 4u, 4u, 3u);
+const FT_GROUP = array<u32, 11>(1u, 0u, 1u, 2u, 1u, 2u, 2u, 4u, 4u, 3u, 4u); // 10: a giant's carcass, scavenging
 struct Params {
   cap: u32, nCol: u32, baseStep: u32, vision: f32,
   wobble: f32, novelty: f32, turnMax: f32, jitter: f32,
@@ -4296,7 +4307,7 @@ fn canEat(col: u32, g: u32) -> bool { return g >= 5u || gene(col, 19u + g) >= pr
 fn usableFood(fv: u32, col: u32) -> bool {
   if (((fv >> 16u) & 255u) > 0u) { return true; }
   if (((fv >> 8u) & 255u) > 0u && canEat(col, 4u)) { return true; }
-  return (fv & 255u) > 0u && canEat(col, FT_GROUP[min((fv >> 24u) & 15u, 9u)]);
+  return (fv & 255u) > 0u && canEat(col, FT_GROUP[min((fv >> 24u) & 15u, 10u)]);
 }
 // restraint: careful colonies (gene slot 29, 0..1) leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out
 fn leaveAlone(x: i32, y: i32, fv: u32, col: u32) -> bool {
@@ -4664,7 +4675,7 @@ fn takeFood(ti: u32) -> u32 {
     let old = atomicLoad(&food[ti]);
     var amt = 0u; var nv = old; var why = 0u;
     let ft = (old >> 24u) & 15u;
-    let pel = (old & 255u) > 0u && canEat(a.col, FT_GROUP[min(ft, 9u)]);
+    let pel = (old & 255u) > 0u && canEat(a.col, FT_GROUP[min(ft, 10u)]);
     if (((old >> 8u) & 255u) > 0u && canEat(a.col, 4u)) { amt = 3u; nv = old - 256u; why = 1u; } // a dead ant: scavengers only
     else if (((old >> 16u) & 255u) > 0u) { amt = 3u; nv = old - 65536u; why = 2u; }
     else if (pel && ft == F_PREY) {
@@ -4680,11 +4691,12 @@ fn takeFood(ti: u32) -> u32 {
       }
       amt = FOOD_VALUE[ft]; nv = old - 1u; why = W_FOOD + ft;
     }
-    else if (pel) { amt = FOOD_VALUE[min(ft, 9u)]; nv = old - 1u; why = W_FOOD + ft; }
+    else if (pel) { amt = FOOD_VALUE[min(ft, 10u)]; nv = old - 1u; why = W_FOOD + ft; }
     else { return 0u; }
     if (atomicCompareExchangeWeak(&food[ti], old, nv).exchanged) {
       atomicStore(&food[NT + ti], curStep()); a.why = why;
       if (why >= W_FOOD && ft <= F_NECTAR) { let hx = i32(ti % u32(W)); let hy = i32(ti / u32(W)); atomicAdd(&world[HARV_OFF + u32((hy >> 6) * CW + (hx >> 6))], 1u); } // count plant food picked up per chunk
+      else if (why == W_FOOD + F_CARCASS) { atomicAdd(&world[GIANT_OFF], 1u); } // a bite of a giant's carcass
       else if (why == W_FOOD + F_PREY) { let hx = i32(ti % u32(W)); let hy = i32(ti / u32(W)); atomicAdd(&world[PREY_OFF + u32((hy >> 6) * CW + (hx >> 6))], 1u); } // and live prey caught
       return amt;
     }
@@ -4704,7 +4716,7 @@ fn goHome(x: i32, y: i32, PR: i32) {
       else { atomicAdd(&world[ctr(home, 0u)], a.carry); }
       // count what came in by food group, so the nest knows how much of each it has
       var fg = 99u;
-      if (a.why == W_CORPSE) { fg = 4u; } else if (a.why == W_CACHE) { fg = 5u; } else if (a.why >= W_FOOD && a.why != W_FOOD + F_LEAF) { fg = FT_GROUP[min(a.why - W_FOOD, 9u)]; }
+      if (a.why == W_CORPSE) { fg = 4u; } else if (a.why == W_CACHE) { fg = 5u; } else if (a.why >= W_FOOD && a.why != W_FOOD + F_LEAF) { fg = FT_GROUP[min(a.why - W_FOOD, 10u)]; }
       if (fg < 6u) { atomicAdd(&world[ctr(home, 32u + fg)], a.carry); }
       atomicAdd(&world[ctr(home, 1u)], 1u);
       if (a.why == W_RAID) { atomicAdd(&world[ctr(home, 11u)], a.carry); callToArms(home, a.goal, a.tcol); }
@@ -4840,7 +4852,7 @@ fn antStep(i: u32) {
     if (d2 <= prm.beastReach * prm.beastReach * be.z * be.z && !(be.w == 3.0 && underCover(x, y))) { // birds can't reach ants under cover
       let tk = BEAST_OFF + b * 2u + 1u; let tok = atomicLoad(&world[tk]);
       if (tok > 0u && atomicCompareExchangeWeak(&world[tk], tok, tok - 1u).exchanged) {
-        a.hp -= biteDamage(prm.beastDmg * be.z * (0.6 + rnd() * 0.8), a.col);
+        a.hp -= biteDamage(prm.beastDmg * select(be.z, 10.0, be.w == 4.0) * (0.6 + rnd() * 0.8), a.col); // a giant's bite kills outright, whatever part of it bites
         if (a.hp <= 0.0) { dieKilled(x, y); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
       }
     }
@@ -4850,17 +4862,18 @@ fn antStep(i: u32) {
     var bb = -1; var bd = f32(R * nose * R * nose);
     for (var b = 0u; b < 8u; b++) {
       let be = ni.beasts[b]; if (be.z <= 0.0) { continue; }
-      let d2 = (be.x - pos.x) * (be.x - pos.x) + (be.y - pos.y) * (be.y - pos.y);
+      var d2 = (be.x - pos.x) * (be.x - pos.x) + (be.y - pos.y) * (be.y - pos.y);
+      if (be.w == 4.0) { let e = max(0.0, sqrt(d2) - be.z * prm.beastReach + 1.5); d2 = e * e; } // a giant is big: measure to its body, not its middle
       // webs and antlion pits are hard to see: only ants with good eyes notice them before they are close
       if (be.w == 1.0 || be.w == 2.0) { let see = select(5.0, 2.5, be.w == 2.0) * be.z * gene(a.col, G_VIEW); if (d2 > see * see) { continue; } }
       if (d2 < bd) { bd = d2; bb = i32(b); }
     }
     if (bb >= 0) {
-      let be = ni.beasts[bb];
+      let be = ni.beasts[bb]; let zz = select(be.z, 1.0, be.w == 4.0);
       if ((calm(a.col) && !abil(a.col, G_COURAGE)) || be.w == 3.0) { // nobody can fight a bird: ants that see one keep away
-        if (bd < 64.0 * be.z * be.z) { _ = stepToward(atan2(pos.y - be.y, pos.x - be.x)); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
+        if (bd < 64.0 * zz * zz) { _ = stepToward(atan2(pos.y - be.y, pos.x - be.x)); a.rng = rs; ants[i] = a; posOut[i] = pos; return; }
       } else {
-        if (bd <= prm.beastReach * prm.beastReach * be.z * be.z) {
+        if (bd <= prm.beastReach * prm.beastReach * zz * zz) {
           atomicAdd(&world[BEAST_OFF + u32(bb) * 2u], u32(prm.dmg * gene(a.col, G_BITE) * (0.5 + rnd()) * 100.0));
           dropRed(x, y); a.fought = curStep();
         } else { _ = stepToward(atan2(be.y - pos.y, be.x - pos.x)); }
@@ -5122,7 +5135,7 @@ fn rotTile(k: u32) {
   if (age <= life) { return; }
   var keep = 0xFF000000u; var gone = 0u;
   let pel = v & 255u; let dead = (v >> 8u) & 255u; let nestF = (v >> 16u) & 255u;
-  if (ft == F_FROZEN || (ft == F_SEED && age <= life * 4u)) { keep |= 255u; } else { gone += pel; }
+  if (ft == F_FROZEN || (ft == F_SEED && age <= life * 4u) || (ft == F_CARCASS && age <= life * 30u)) { keep |= 255u; } else { gone += pel; if (ft == F_CARCASS) { atomicAdd(&world[GIANT_OFF + 1u], pel); } } // a giant's carcass rots slowly
   gone += dead;
   if (age <= life * 3u) { keep |= 0xFF0000u; } else { gone += nestF * 3u; }
   if (gone == 0u) { return; }
@@ -5694,6 +5707,7 @@ struct Cam { scale: f32, ox: f32, oy: f32, cap: u32, vw: f32, vh: f32, showTrail
 @group(0) @binding(6) var<storage, read> climate: array<u32>;
 @group(0) @binding(7) var<storage, read> baseRough: array<u32>;
 @group(0) @binding(8) var<storage, read> look: array<vec4f>; // four per nest: how its ants look
+@group(0) @binding(9) var<storage, read> decal: array<u32>; // a giant's carcass: x0, y0, w, h, on, bone wear, rot (header of 16), then skin, muscle and bone colours per tile
 
 struct VOut { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) col: vec4f, @location(2) kind: f32, @location(3) @interpolate(flat) ci: u32, @location(4) @interpolate(flat) iid: u32 };
 @vertex fn mapVS(@builtin(vertex_index) vi: u32) -> VOut {
@@ -5701,8 +5715,8 @@ struct VOut { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) 
   o.p = vec4f(xy * 2.0 - 1.0, 0.0, 1.0); o.uv = vec2f(xy.x, 1.0 - xy.y); return o;
 }
 fn hash(x: u32, y: u32) -> f32 { var h = (x * 374761393u) ^ (y * 668265263u); h = (h ^ (h >> 13u)) * 1274126177u; h ^= h >> 16u; return f32(h & 255u) / 255.0; }
-const FOOD_COL = array<vec3f, 10>(vec3f(241.0, 220.0, 134.0), vec3f(214.0, 178.0, 112.0), vec3f(150.0, 220.0, 90.0), vec3f(255.0, 196.0, 64.0), vec3f(90.0, 200.0, 80.0),
-  vec3f(240.0, 90.0, 70.0), vec3f(255.0, 250.0, 190.0), vec3f(200.0, 110.0, 90.0), vec3f(170.0, 215.0, 240.0), vec3f(150.0, 70.0, 45.0));
+const FOOD_COL = array<vec3f, 11>(vec3f(241.0, 220.0, 134.0), vec3f(214.0, 178.0, 112.0), vec3f(150.0, 220.0, 90.0), vec3f(255.0, 196.0, 64.0), vec3f(90.0, 200.0, 80.0),
+  vec3f(240.0, 90.0, 70.0), vec3f(255.0, 250.0, 190.0), vec3f(200.0, 110.0, 90.0), vec3f(170.0, 215.0, 240.0), vec3f(150.0, 70.0, 45.0), vec3f(140.0, 40.0, 34.0));
 const BIOME_COL = array<vec3f, 18>(
   vec3f(34.0, 34.0, 20.0), vec3f(54.0, 46.0, 26.0), vec3f(28.0, 36.0, 24.0), vec3f(92.0, 74.0, 44.0), vec3f(66.0, 56.0, 28.0), vec3f(18.0, 40.0, 18.0),
   vec3f(74.0, 84.0, 94.0), vec3f(50.0, 52.0, 44.0), vec3f(22.0, 34.0, 28.0), vec3f(90.0, 48.0, 30.0), vec3f(46.0, 30.0, 50.0), vec3f(40.0, 44.0, 24.0),
@@ -5767,10 +5781,43 @@ fn ramp(t: f32, a: vec3f, b: vec3f, c: vec3f) -> vec3f { if (t < 0.5) { return m
   else if (vm == 2u) { let hm = f32((cl >> 8u) & 255u) / 255.0; c = mix(vec3f(180.0, 140.0, 80.0), vec3f(30.0, 140.0, 170.0), hm); }
   else if (vm == 3u) { let wd = f32((cl >> 16u) & 255u) / 255.0; c = mix(vec3f(30.0, 30.0, 34.0), vec3f(200.0, 90.0, 230.0), abs(wd * 2.0 - 1.0)); }
   else if (vm == 4u) { c = vec3f(ht * 255.0); }
+  // a giant's carcass lies in the ground: skin over muscle while there is carcass food on the tile, then bone, which crumbles into soil
+  var dec = false;
+  if (vm == 0u && decal[4] != 0u) {
+    let ddx = x - i32(decal[0]); let ddy = y - i32(decal[1]); let dw = i32(decal[2]); let dh = i32(decal[3]);
+    if (ddx >= 0 && ddy >= 0 && ddx < dw && ddy < dh) {
+      let nn = u32(dw * dh); let di = u32(ddy * dw + ddx);
+      let n = select(0u, fv & 255u, ((fv >> 24u) & 15u) == 10u);
+      let sk = decal[16u + di]; let mu = decal[16u + nn + di];
+      let hs = (sk >> 24u) > 110u; let hm = (mu >> 24u) > 110u;
+      var fl = 0u;
+      if (hs && hm) { if (n >= 2u) { fl = sk; } else if (n == 1u) { fl = mu; } }
+      else if (hs) { if (n >= 1u) { fl = sk; } } else if (hm) { if (n >= 1u) { fl = mu; } }
+      let rotA = f32(decal[6]) / 1000.0; let D = f32(decal[5]) / 1000.0;
+      if (fl != 0u) {
+        let fc = mix(vec3f(f32(fl & 255u), f32((fl >> 8u) & 255u), f32((fl >> 16u) & 255u)), vec3f(70.0, 78.0, 30.0), rotA * 0.5);
+        c = fc * (0.94 + 0.12 * hash(u32(x) * 13u, u32(y) * 7u)); dec = true;
+      } else {
+        var best = 0.0; var bc = vec3f(0.0);
+        for (var k = 0u; k < 3u; k++) {
+          var sx = ddx; var sy = ddy; var al = 1.0 - smoothstep(0.55 + 0.25 * hash(u32(x) * 5u, u32(y) * 9u), 1.0, D);
+          if (k > 0u) { // grit spreading out from the bones as they crumble
+            let an = hash(u32(x) * 7u + k * 31u, u32(y) * 11u) * 6.2832; let dist = pow(D, 1.4) * (1.5 + 7.0 * hash(u32(x) + k * 17u, u32(y) * 3u));
+            sx = ddx + i32(round(cos(an) * dist)); sy = ddy + i32(round(sin(an) * dist)); al = 0.55 * smoothstep(0.0, 0.35, D) * (1.0 - smoothstep(0.7, 1.0, D));
+          }
+          if (sx < 0 || sy < 0 || sx >= dw || sy >= dh) { continue; }
+          let bo = decal[16u + 2u * nn + u32(sy * dw + sx)];
+          if ((bo >> 24u) > 110u && al > best) { best = al; bc = vec3f(f32(bo & 255u), f32((bo >> 8u) & 255u), f32((bo >> 16u) & 255u)); }
+        }
+        if (best > 0.0) { bc = mix(mix(bc, vec3f(150.0, 146.0, 134.0), smoothstep(0.0, 0.5, D)), vec3f(52.0, 40.0, 26.0), smoothstep(0.4, 1.0, D)); c = mix(c, bc, best); dec = true; }
+      }
+    }
+  }
   if (vm > 0u && wl == 3u) { c *= 0.6; }
   else if (((fv >> 8u) & 255u) > 0u) { c = vec3f(201.0, 128.0, 82.0); }
   else if (((fv >> 16u) & 255u) > 0u) { c = vec3f(215.0, 124.0, 255.0); }
-  else if ((fv & 255u) > 0u) { c = FOOD_COL[min((fv >> 24u) & 15u, 9u)]; }
+  else if (dec) { }
+  else if ((fv & 255u) > 0u) { c = FOOD_COL[min((fv >> 24u) & 15u, 10u)]; }
   else if ((cam.showTrails & 255u) == 1u) {
     let o1 = tsum[ti * 4u + 1u]; let gold = (o1 >> 31u) != 0u;
     var s = vec4f(f32(tsum[ti * 4u]), f32(o1 & 0x7FFFFFFFu), f32(tsum[ti * 4u + 2u]), f32(tsum[ti * 4u + 3u])) / 65535.0;
@@ -5871,6 +5918,7 @@ const STO = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.CO
 bufs.params = mk(240, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.nests = mk(MAXCOL * 48 + 208, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 bufs.cam = mk(32 + MAXCOL * 16 + MAXFAM * 16, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+bufs.decal = mk((16 + 3 * DECMAX * DECMAX) * 4, STO); // a giant's carcass, drawn into the ground
 bufs.look = mk(MAXCOL * LOOKN * 4, STO); const lookF = new Float32Array(MAXCOL * LOOKN);
 bufs.tiles = mk(N * 4, STO);
 bufs.occ = mk(N * 4, STO);
@@ -5883,7 +5931,7 @@ function uploadClimate() { measureFood(); device.queue.writeBuffer(bufs.base, 0,
 const MAXSTEPS = 1024;
 bufs.phase = mk(256 * MAXSTEPS, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
 { const ph = new Uint32Array(64 * MAXSTEPS); for (let k = 0; k < MAXSTEPS; k++) ph[k * 64] = k; device.queue.writeBuffer(bufs.phase, 0, ph); }
-const HARV_AT = MAXCOL * CTRN + 4 + 8 + 4 + 64 * 4 + 4 + 4, READ_WORDS = HARV_AT + 3 * NCH + 8, BEAST2_AT = HARV_AT + 3 * NCH; // last: plant food picked up per chunk // ... and two timestamps at the end // counters, world header, beasts, founders, tap pick // counters, world header, beasts, founders
+const HARV_AT = MAXCOL * CTRN + 4 + 8 + 4 + 64 * 4 + 4 + 4, READ_WORDS = HARV_AT + 3 * NCH + 10, BEAST2_AT = HARV_AT + 3 * NCH, GIANT_AT = BEAST2_AT + 8; // last: plant food picked up per chunk // ... and two timestamps at the end // counters, world header, beasts, founders, tap pick // counters, world header, beasts, founders
 const HAS_TS = device.features.has('timestamp-query'), TS_AT = MAXCOL * CTRN + 276;
 const tsSet = HAS_TS ? device.createQuerySet({ type: 'timestamp', count: 2 }) : null;
 const tsBuf = HAS_TS ? mk(16, GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC) : null;
@@ -5941,6 +5989,7 @@ const drawLayout = device.createBindGroupLayout({ entries: [
   { binding: 6, visibility: F, buffer: { type: 'read-only-storage' } },
   { binding: 7, visibility: F, buffer: { type: 'read-only-storage' } },
   { binding: 8, visibility: V | F, buffer: { type: 'read-only-storage' } },
+  { binding: 9, visibility: F, buffer: { type: 'read-only-storage' } },
 ] });
 const drawPL = device.createPipelineLayout({ bindGroupLayouts: [drawLayout] });
 const blend = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' } };
@@ -5952,7 +6001,7 @@ let cap = 0, simBG = [], drawBG = [], cur = 0, simStep = 0;
 let colonies = [], plants = [], drops = [], spawns = [], kills = new Uint32Array(MAXCOL * 2);
 let rnd = Math.random;
 let counts = new Uint32Array(MAXCOL * CTRN), lastCtr = new Uint32Array(MAXCOL * CTRN), freeAnts = 0, famCounter = 0;
-let beasts = [], beastDmgSeen = new Uint32Array(8), beastTok = new Uint32Array(8), foundSeen = 0, foundRing = new Uint32Array(4 + 256), beastWords = new Uint32Array(16), preyWords = null, families = new Map();
+let beasts = [], beastDmgSeen = new Uint32Array(8), beastTok = new Uint32Array(8), foundSeen = 0, foundRing = new Uint32Array(4 + 256), beastWords = new Uint32Array(16), preyWords = null, giantWords = new Uint32Array(2), families = new Map();
 const eatRate = () => P.eat;
 // a colour family: nests of one colour never fight each other and share spare food
 function newFamily(from = null, why = 'start') {
@@ -6785,9 +6834,11 @@ const wrapA = a => Math.atan2(Math.sin(a), Math.cos(a));
 // beasts wander toward plants, steer away from nests and the edge, and earn a bite every few steps
 function stepBeasts(steps) {
   beastTok.fill(0);
+  GIANT.stepAll(steps);
   stepHazardMoves(steps);
   for (const b of beasts) for (let s = 0; s < steps; s++) {
     b.age++;
+    if (b.kind === 4) continue; // a giant's body parts are moved by the giant
     if (b.kind === 1 || b.kind === 2) { if (++b.bite >= b.biteEvery) { b.bite = 0; beastTok[b.slot]++; } continue; } // webs and pits stay put
     if (b.kind === 3) { // a bird circles over its hunting ground, swooping in and out
       const h = b.home, ang = Math.atan2(b.fy - h[1], b.fx - h[0]), d = Math.hypot(b.fx - h[0], b.fy - h[1]);
@@ -7055,6 +7106,495 @@ function drawBeast(g, b, z) {
   if (!b.noBar && b.hp < b.maxHp) { const L = s, bh = Math.max(0.6, 3 / z), y0 = b.fy - s * 0.7 - bh * 2; g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(b.fx - L / 2, y0, L, bh); g.fillStyle = '#f0645a'; g.fillRect(b.fx - L / 2, y0, L * Math.max(0, b.hp / b.maxHp), bh); }
 }
 // HAZARDS-END
+// GIANTS-BEGIN
+// three rare giant creatures, kept in their own scope (their drawing code has its own small helpers)
+const GIANT = ((PR) => {
+const TAU = Math.PI * 2;
+const hash = n => { const s = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return s - Math.floor(s); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const wrapA = a => { while (a > Math.PI) a -= TAU; while (a < -Math.PI) a += TAU; return a; };
+const lerp = (a, b, t) => a + (b - a) * t;
+const prof = keys => t => { for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, r0] = keys[i - 1], [t1, r1] = keys[i]; return lerp(r0, r1, (t - t0) / (t1 - t0)); } return keys[keys.length - 1][1]; };
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- the three creatures ----------
+// n spine points, seg tiles apart; prof gives the body radius along it (0 = nose, 1 = tail tip)
+const SPECS = [
+  { id: 'lizard', name: 'Giant monitor lizard', blurb: 'Low and sprawling. Its whole body swings side to side as it walks, and it flicks its tongue to taste for ants.',
+    n: 36, seg: 9, prof: prof([[0, 4], [0.03, 10], [0.07, 15], [0.1, 11], [0.14, 13], [0.22, 24], [0.34, 26], [0.44, 20], [0.5, 15], [0.7, 8], [1, 1.2]]),
+    bend: t => t < 0.12 ? 0.24 : t < 0.48 ? 0.13 : 0.26, sway: 15, stride: 70, speed: 46,
+    legs: [{ t: 0.2, side: 1, l1: 30, l2: 28, fwd: 16, out: 46, knee: 'back', g: 0 }, { t: 0.2, side: -1, l1: 30, l2: 28, fwd: 16, out: 46, knee: 'back', g: 1 },
+           { t: 0.44, side: 1, l1: 32, l2: 30, fwd: -4, out: 48, knee: 'fwd', g: 1 }, { t: 0.44, side: -1, l1: 32, l2: 30, fwd: -4, out: 48, knee: 'fwd', g: 0 }],
+    step: 30, stepTime: 0.32, skin: '#5d6b37', skin2: '#3a4423', belly: '#8b915a', shadow: 0.5 },
+  { id: 'anteater', name: 'Giant anteater', blurb: 'A long snout for raiding nests, huge front claws, and a tail like a broom. Slow, heavy and hard to stop.',
+    n: 34, seg: 9, prof: prof([[0, 2.5], [0.12, 4.5], [0.2, 9], [0.25, 13], [0.3, 16], [0.38, 27], [0.52, 31], [0.64, 27], [0.7, 18], [0.74, 15], [0.82, 22], [0.92, 21], [1, 7]]),
+    bend: t => t < 0.24 ? 0.18 : t < 0.7 ? 0.07 : 0.22, sway: 6, stride: 60, speed: 34,
+    legs: [{ t: 0.37, side: 1, l1: 24, l2: 22, fwd: 14, out: 36, knee: 'back', g: 0 }, { t: 0.37, side: -1, l1: 24, l2: 22, fwd: 14, out: 36, knee: 'back', g: 1 },
+           { t: 0.64, side: 1, l1: 26, l2: 24, fwd: 2, out: 36, knee: 'fwd', g: 1 }, { t: 0.64, side: -1, l1: 26, l2: 24, fwd: 2, out: 36, knee: 'fwd', g: 0 }],
+    step: 22, stepTime: 0.36, skin: '#6c6358', skin2: '#2a2420', belly: '#a89d8c', shadow: 0.55 },
+  { id: 'bird', name: 'Ground hornbill', blurb: 'Stalks on long legs with its head bobbing, then stabs down with a heavy beak. Moves in quick bursts.',
+    n: 30, seg: 10, prof: prof([[0, 1.5], [0.08, 5], [0.12, 11], [0.15, 8], [0.3, 7], [0.36, 14], [0.46, 32], [0.6, 34], [0.72, 26], [0.8, 16], [0.92, 22], [1, 4]]),
+    bend: t => t < 0.33 ? 0.42 : t < 0.8 ? 0.05 : 0.12, sway: 0, stride: 80, speed: 56, bob: true,
+    legs: [{ t: 0.56, side: 1, l1: 42, l2: 40, fwd: 8, out: 30, knee: 'back', g: 0 }, { t: 0.56, side: -1, l1: 42, l2: 40, fwd: 8, out: 30, knee: 'back', g: 1 }],
+    step: 34, stepTime: 0.28, skin: '#3a3430', skin2: '#1e1a17', belly: '#4a433d', shadow: 0.5 },
+];
+
+// ---------- a creature: a chain of spine points pulled along by the head, legs solved with two-bone IK ----------
+function makeCreature(S) {
+  const c = { S, V: VARIANTS[S.id][0], state: 'alive', anim: null, wingOpen: 0, pts: [], h: -Math.PI / 2, th: -Math.PI / 2, phase: 0, t: 0, walking: true, speedMul: 1, dead: false, deadSide: 1, vx: 0, vy: 0, legs: [], tongue: 0 };
+  for (let i = 0; i < S.n; i++) c.pts.push({ x: 0, y: i * S.seg });
+  c.r = i => S.prof(i / (S.n - 1));
+  c.legs = S.legs.map((L, k) => ({ ...L, i: Math.round(L.t * (S.n - 1)), foot: null, from: null, to: null, st: -1, lift: 0, k }));
+  layoutLegs(c, true);
+  return c;
+}
+function frame(c, i) { // forward direction and right-hand side at spine point i
+  const p = c.pts, a = p[Math.max(0, i - 1)], b = p[Math.min(p.length - 1, i + 1)];
+  let fx = a.x - b.x, fy = a.y - b.y; const l = Math.hypot(fx, fy) || 1; fx /= l; fy /= l;
+  return { fx, fy, rx: -fy, ry: fx };
+}
+function anchorOf(c, L) { const p = c.pts[L.i], F = frame(c, L.i), o = c.r(L.i) * 0.55 * L.side; return { x: p.x + F.rx * o, y: p.y + F.ry * o, F }; }
+function restOf(c, L) { const A = anchorOf(c, L), F = A.F; return { x: A.x + F.fx * L.fwd + F.rx * L.side * L.out, y: A.y + F.fy * L.fwd + F.ry * L.side * L.out }; }
+function layoutLegs(c, snap) { for (const L of c.legs) if (snap || !L.foot) { const r = restOf(c, L); L.foot = { ...r }; L.st = -1; } }
+function ik(A, Fp, l1, l2, F, knee) {
+  let dx = Fp.x - A.x, dy = Fp.y - A.y, d = Math.hypot(dx, dy) || 0.001;
+  const dd = clamp(d, Math.abs(l1 - l2) + 0.5, l1 + l2 - 0.5), a = Math.atan2(dy, dx);
+  const k = Math.acos(clamp((l1 * l1 + dd * dd - l2 * l2) / (2 * l1 * dd), -1, 1));
+  const c1 = { x: A.x + Math.cos(a + k) * l1, y: A.y + Math.sin(a + k) * l1 }, c2 = { x: A.x + Math.cos(a - k) * l1, y: A.y + Math.sin(a - k) * l1 };
+  const pr = q => ((q.x - A.x) * F.fx + (q.y - A.y) * F.fy) * (knee === 'fwd' ? 1 : -1);
+  return { knee: pr(c1) > pr(c2) ? c1 : c2, foot: { x: A.x + Math.cos(a) * dd, y: A.y + Math.sin(a) * dd } };
+}
+function step(c, dt) {
+  const S = c.S; c.t += dt;
+  if (c.anim) { animate(c, dt); return; }
+  if (c.state === 'dead') return;
+  const diff = wrapA(c.th - c.h), turning = Math.abs(diff) > 0.04;
+  const sp = (c.walking ? S.speed * c.speedMul : turning ? S.speed * 0.35 : 0) * (c.attack ? (S.id === 'anteater' ? 0 : 0.3) : 1);
+  c.h += clamp(diff, -1.3 * dt * Math.max(0.5, c.speedMul), 1.3 * dt * Math.max(0.5, c.speedMul));
+  const p = c.pts, hd = p[0], fx = Math.cos(c.h), fy = Math.sin(c.h);
+  c.phase += sp * dt / S.stride * TAU;
+  let v = sp;
+  if (S.bob && sp > 0) v = sp * (0.35 + 1.3 * Math.max(0, Math.sin(c.phase * 2))); // a bird's head holds, then shoots forward
+  const lat = S.sway * Math.cos(c.phase) * (sp / S.stride) * TAU * 0.5;
+  const ox = hd.x, oy = hd.y;
+  hd.x += (fx * v - fy * lat) * dt; hd.y += (fy * v + fx * lat) * dt;
+  if (!sp) { const w = Math.sin(c.t * 0.9) * 0.6 * dt; hd.x += -fy * w; hd.y += fx * w; } // idle: the head looks about a little
+  c.vx = lerp(c.vx, (hd.x - ox) / Math.max(dt, 1e-4), 0.2); c.vy = lerp(c.vy, (hd.y - oy) / Math.max(dt, 1e-4), 0.2);
+  // follow the leader, with a limit on how sharply each joint can bend
+  for (let i = 1; i < p.length; i++) {
+    const a = p[i - 1]; let ang = Math.atan2(p[i].y - a.y, p[i].x - a.x);
+    if (i >= 2) { const pa = Math.atan2(a.y - p[i - 2].y, a.x - p[i - 2].x), mb = S.bend(i / (p.length - 1)); ang = pa + clamp(wrapA(ang - pa), -mb, mb); }
+    p[i].x = a.x + Math.cos(ang) * S.seg; p[i].y = a.y + Math.sin(ang) * S.seg;
+  }
+  // feet: planted until too far from where they want to be, then a quick step (only when the other group is down)
+  const busy = g => c.legs.some(L => L.g !== g && L.st >= 0);
+  const stepT = S.stepTime / Math.max(0.6, Math.sqrt(c.speedMul));
+  for (const L of c.legs) {
+    const R = restOf(c, L);
+    if (L.st < 0) {
+      if (Math.hypot(L.foot.x - R.x, L.foot.y - R.y) > S.step && !busy(L.g)) { L.st = 0; L.from = { ...L.foot }; const lead = 0.55 * stepT; L.to = { x: R.x + c.vx * lead, y: R.y + c.vy * lead }; }
+    } else {
+      L.st += dt / stepT; L.to.x = lerp(L.to.x, R.x + c.vx * 0.3 * stepT, 0.1); L.to.y = lerp(L.to.y, R.y + c.vy * 0.3 * stepT, 0.1);
+      const e = L.st < 1 ? 0.5 - 0.5 * Math.cos(Math.PI * L.st) : 1;
+      L.foot.x = lerp(L.from.x, L.to.x, e); L.foot.y = lerp(L.from.y, L.to.y, e); L.lift = Math.sin(Math.PI * Math.min(1, L.st));
+      if (L.st >= 1) { L.st = -1; L.lift = 0; }
+    }
+  }
+  if (S.id !== 'bird') { c.tongue = Math.max(0, c.tongue - dt * 2.5); if (hash(Math.floor(c.t * 1.3) + S.n) > 0.93 && c.tongue <= 0) c.tongue = 1; }
+}
+// ---------- poses: a pose is the head position, the angle of every spine segment, and where each foot is ----------
+function poseOf(c) { const p = c.pts, ang = []; for (let i = 1; i < p.length; i++) ang.push(Math.atan2(p[i].y - p[i - 1].y, p[i].x - p[i - 1].x)); return { hx: p[0].x, hy: p[0].y, ang, feet: c.legs.map(L => ({ ...L.foot })) }; }
+function applyPose(c, P0) { const p = c.pts; p[0].x = P0.hx; p[0].y = P0.hy; for (let i = 1; i < p.length; i++) { p[i].x = p[i - 1].x + Math.cos(P0.ang[i - 1]) * c.S.seg; p[i].y = p[i - 1].y + Math.sin(P0.ang[i - 1]) * c.S.seg; } c.legs.forEach((L, k) => { L.foot = { ...P0.feet[k] }; }); }
+// the dead pose: the spine curls to one side and the legs flop outward
+function deadPose(c) {
+  const from = poseOf(c), n = c.pts.length, ang = []; let acc = 0;
+  for (let i = 1; i < n; i++) { acc += c.deadSide * (c.S.id === 'bird' ? (i < n * 0.33 ? 0.16 : 0.01) : 0.035 + 0.03 * (i / n)); ang.push(from.ang[i - 1] + acc); }
+  const to = { hx: from.hx, hy: from.hy, ang, feet: [] };
+  applyPose(c, to);
+  to.feet = c.legs.map(L => { const A = anchorOf(c, L), F = A.F, reach = (L.l1 + L.l2) * 0.82, f = L.fwd > 5 ? 10 : -12; return { x: A.x + F.rx * L.side * reach + F.fx * f, y: A.y + F.ry * L.side * reach + F.fy * f }; });
+  applyPose(c, from);
+  return to;
+}
+// standing pose: straight behind the head, feet where they rest
+function standPose(c) {
+  const from = poseOf(c), back = Math.atan2(c.pts[3].y - c.pts[0].y, c.pts[3].x - c.pts[0].x), to = { hx: from.hx, hy: from.hy, ang: from.ang.map(() => back), feet: [] };
+  applyPose(c, to); to.feet = c.legs.map(L => restOf(c, L)); applyPose(c, from); return to;
+}
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+// blend from one pose to another: angles turn the short way round, and the legs kick and settle one after another
+function animate(c, dt) {
+  const A = c.anim; A.t = Math.min(1, A.t + dt / A.dur);
+  const e = ease(A.t), sag = Math.sin(Math.PI * A.t);
+  const ang = A.from.ang.map((a, i) => a + wrapA(A.to.ang[i] - a) * e + (A.kind === 'die' ? c.deadSide * 0.12 * sag * Math.sin(i * 0.5 + A.t * 9) * (1 - A.t) : 0));
+  const pose = { hx: lerp(A.from.hx, A.to.hx, e), hy: lerp(A.from.hy, A.to.hy, e), ang, feet: A.from.feet.map((f, k) => { const d = clamp((A.t - k * 0.07) / 0.75, 0, 1), ee = ease(d); return { x: lerp(f.x, A.to.feet[k].x, ee), y: lerp(f.y, A.to.feet[k].y, ee) }; }) };
+  applyPose(c, pose);
+  c.legs.forEach((L, k) => { const d = clamp((A.t - k * 0.07) / 0.75, 0, 1); L.lift = Math.sin(Math.PI * d) * 0.8; L.st = -1; });
+  if (c.S.id === 'bird') c.wingOpen = A.kind === 'die' ? e : 1 - e;
+  if (A.t >= 1) { c.legs.forEach(L => L.lift = 0); c.state = A.kind === 'die' ? 'dead' : 'alive'; c.dead = c.state === 'dead'; c.anim = null; if (c.state === 'alive') { c.h = c.th = Math.atan2(c.pts[0].y - c.pts[3].y, c.pts[0].x - c.pts[3].x); } }
+}
+function kill(c) { c.deadSide = hash(c.t * 3.7) > 0.5 ? 1 : -1; c.state = 'dying'; c.dead = true; c.anim = { kind: 'die', t: 0, dur: 1.9, from: poseOf(c), to: deadPose(c) }; }
+function revive(c) { c.state = 'rising'; c.anim = { kind: 'rise', t: 0, dur: 1.3, from: poseOf(c), to: standPose(c) }; }
+// ---------- drawing helpers ----------
+function edges(c, k = 1) {
+  const p = c.pts, n = p.length, Lf = [], Rt = [];
+  for (let i = 0; i < n; i++) { const F = frame(c, i), r = c.r(i) * k; Lf.push({ x: p[i].x + F.rx * r, y: p[i].y + F.ry * r }); Rt.push({ x: p[i].x - F.rx * r, y: p[i].y - F.ry * r }); }
+  return { Lf, Rt };
+}
+function smoothTo(g, arr) { for (let i = 1; i < arr.length - 1; i++) { const m = { x: (arr[i].x + arr[i + 1].x) / 2, y: (arr[i].y + arr[i + 1].y) / 2 }; g.quadraticCurveTo(arr[i].x, arr[i].y, m.x, m.y); } const l = arr[arr.length - 1]; g.lineTo(l.x, l.y); }
+function bodyPath(g, c, k = 1, from = 0, to = null) {
+  const p = c.pts, n = to ?? p.length - 1, { Lf, Rt } = edges(c, k);
+  const F0 = frame(c, from), r0 = c.r(from) * k, Fn = frame(c, n), rn = c.r(n) * k;
+  g.beginPath(); g.moveTo(Rt[from].x, Rt[from].y);
+  g.quadraticCurveTo(p[from].x + F0.fx * r0 * 1.6 - F0.rx * r0, p[from].y + F0.fy * r0 * 1.6 - F0.ry * r0, p[from].x + F0.fx * r0, p[from].y + F0.fy * r0);
+  g.quadraticCurveTo(p[from].x + F0.fx * r0 * 1.6 + F0.rx * r0, p[from].y + F0.fy * r0 * 1.6 + F0.ry * r0, Lf[from].x, Lf[from].y);
+  smoothTo(g, Lf.slice(from, n + 1));
+  g.quadraticCurveTo(p[n].x - Fn.fx * rn * 1.4, p[n].y - Fn.fy * rn * 1.4, Rt[n].x, Rt[n].y);
+  smoothTo(g, Rt.slice(from, n + 1).reverse());
+  g.closePath();
+}
+const at = (c, t) => Math.round(t * (c.pts.length - 1));
+const P = (c, i, u, f = 0) => { const p = c.pts[i], F = frame(c, i), r = c.r(i); return { x: p.x + F.rx * r * u + F.fx * f, y: p.y + F.ry * r * u + F.fy * f, F }; };
+function legPts(c, L) { const A = anchorOf(c, L), s = ik(A, L.foot, L.l1, L.l2, A.F, L.knee); return { A, K: s.knee, Fo: s.foot, F: A.F }; }
+function limb(g, a, b, w, col) { g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round'; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+function toes(g, c, L, Fo, F, n, len, spread, col, w) {
+  const out = Math.atan2(F.ry * L.side, F.rx * L.side), fwd = Math.atan2(F.fy, F.fx), base = Math.atan2(Math.sin(out) + Math.sin(fwd) * 0.9, Math.cos(out) + Math.cos(fwd) * 0.9);
+  g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round';
+  for (let k = 0; k < n; k++) { const a = base + (k - (n - 1) / 2) * spread; g.beginPath(); g.moveTo(Fo.x, Fo.y); g.lineTo(Fo.x + Math.cos(a) * len, Fo.y + Math.sin(a) * len); g.stroke(); }
+}
+
+// ---------- skin ----------
+// ---------- looks: three colour and pattern variants for each creature ----------
+const VARIANTS = {
+  lizard: [
+    { name: 'Olive', skin: '#5d6b37', edge: '#3a4423', band: 'rgba(28,32,16,.55)', speck: 'rgba(214,206,150,.55)', specks: 160, eye: '#d8b84a', pattern: 'bands' },
+    { name: 'Teal', skin: '#2f7d78', edge: '#173f3d', band: 'rgba(10,30,40,.5)', speck: 'rgba(170,240,225,.6)', specks: 220, eye: '#e8d26a', pattern: 'rings' },
+    { name: 'Yellow', skin: '#c9a23a', edge: '#5e4714', band: 'rgba(25,18,8,.8)', speck: 'rgba(30,22,10,.7)', specks: 120, eye: '#2a2a2a', pattern: 'bars' },
+  ],
+  anteater: [
+    { name: 'Grey', fur: '#6c6358', dark: '#2a2420', light: 'rgba(160,150,135,.45)', tail: ['#2c2622', '#4a423b'], arm: '#d9d2c4', pattern: 'band' },
+    { name: 'Golden vest', fur: '#b98d4e', dark: '#1d1714', light: 'rgba(235,205,150,.5)', tail: ['#a07a40', '#7a5a2e'], arm: '#c9a46a', pattern: 'vest' },
+    { name: 'Russet', fur: '#7a4128', dark: '#3a1d12', light: 'rgba(230,190,160,.4)', tail: ['#3a1d12', '#d8c3a5'], arm: '#9a5a38', pattern: 'stripe' },
+  ],
+  bird: [
+    { name: 'Hornbill', body: '#3a3430', wing: '#2a2522', tip: '#e6dfd2', head: '#3a3430', face: '#c23a2c', beak: '#2f2a26', casque: '#4a3f36', eye: '#e8d9b0', tail: ['#1c1816', '#252019'], beakFrom: 0, hook: false, ruff: null },
+    { name: 'Vulture', body: '#5a4632', wing: '#4a3a2a', tip: '#cdb48e', head: '#d39a8a', face: '#b8705e', beak: '#d8cdb0', casque: null, eye: '#3a2216', tail: ['#3a2c1e', '#4a3a28'], beakFrom: 1, hook: true, ruff: '#e8dcc4' },
+    { name: 'Eagle', body: '#4a3020', wing: '#3d2718', tip: '#6b4a30', head: '#f2efe6', face: null, beak: '#f0b429', casque: null, eye: '#f0b429', tail: ['#f2efe6', '#e2ddd0'], beakFrom: 1, hook: true, ruff: null },
+  ],
+};
+function skinLizard(g, c) {
+  const V = c.V;
+  for (const L of c.legs) { const { A, K, Fo, F } = legPts(c, L), ls = 1 + 0.25 * L.lift; limb(g, A, K, 15, V.edge); limb(g, K, Fo, 11 * ls, V.edge); limb(g, A, K, 11, V.skin); limb(g, K, Fo, 8 * ls, V.skin); toes(g, c, L, Fo, F, 5, 12 * ls, 0.38, V.skin, 3.2); }
+  bodyPath(g, c, 1); g.fillStyle = V.edge; g.fill(); bodyPath(g, c, 0.78); g.fillStyle = V.skin; g.fill();
+  const n = c.pts.length;
+  if (V.pattern === 'bands') for (let i = 6; i < n - 2; i += 3) { const a = P(c, i, -0.85), m = P(c, i, 0, -6), b = P(c, i, 0.85); g.strokeStyle = V.band; g.lineWidth = Math.max(2, c.r(i) * 0.3); g.beginPath(); g.moveTo(a.x, a.y); g.quadraticCurveTo(m.x, m.y, b.x, b.y); g.stroke(); }
+  if (V.pattern === 'rings') for (let k = 0; k < 26; k++) { const i = 6 + Math.floor(hash(k * 4.1) * (n - 12)), q = P(c, i, (hash(k * 2.3) - 0.5) * 1.2), r = Math.max(2.5, c.r(i) * 0.22); g.strokeStyle = V.band; g.lineWidth = Math.max(1.2, r * 0.45); g.beginPath(); g.arc(q.x, q.y, r, 0, TAU); g.stroke(); }
+  if (V.pattern === 'bars') for (let i = 5; i < n - 1; i += 2) { const a = P(c, i, -0.95), b = P(c, i, 0.95); g.strokeStyle = V.band; g.lineWidth = Math.max(1.5, c.r(i) * 0.38); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+  g.fillStyle = V.speck;
+  for (let k = 0; k < V.specks; k++) { const i = 4 + Math.floor(hash(k) * (n - 8)), q = P(c, i, (hash(k + 50) - 0.5) * 1.4); g.beginPath(); g.arc(q.x, q.y, 1 + hash(k + 9) * 1.6, 0, TAU); g.fill(); }
+  const e = at(c, 0.065); for (const s of [-1, 1]) { const q = P(c, e, 0.78 * s); g.fillStyle = V.eye; g.beginPath(); g.arc(q.x, q.y, 3.2, 0, TAU); g.fill(); g.fillStyle = '#111'; g.beginPath(); g.arc(q.x, q.y, 1.6, 0, TAU); g.fill(); const nn = P(c, 1, 0.5 * s); g.beginPath(); g.arc(nn.x, nn.y, 1, 0, TAU); g.fill(); }
+  tongue(g, c, 30, '#c2364a');
+}
+function tongue(g, c, len, col) {
+  if (c.tongue <= 0 || c.dead) return; const q = P(c, 0, 0, 2), F = q.F, l = len * Math.sin(Math.PI * c.tongue), tip = { x: q.x + F.fx * l, y: q.y + F.fy * l };
+  g.strokeStyle = col; g.lineWidth = 1.6; g.lineCap = 'round'; g.beginPath(); g.moveTo(q.x, q.y); g.lineTo(tip.x, tip.y); g.stroke();
+  if (c.S.id === 'lizard') for (const s of [-1, 1]) { g.beginPath(); g.moveTo(tip.x, tip.y); g.lineTo(tip.x + F.fx * 5 + F.rx * s * 3, tip.y + F.fy * 5 + F.ry * s * 3); g.stroke(); }
+}
+function skinAnteater(g, c) {
+  const V = c.V, n = c.pts.length, tail0 = at(c, 0.72);
+  for (const L of c.legs) { const { A, K, Fo, F } = legPts(c, L), ls = 1 + 0.2 * L.lift; limb(g, A, K, 16, V.dark); limb(g, K, Fo, 12 * ls, L.fwd > 5 ? V.arm : V.dark); if (L.fwd > 5) toes(g, c, L, Fo, F, 3, 13 * ls, 0.3, '#cfc6b2', 3.4); else toes(g, c, L, Fo, F, 4, 7, 0.4, '#2a2420', 3); }
+  // the tail: long hair fanning out (the russet one has pale rings)
+  for (let k = 0; k < 140; k++) { const i = tail0 + Math.floor(hash(k + 3) * (n - tail0 - 1)), u = (hash(k + 7) - 0.5) * 2, q = P(c, i, u * 0.8), F = q.F, l = 14 + 22 * hash(k + 11);
+    const col = V.pattern === 'stripe' ? V.tail[Math.floor((i - tail0) / 2) % 2] : V.tail[hash(k) > 0.5 ? 0 : 1];
+    g.strokeStyle = col; g.lineWidth = 2.2; g.beginPath(); g.moveTo(q.x, q.y); g.quadraticCurveTo(q.x - F.fx * l * 0.5 + F.rx * u * 10, q.y - F.fy * l * 0.5 + F.ry * u * 10, q.x - F.fx * l + F.rx * u * 20, q.y - F.fy * l + F.ry * u * 20); g.stroke(); }
+  bodyPath(g, c, 1, 0, tail0 + 2); g.fillStyle = V.fur; g.fill();
+  if (V.pattern === 'band') for (const s of [-1, 1]) { const a = at(c, 0.3), b = at(c, 0.55); // dark shoulder band with pale edges
+    g.beginPath(); for (let i = a; i <= b; i++) { const q = P(c, i, s * lerp(0.2, 1, (i - a) / (b - a))); i === a ? g.moveTo(q.x, q.y) : g.lineTo(q.x, q.y); } for (let i = b; i >= a; i--) { const q = P(c, i, s * lerp(0.55, 1.02, (i - a) / (b - a))); g.lineTo(q.x, q.y); } g.closePath();
+    g.fillStyle = V.dark; g.fill(); g.strokeStyle = 'rgba(236,230,216,.7)'; g.lineWidth = 1.6; g.stroke(); }
+  if (V.pattern === 'vest') { const a = at(c, 0.34), b = at(c, 0.68); // a black vest over the back and sides, golden shoulders and head
+    g.beginPath(); for (let i = a; i <= b; i++) { const q = P(c, i, 1.02 * Math.min(1, (i - a + 1) / 3)); i === a ? g.moveTo(q.x, q.y) : g.lineTo(q.x, q.y); } for (let i = b; i >= a; i--) { const q = P(c, i, -1.02 * Math.min(1, (i - a + 1) / 3)); g.lineTo(q.x, q.y); } g.closePath(); g.fillStyle = V.dark; g.fill(); }
+  if (V.pattern === 'stripe') { const a = at(c, 0.24), b = tail0; g.strokeStyle = 'rgba(230,205,170,.75)'; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); for (let i = a; i <= b; i++) { const q = P(c, i, 0); i === a ? g.moveTo(q.x, q.y) : g.lineTo(q.x, q.y); } g.stroke(); }
+  for (let k = 0; k < 260; k++) { const i = 3 + Math.floor(hash(k + 21) * (tail0 - 2)), u = (hash(k + 31) - 0.5) * 1.8, q = P(c, i, u), F = q.F; g.strokeStyle = hash(k + 41) > 0.5 ? V.light : 'rgba(30,24,20,.35)'; g.lineWidth = 1.3; g.beginPath(); g.moveTo(q.x, q.y); g.lineTo(q.x - F.fx * 7 + F.rx * u * 2, q.y - F.fy * 7 + F.ry * u * 2); g.stroke(); }
+  const e = at(c, 0.21); for (const s of [-1, 1]) { const q = P(c, e, 0.7 * s); g.fillStyle = '#0d0b0a'; g.beginPath(); g.arc(q.x, q.y, 2, 0, TAU); g.fill(); const ear = P(c, at(c, 0.25), 1.05 * s); g.fillStyle = V.dark; g.beginPath(); g.arc(ear.x, ear.y, 3.6, 0, TAU); g.fill(); }
+  tongue(g, c, 70, '#d06a86');
+}
+function skinBird(g, c) {
+  const V = c.V, n = c.pts.length;
+  for (const L of c.legs) { const { A, K, Fo, F } = legPts(c, L), ls = 1 + 0.35 * L.lift, lc = V.name === 'Eagle' ? '#d9a62a' : '#59524c'; limb(g, A, K, 7, V.body); limb(g, K, Fo, 5, lc); toes(g, c, L, Fo, F, 3, 15 * ls, 0.5, lc, 2.6); const back = { x: Fo.x - F.fx * 9, y: Fo.y - F.fy * 9 }; limb(g, Fo, back, 2.4, lc); }
+  const t0 = at(c, 0.78); for (let k = -4; k <= 4; k++) { const b = P(c, t0, k * 0.12), tip = P(c, n - 1, k * 0.45, -10 - (4 - Math.abs(k)) * 2); g.fillStyle = V.tail[Math.abs(k) % 2]; g.beginPath(); g.moveTo(b.x - b.F.rx * 4, b.y - b.F.ry * 4); g.quadraticCurveTo(tip.x - tip.F.rx * 7, tip.y - tip.F.ry * 7, tip.x, tip.y); g.quadraticCurveTo(tip.x + tip.F.rx * 7, tip.y + tip.F.ry * 7, b.x + b.F.rx * 4, b.y + b.F.ry * 4); g.fill(); }
+  bodyPath(g, c, 1, V.beakFrom, t0); g.fillStyle = V.body; g.fill();
+  g.strokeStyle = 'rgba(255,240,220,.16)'; g.lineWidth = 2; g.stroke();
+  for (const s of [-1, 1]) {
+    const a = at(c, 0.4), b = at(c, 0.86), w = s === c.deadSide ? c.wingOpen : 0;
+    if (w > 0.02) {
+      const S0 = P(c, a, s * 0.85), F = S0.F, R = { x: F.rx * s, y: F.ry * s }, back = P(c, at(c, 0.72), s * 0.85);
+      const wrist = { x: S0.x + R.x * 105 * w + F.fx * 6 * w, y: S0.y + R.y * 105 * w + F.fy * 6 * w }, tip = { x: S0.x + R.x * 160 * w - F.fx * 55, y: S0.y + R.y * 160 * w - F.fy * 55 };
+      for (let k = 0; k <= 12; k++) { const t = k / 12, u = t < 0.62 ? Math.min(1, t * 1.6) : (t - 0.62) / 0.38, A0 = t < 0.62 ? S0 : wrist, B0 = t < 0.62 ? wrist : tip, bx = lerp(A0.x, B0.x, u), by = lerp(A0.y, B0.y, u), L2 = 46 + 30 * Math.sin(Math.PI * t);
+        g.fillStyle = k % 2 ? V.wing : V.body; g.beginPath(); g.moveTo(bx - F.fx * 2 - R.x * 7, by - F.fy * 2 - R.y * 7); g.lineTo(bx - F.fx * L2, by - F.fy * L2); g.lineTo(bx - F.fx * 2 + R.x * 7, by - F.fy * 2 + R.y * 7); g.fill();
+        if (t > 0.55) { g.strokeStyle = V.tip; g.lineWidth = 2; g.beginPath(); g.moveTo(bx - F.fx * L2 * 0.55, by - F.fy * L2 * 0.55); g.lineTo(bx - F.fx * L2, by - F.fy * L2); g.stroke(); } }
+      g.fillStyle = V.wing; g.beginPath(); g.moveTo(S0.x, S0.y); g.lineTo(wrist.x, wrist.y); g.lineTo(tip.x, tip.y); g.quadraticCurveTo(wrist.x - F.fx * 30, wrist.y - F.fy * 30, back.x, back.y); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(255,240,220,.14)'; g.lineWidth = 1.5; g.stroke();
+      if (w > 0.6) continue;
+    }
+    g.beginPath(); for (let i = a; i <= b; i++) { const q = P(c, i, s * 0.15); i === a ? g.moveTo(q.x, q.y) : g.lineTo(q.x, q.y); }
+    for (let i = b; i >= a; i--) { const q = P(c, i, s * 1.08, i > b - 3 ? -8 : 0); g.lineTo(q.x, q.y); }
+    g.closePath(); g.fillStyle = V.wing; g.fill(); g.strokeStyle = 'rgba(255,240,220,.14)'; g.lineWidth = 1.2; g.stroke();
+    for (let i = a + 2; i < b; i += 2) for (let u = 0.3; u < 1; u += 0.3) { const q = P(c, i, s * u), F = q.F; g.strokeStyle = 'rgba(200,180,150,.3)'; g.lineWidth = 1.1; g.beginPath(); g.moveTo(q.x + F.rx * 5, q.y + F.ry * 5); g.quadraticCurveTo(q.x - F.fx * 5, q.y - F.fy * 5, q.x - F.rx * 5, q.y - F.ry * 5); g.stroke(); }
+    const tp = P(c, b, s * 0.7, -10); g.strokeStyle = V.tip; g.lineWidth = 2.2; g.beginPath(); g.moveTo(tp.x, tp.y); g.lineTo(tp.x - tp.F.fx * 12, tp.y - tp.F.fy * 12); g.stroke();
+  }
+  // a vulture's pale ruff where the bare neck meets the body
+  if (V.ruff) { const r = at(c, 0.34); for (let k = 0; k < 40; k++) { const u = (k / 39 - 0.5) * 2.2, q = P(c, r, u), F = q.F; g.strokeStyle = V.ruff; g.lineWidth = 2.4; g.beginPath(); g.moveTo(q.x - F.fx * 4, q.y - F.fy * 4); g.lineTo(q.x + F.fx * 4 + F.rx * u * 2, q.y + F.fy * 4 + F.ry * u * 2); g.stroke(); } }
+  // neck and head colour (bare pink for the vulture, white for the eagle)
+  if (V.head !== V.body) { bodyPath(g, c, 1, V.beakFrom, at(c, V.ruff ? 0.33 : 0.2)); g.fillStyle = V.head; g.fill(); }
+  const hI = at(c, 0.12), h = P(c, hI, 0); g.fillStyle = V.head; g.beginPath(); g.arc(h.x, h.y, 9, 0, TAU); g.fill();
+  if (V.face) for (const s of [-1, 1]) { const q = P(c, hI, 0.95 * s, -1); g.fillStyle = V.face; g.beginPath(); g.ellipse(q.x, q.y, 3, 5, Math.atan2(q.F.fy, q.F.fx), 0, TAU); g.fill(); }
+  for (const s of [-1, 1]) { const q = P(c, hI, 0.65 * s, 2); g.fillStyle = V.eye; g.beginPath(); g.arc(q.x, q.y, 2.6, 0, TAU); g.fill(); g.fillStyle = '#000'; g.beginPath(); g.arc(q.x, q.y, 1.2, 0, TAU); g.fill(); }
+  const b0 = P(c, hI, 0, 4);
+  if (V.hook) { // a short, deep hooked beak
+    const tip = P(c, 1, 0, 3), F = tip.F; g.fillStyle = V.beak; g.beginPath(); g.moveTo(b0.x + b0.F.rx * 6, b0.y + b0.F.ry * 6); g.quadraticCurveTo(tip.x + F.rx * 5, tip.y + F.ry * 5, tip.x + F.fx * 2, tip.y + F.fy * 2); g.quadraticCurveTo(tip.x - F.rx * 5, tip.y - F.ry * 5, b0.x - b0.F.rx * 6, b0.y - b0.F.ry * 6); g.fill();
+    g.fillStyle = '#2a2018'; g.beginPath(); g.arc(tip.x + F.fx * 1, tip.y + F.fy * 1, 2.2, 0, TAU); g.fill(); // dark hooked tip
+  } else {
+    const tip = P(c, 0, 0, 2); g.fillStyle = V.beak; g.beginPath(); g.moveTo(b0.x + b0.F.rx * 6, b0.y + b0.F.ry * 6); g.quadraticCurveTo(tip.x + tip.F.rx * 3, tip.y + tip.F.ry * 3, tip.x, tip.y); g.quadraticCurveTo(tip.x - tip.F.rx * 2, tip.y - tip.F.ry * 2, b0.x - b0.F.rx * 6, b0.y - b0.F.ry * 6); g.fill();
+    if (V.casque) { g.fillStyle = V.casque; const ca = P(c, hI - 1, 0, 2); g.beginPath(); g.ellipse(ca.x, ca.y, 6, 3, Math.atan2(ca.F.fy, ca.F.fx), 0, TAU); g.fill(); }
+  }
+}
+// ---------- muscle ----------
+function muscle(g, c) {
+  const id = c.S.id, end = id === 'bird' ? at(c, 0.82) : id === 'anteater' ? at(c, 0.76) : c.pts.length - 1;
+  for (const L of c.legs) { const { A, K, Fo } = legPts(c, L); limb(g, A, K, id === 'bird' ? 8 : 13, '#7c2420'); limb(g, K, Fo, id === 'bird' ? 4 : 8, '#8e2f27'); limb(g, A, K, 3, 'rgba(240,200,190,.35)'); }
+  bodyPath(g, c, 0.86, 0, end); const gr = g.createRadialGradient(c.pts[at(c, 0.4)].x, c.pts[at(c, 0.4)].y, 4, c.pts[at(c, 0.4)].x, c.pts[at(c, 0.4)].y, 160); gr.addColorStop(0, '#a5372c'); gr.addColorStop(1, '#6a1d1a'); g.fillStyle = gr; g.fill();
+  // pale lines of tendon along the back and across the muscle bands
+  g.strokeStyle = 'rgba(244,214,200,.4)'; g.lineWidth = 1.4;
+  for (const u of [-0.55, -0.22, 0.22, 0.55]) { g.beginPath(); for (let i = 2; i <= end; i++) { const q = P(c, i, u * 0.86); i === 2 ? g.moveTo(q.x, q.y) : g.lineTo(q.x, q.y); } g.stroke(); }
+  g.strokeStyle = 'rgba(60,10,10,.45)'; for (let i = 3; i < end; i += 2) { const a = P(c, i, -0.8), b = P(c, i, 0.8); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+}
+
+// ---------- bone ----------
+const BONE = '#e9e0c9', BONE2 = '#b9ad90';
+function bones(g, c) {
+  const id = c.S.id, n = c.pts.length;
+  const skullEnd = at(c, id === 'anteater' ? 0.26 : id === 'bird' ? 0.13 : 0.1), ribA = at(c, id === 'bird' ? 0.42 : id === 'anteater' ? 0.36 : 0.18), ribB = at(c, id === 'bird' ? 0.66 : id === 'anteater' ? 0.6 : 0.4);
+  // limbs
+  for (const L of c.legs) { const { A, K, Fo, F } = legPts(c, L); for (const [a, b, w] of [[A, K, id === 'bird' ? 5 : 7], [K, Fo, id === 'bird' ? 4 : 5]]) { limb(g, a, b, w + 2, BONE2); limb(g, a, b, w, BONE); } for (const q of [A, K, Fo]) { g.fillStyle = BONE; g.beginPath(); g.arc(q.x, q.y, id === 'bird' ? 4 : 5.5, 0, TAU); g.fill(); } toes(g, c, L, Fo, F, id === 'bird' ? 3 : id === 'anteater' && L.fwd > 5 ? 3 : 5, id === 'bird' ? 14 : 11, 0.4, BONE, 2); }
+  // ribs
+  for (let i = ribA; i <= ribB; i++) for (const s of [-1, 1]) { const a = P(c, i, 0), m = P(c, i, s * 0.75, 2), b = P(c, Math.min(n - 1, i + 2), s * 0.9); g.strokeStyle = BONE2; g.lineWidth = 3.6; g.beginPath(); g.moveTo(a.x, a.y); g.quadraticCurveTo(m.x, m.y, b.x, b.y); g.stroke(); g.strokeStyle = BONE; g.lineWidth = 2.4; g.stroke(); }
+  // shoulder blades and hips
+  for (const L of c.legs) { const A = anchorOf(c, L), q = P(c, L.i, L.side * 0.35); g.fillStyle = BONE; g.strokeStyle = BONE2; g.lineWidth = 1.5; g.beginPath(); g.ellipse(q.x, q.y, 9, 5, Math.atan2(A.F.fy, A.F.fx), 0, TAU); g.fill(); g.stroke(); }
+  if (id === 'bird') { const a = P(c, at(c, 0.45), 0), b = P(c, at(c, 0.68), 0); limb(g, a, b, 9, BONE2); limb(g, a, b, 7, BONE);
+    for (const s of [-1, 1]) { const sh = P(c, at(c, 0.42), s * 0.7), el = P(c, at(c, 0.58), s * 0.95), wr = P(c, at(c, 0.48), s * 0.8), tp = P(c, at(c, 0.86), s * 0.6); for (const [a2, b2] of [[sh, el], [el, wr], [wr, tp]]) { limb(g, a2, b2, 5, BONE2); limb(g, a2, b2, 3.4, BONE); } } }
+  // vertebrae down the spine
+  for (let i = skullEnd; i < n - 1; i++) { const q = P(c, i, 0), F = q.F, w = clamp(c.r(i) * 0.28, 1.6, 7), h = Math.max(1.4, c.S.seg * 0.36); g.save(); g.translate(q.x, q.y); g.rotate(Math.atan2(F.fy, F.fx)); g.fillStyle = BONE2; g.fillRect(-h - 0.8, -w - 0.8, 2 * h + 1.6, 2 * w + 1.6); g.fillStyle = BONE; g.fillRect(-h, -w, 2 * h, 2 * w); g.restore(); }
+  // skull
+  const tip = P(c, 0, 0), back = P(c, skullEnd, 0); const F = back.F, ang = Math.atan2(F.fy, F.fx), len = Math.hypot(tip.x - back.x, tip.y - back.y);
+  g.save(); g.translate(back.x, back.y); g.rotate(ang); g.fillStyle = BONE; g.strokeStyle = BONE2; g.lineWidth = 2;
+  if (id === 'anteater') { g.beginPath(); g.ellipse(4, 0, 15, 12, 0, 0, TAU); g.fill(); g.stroke(); g.beginPath(); g.roundRect(8, -4, len - 6, 8, 4); g.fill(); g.stroke(); }
+  else if (id === 'bird') { g.beginPath(); g.ellipse(2, 0, 11, 9, 0, 0, TAU); g.fill(); g.stroke(); g.beginPath(); g.moveTo(8, -5); g.quadraticCurveTo(len * 0.7, -3, len + 2, 0); g.quadraticCurveTo(len * 0.7, 3, 8, 5); g.fill(); g.stroke(); }
+  else { g.beginPath(); g.moveTo(-4, -14); g.quadraticCurveTo(len * 0.5, -13, len + 4, 0); g.quadraticCurveTo(len * 0.5, 13, -4, 14); g.closePath(); g.fill(); g.stroke(); }
+  g.fillStyle = '#3a3026'; const ex = id === 'anteater' ? 8 : id === 'bird' ? 5 : len * 0.45; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(ex, s * (id === 'lizard' ? 7 : 5), id === 'lizard' ? 5 : 3.4, 3, 0, 0, TAU); g.fill(); }
+  g.restore();
+}
+
+// ---------- attacks, and a living tail ----------
+// the physics chain stays as it is; these offsets bend a copy of it for drawing and for hitting ants
+const ATTACKS = { lizard: { name: 'Tail whip', dur: 1.3 }, anteater: { name: 'Tongue lash', dur: 2.2 }, bird: { name: 'Peck', dur: 1.5 } };
+function startAttack(st) { const c = st.c; if (c.state !== 'alive' || c.attack) return; c.attack = { t: 0, side: hash(c.t * 5.1) > 0.5 ? 1 : -1, tongue: null, next: 0, dir: c.h }; }
+function whipCurve(t) { // per-joint extra bend over the attack: wind up, crack across, settle
+  if (t < 0.3) return -0.07 * ease(t / 0.3);
+  if (t < 0.52) return lerp(-0.07, 0.15, ease((t - 0.3) / 0.22));
+  return lerp(0.15, 0, ease((t - 0.52) / 0.48));
+}
+function displayPts(c) {
+  const p = c.pts, n = p.length, q = p.map(o => ({ x: o.x, y: o.y })), A = c.attack;
+  if (c.S.id === 'lizard' && c.state === 'alive') {
+    const t0 = Math.round(n * (A ? 0.36 : 0.46)), moving = c.walking ? 1 : 0.35;
+    let acc = 0;
+    for (let i = t0; i < n; i++) {
+      const w = (i - t0 + 1) / (n - t0), wave = (0.035 + 0.05 * moving) * Math.sin(c.phase * 1.0 + c.t * 1.4 - i * 0.42); // a slow wave runs down the tail, so it never hangs stiff
+      acc += w * (wave + (A ? A.side * whipCurve(A.t) : 0));
+      const a = Math.atan2(p[i].y - p[i - 1].y, p[i].x - p[i - 1].x) + acc; q[i].x = q[i - 1].x + Math.cos(a) * c.S.seg; q[i].y = q[i - 1].y + Math.sin(a) * c.S.seg;
+    }
+  }
+  if (c.S.id === 'bird' && A) { // the neck shoots the head forward three times
+    const ne = at(c, 0.33), f = Math.pow(Math.max(0, Math.sin(Math.PI * ((A.t * 3) % 1))), 3) * 46, dx = Math.cos(A.dir), dy = Math.sin(A.dir);
+    for (let i = 0; i <= ne; i++) { const k = 1 - i / ne; q[i].x += dx * f * k; q[i].y += dy * f * k; }
+    A.reach = f;
+  }
+  return q;
+}
+
+// ---------- giants in the game ----------
+// creature units (cu): the shapes above are about 300 cu long; a giant is scaled so it is about a tenth of the map long
+const SKIN = { lizard: skinLizard, anteater: skinAnteater, bird: skinBird };
+const KINDS = ['lizard', 'anteater', 'bird'], HOUR = 60 * MINUTE;
+const nameOf = (id, V) => id === 'bird' ? (V.name === 'Hornbill' ? 'giant ground hornbill' : `giant ${V.name.toLowerCase()}`) : `${V.name.toLowerCase()} giant ${id === 'lizard' ? 'monitor lizard' : 'anteater'}`;
+let G = null, C = null, next = 0;
+const queue = []; // pellets and ground marks waiting to go down, a share per frame
+const antsTotal = () => colonies.reduce((a, c) => a + c.inside + c.out, 0);
+function schedule() { next = simStep + Math.round(HOUR * PR.giantEvery * (0.5 + rnd())); } // on average every giantEvery hours, anywhere from half to one and a half times that
+function decalOff() { device.queue.writeBuffer(bufs.decal, 16, new Uint32Array([0])); }
+function reset() { G = null; C = null; queue.length = 0; decalOff(); schedule(); }
+const scaleFor = S => Math.min(1.05, W / 10 / (S.n * S.seg));
+const inMap = (x, y) => x >= 0 && y >= 0 && x < W && y < H;
+const isWater = (x, y) => { x = Math.floor(x); y = Math.floor(y); return inMap(x, y) && wall[y * W + x] === 3; };
+function pickNest(not) {
+  const list = colonies.filter(c => c !== not).sort((a, b) => (b.inside + b.out) - (a.inside + a.out)).slice(0, 4);
+  return list.length ? list[(rnd() * list.length) | 0] : null;
+}
+function freeSlots() { return [0, 1, 2, 3, 4, 5, 6, 7].filter(s => !beasts.some(b => b.slot === s)).length; }
+function makeParts() {
+  for (const kd of [0, 1, 2, 3]) while (freeSlots() < 3) { const i = beasts.findIndex(b => (b.kind || 0) === kd); if (i < 0) break; beasts.splice(i, 1); } // make room: lesser beasts wander off
+  G.parts = [];
+  for (let j = 0; j < 3; j++) { const b = addBeast({ kind: 4, fx: -999, fy: -999, hp: 1e12, size: 1, noBar: true, life: 1e9, giant: true }); if (b) G.parts.push(b); }
+}
+function removeParts() { if (G) beasts = beasts.filter(b => !G.parts.includes(b)); }
+function spawn(kind) {
+  if (G && G.c.state !== 'dead') return false;
+  if (G) finishCarcassLink();
+  const id = KINDS.includes(kind) ? kind : KINDS[(rnd() * 3) | 0], S = SPECS.find(s => s.id === id), k = scaleFor(S);
+  const c = makeCreature(S); c.V = VARIANTS[id][(rnd() * 3) | 0]; c.speedMul = 0.45;
+  const n0 = pickNest(), tgt = n0 ? { x: n0.x, y: n0.y } : { x: W / 2, y: H / 2 };
+  // walk on from the edge nearest its first target, from somewhere the way in isn't water
+  let best = null;
+  for (let t = 0; t < 16; t++) { const side = (rnd() * 4) | 0, u = 0.12 + 0.76 * rnd(), ex = [0, W, u * W, u * W][side], ey = [u * H, u * H, 0, H][side], d = Math.hypot(ex - tgt.x, ey - tgt.y) * (isWater(ex + (tgt.x - ex) * 0.05, ey + (tgt.y - ey) * 0.05) ? 3 : 1); if (!best || d < best.d) best = { ex, ey, d }; }
+  const h = Math.atan2(tgt.y - best.ey, tgt.x - best.ex), hx = best.ex / k - Math.cos(h) * 30, hy = best.ey / k - Math.sin(h) * 30;
+  c.pts.forEach((q, i) => { q.x = hx - Math.cos(h) * i * S.seg; q.y = hy - Math.sin(h) * i * S.seg; });
+  c.h = c.th = h; layoutLegs(c, true);
+  G = { S, c, k, id, name: nameOf(id, c.V), mode: 'enter', home: tgt, nest: n0, goal: { ...tgt }, linger: 0, lingerMax: 30, hp: PR.giantHp, maxHp: PR.giantHp, spawnAnts: Math.max(1, antsTotal()), parts: [], atkCd: 5, tok: [0, 0, 0], side: 1, fade: 1 };
+  makeParts();
+  emit('giant', `A ${G.name} is coming onto the map. Ants that fight it together can bring it down`, best.ex, best.ey);
+  return true;
+}
+// steering: toward its goal, turning away from water it sees ahead
+function clearWay(hx, hy, a) {
+  const R = 26 * G.k;
+  for (const d of [R, R * 2, R * 3.2]) { const x = hx + Math.cos(a) * d, y = hy + Math.sin(a) * d; if (isWater(x, y) || isWater(x - Math.sin(a) * R * 0.7, y + Math.cos(a) * R * 0.7) || isWater(x + Math.sin(a) * R * 0.7, y - Math.cos(a) * R * 0.7)) return false; }
+  return true;
+}
+function steer(hx, hy, want) {
+  const offs = [0, 0.35, 0.7, 1.05, 1.45, 1.9, 2.4, Math.PI];
+  for (const o of offs) for (const s of [G.side, -G.side]) { const a = want + o * s; if (clearWay(hx, hy, a)) { if (o) G.side = s; return a; } if (!o) break; }
+  return want + Math.PI;
+}
+function think(dt) {
+  const c = G.c, k = G.k; if (c.state !== 'alive') return;
+  const hx = c.pts[0].x * k, hy = c.pts[0].y * k;
+  if (G.mode !== 'leave' && antsTotal() <= G.spawnAnts * 0.5) { // it has eaten enough: off it goes, out the nearest edge
+    G.mode = 'leave'; const ex = [[-600, hy], [W + 600, hy], [hx, -600], [hx, H + 600]].sort((a, b) => Math.hypot(a[0] - hx, a[1] - hy) - Math.hypot(b[0] - hx, b[1] - hy))[0];
+    G.goal = { x: ex[0], y: ex[1] }; emit('giant', `The ${G.name} has eaten its fill and is leaving`, hx, hy);
+  }
+  if (G.mode === 'enter' && hx > 80 && hy > 80 && hx < W - 80 && hy < H - 80) G.mode = 'hunt';
+  if (G.mode === 'hunt') {
+    if (G.nest && !colonies.includes(G.nest)) { G.nest = pickNest(); G.home = G.nest ? { x: G.nest.x, y: G.nest.y } : { x: W / 2, y: H / 2 }; G.goal = { ...G.home }; G.linger = 0; }
+    const dh = Math.hypot(G.home.x - hx, G.home.y - hy);
+    if (dh < 110) { // prowling around a nest: new spots to rake through now and then
+      G.linger += dt;
+      if (Math.hypot(G.goal.x - hx, G.goal.y - hy) < 30 || rnd() < dt * 0.25) G.goal = { x: G.home.x + (rnd() - 0.5) * 200, y: G.home.y + (rnd() - 0.5) * 200 };
+      if (G.linger > G.lingerMax) { G.nest = pickNest(G.nest); G.home = G.nest ? { x: G.nest.x, y: G.nest.y } : { x: W * (0.2 + 0.6 * rnd()), y: H * (0.2 + 0.6 * rnd()) }; G.goal = { ...G.home }; G.linger = 0; G.lingerMax = 25 + rnd() * 30; }
+    }
+    G.atkCd -= dt * (dh < 160 ? 1 : 0.35);
+    if (G.atkCd <= 0) { c.attack = { t: 0, side: rnd() > 0.5 ? 1 : -1, tongue: null, dir: c.h }; G.atkCd = 3 + rnd() * 4; }
+  }
+  c.walking = true; c.speedMul = G.mode === 'hunt' && Math.hypot(G.home.x - hx, G.home.y - hy) < 110 ? 0.3 : 0.45;
+  const want = Math.atan2(G.goal.y - hy, G.goal.x - hx);
+  c.th = inMap(hx, hy) ? steer(hx, hy, want) : want;
+}
+// its attacks in the game: the striking part of the body bites every ant it reaches
+function attackStep(dt) {
+  const c = G.c, A = c.attack; if (!A) return;
+  A.t += dt / ATTACKS[G.id].dur;
+  if (G.id === 'anteater') {
+    const tip0 = P(c, 0, 0, 2);
+    if (!A.tongue && A.t < 0.9) A.tongue = { ang: c.h + (rnd() - 0.5) * 1.3, len: 70 + 40 * rnd(), u: 0 };
+    if (A.tongue) { const T = A.tongue; T.u += dt / 0.3; if (T.u >= 0.5 && !T.hit) { T.hit = true; G.tok[0] += 6 * PR.giantBite; } if (T.u >= 1) A.tongue = null; }
+  }
+  if (G.id === 'lizard' && A.t > 0.28 && A.t < 0.62) G.tok[2] += 150 * dt * PR.giantBite;
+  if (G.id === 'bird') { const ph = (A.t * 3) % 1; if (ph > 0.45 && !A['p' + Math.floor(A.t * 3)]) { A['p' + Math.floor(A.t * 3)] = true; G.tok[0] += 8 * PR.giantBite; } }
+  if (A.t >= 1) c.attack = null;
+}
+// where the three biting parts are: the head (or the tongue tip or beak while striking), the body, and the rear (the tail tip while whipping)
+function syncParts() {
+  const c = G.c, k = G.k, d = displayPts(c), A = c.attack, n = d.length, R = PR.beastReach;
+  const put = (b, x, y, r) => { b.fx = x * k; b.fy = y * k; b.size = Math.max(1, (r * k + 2) / R); };
+  if (!G.parts.length) return;
+  const at0 = (t) => Math.round(t * (n - 1));
+  let hx = d[0].x, hy = d[0].y, hr = c.r(at0(0.08)) + 4;
+  if (A && G.id === 'anteater' && A.tongue) { const T = A.tongue, tip0 = d[0], l = T.len * Math.sin(Math.PI * T.u); hx = tip0.x + Math.cos(T.ang) * l; hy = tip0.y + Math.sin(T.ang) * l; hr = 5; }
+  put(G.parts[0], hx, hy, hr);
+  const m = at0(0.42); put(G.parts[1], d[m].x, d[m].y, c.r(m) + 6);
+  const tI = at0(A && G.id === 'lizard' ? 0.82 : 0.68); if (G.parts[2]) put(G.parts[2], d[tI].x, d[tI].y, c.r(tI) + (A && G.id === 'lizard' ? 14 : 4));
+}
+function die() {
+  const c = G.c, hx = c.pts[at(c, 0.4)].x * G.k, hy = c.pts[at(c, 0.4)].y * G.k;
+  c.attack = null; kill(c); removeParts(); G.parts = [];
+  emit('giant', `The ants brought down the ${G.name}! Its body is food for weeks`, hx, hy);
+}
+// once it lies still, its body becomes the ground: carcass food on every tile (skin, then the muscle under it), a pressed hollow under it, and its picture in the ground
+function layCarcass() {
+  const c = G.c, k = G.k, p = c.pts; let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  const grow = (x, y, r) => { x0 = Math.min(x0, (x - r) * k); y0 = Math.min(y0, (y - r) * k); x1 = Math.max(x1, (x + r) * k); y1 = Math.max(y1, (y + r) * k); };
+  p.forEach((q, i) => grow(q.x, q.y, c.r(i) * 1.7 + 12)); c.legs.forEach(L => grow(L.foot.x, L.foot.y, 30)); if (G.id === 'bird') p.forEach(q => grow(q.x, q.y, 175));
+  x0 = Math.floor(x0); y0 = Math.floor(y0); let w = Math.min(DECMAX, Math.ceil(x1 - x0)), h = Math.min(DECMAX, Math.ceil(y1 - y0));
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const q = cv.getContext('2d', { willReadFrequently: true });
+  const layer = fn => { q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, w, h); q.setTransform(k, 0, 0, k, -x0, -y0); fn(q, c); return new Uint32Array(q.getImageData(0, 0, w, h).data.buffer.slice(0)); };
+  const skin = layer(SKIN[G.id]), mus = layer(muscle), bone = layer(bones), NN = w * h;
+  const head = new Uint32Array([x0, y0, w, h, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  let flesh = 0;
+  for (let i = 0; i < NN; i++) {
+    const x = x0 + (i % w), y = y0 + ((i / w) | 0); if (!inMap(x, y)) continue; const t = y * W + x; if (wall[t] === 3) continue;
+    const s = (skin[i] >>> 24) > 110, m = (mus[i] >>> 24) > 110, b = (bone[i] >>> 24) > 110;
+    if (s && m) { queue.push(t | (10 << 24), t | (10 << 24)); flesh += 2; } else if (s || m) { queue.push(t | (10 << 24)); flesh++; }
+    if ((s || m || b) && !wall[t] && hash(i * 0.17) < 0.6) queue.push(t | (6 << 24) | (3 << 28)); // the weight of it presses the ground into a hollow the shape of its body
+  }
+  device.queue.writeBuffer(bufs.decal, 0, head); device.queue.writeBuffer(bufs.decal, 64, skin); device.queue.writeBuffer(bufs.decal, 64 + NN * 4, mus); device.queue.writeBuffer(bufs.decal, 64 + NN * 8, bone);
+  C = { x0, y0, w, h, flesh, base: [giantWords[0], giantWords[1]], deadAt: simStep, boneAt: 0, k, name: G.name, cx: (x0 + w / 2), cy: (y0 + h / 2) };
+  G.laid = true; G.fade = 1;
+}
+function finishCarcassLink() { /* a new giant can arrive while an old carcass is still on the ground */ }
+// the carcass over time: it rots slowly where nothing eats it; once picked clean (or after 8 sim hours) the bones wear away over 20 sim hours, enriching the soil
+function stepCarcass() {
+  const eaten = ((giantWords[0] - C.base[0]) >>> 0) + ((giantWords[1] - C.base[1]) >>> 0), left = Math.max(0, C.flesh - eaten);
+  const age = simStep - C.deadAt;
+  if (!C.boneAt && (left < C.flesh * 0.08 || age > 8 * HOUR)) { C.boneAt = simStep; emit('giant', `The ${C.name} has been picked clean. Its bones will lie there for a while`, C.cx, C.cy); }
+  const D = C.boneAt ? Math.min(1, (simStep - C.boneAt) / (20 * HOUR)) : 0, rot = Math.min(1, age / (6 * HOUR));
+  device.queue.writeBuffer(bufs.decal, 20, new Uint32Array([Math.round(D * 1000), Math.round(rot * 1000)]));
+  // the soil under it gets richer, more so while the bones break down
+  if (P_FERT() && simStep - (C.lastF || 0) >= MINUTE) for (let cy = Math.floor(C.y0 / 64); cy <= Math.floor((C.y0 + C.h) / 64); cy++) for (let cx = Math.floor(C.x0 / 64); cx <= Math.floor((C.x0 + C.w) / 64); cx++) { if (cx < 0 || cy < 0 || cx >= CW || cy >= CW) continue; const j = cy * CW + cx; fert[j] = Math.min(1.6, fert[j] + (C.boneAt ? 0.02 : 0.008)); }
+  if (simStep - (C.lastF || 0) >= MINUTE) C.lastF = simStep;
+  if (D >= 1) { decalOff(); emit('giant', `The bones of the ${C.name} have crumbled into rich soil`, C.cx, C.cy); C = null; }
+}
+const P_FERT = () => PR.fert;
+let lastFertStep = 0;
+function stepAll(steps) {
+  while (queue.length && drops.length < MAXDROP - 64) { const take = Math.min(queue.length, MAXDROP - 64 - drops.length, 6000); for (let i = 0; i < take; i++) drops.push(queue.pop()); }
+  if (!G && PR.giants && simStep >= next && colonies.length) { spawn(); schedule(); }
+  if (C && simStep - lastFertStep >= 30) { lastFertStep = simStep; stepCarcass(); }
+  if (!G) return;
+  for (const b of G.parts) { const d = b.maxHp - b.hp; if (d > 0) { G.hp -= d; b.hp = b.maxHp; G.hurt = 2; } } // damage the ants did to any part of it
+  const c = G.c, dt = steps / 120, n = Math.min(14, Math.max(1, Math.ceil(dt / 0.05))), sdt = dt / n;
+  for (let s = 0; s < n; s++) { think(sdt); step(c, sdt); if (c.attack) attackStep(sdt); if (c.state === 'alive') { G.tok[0] += 3 * sdt * PR.giantBite; G.tok[1] += 4 * sdt * PR.giantBite; G.tok[2] += 2 * sdt * PR.giantBite; } }
+  if (G.hp <= 0 && c.state === 'alive') die();
+  if (c.state === 'alive' && G.parts.length) { syncParts(); G.parts.forEach((b, j) => { const t = Math.floor(G.tok[j]); if (t > 0) { beastTok[b.slot] += t; G.tok[j] -= t; } }); }
+  if (c.state === 'dead' && !G.laid) layCarcass();
+  if (G.laid) { G.fade -= dt * 0.8; if (G.fade <= 0) G = null; return; }
+  if (G.mode === 'leave') { const k = G.k, out = c.pts.every(q => q.x * k < -40 || q.y * k < -40 || q.x * k > W + 40 || q.y * k > H + 40); if (out) { removeParts(); emit('giant', `The ${G.name} left the map`, W / 2, H / 2); G = null; } }
+}
+function draw(g, z) {
+  if (!G) return;
+  const c = G.c, k = G.k, real = c.pts;
+  g.save(); g.scale(k, k);
+  c.pts = displayPts(c);
+  if (G.laid) g.globalAlpha = Math.max(0, G.fade); // the drawn body fades into its picture in the ground
+  else { g.save(); g.translate(9, 12); bodyPath(g, c, 0.95); g.fillStyle = `rgba(0,0,0,${G.S.shadow})`; g.fill(); g.restore(); }
+  SKIN[G.id](g, c);
+  if (c.attack && G.id === 'anteater' && c.attack.tongue) { const T = c.attack.tongue, tip0 = P(c, 0, 0, 2), l = T.len * Math.sin(Math.PI * T.u), ex = tip0.x + Math.cos(T.ang) * l, ey = tip0.y + Math.sin(T.ang) * l; g.strokeStyle = '#d06a86'; g.lineWidth = 2; g.lineCap = 'round'; g.beginPath(); g.moveTo(tip0.x, tip0.y); g.lineTo(ex, ey); g.stroke(); }
+  c.pts = real;
+  g.restore();
+  if (!G.laid && G.hp < G.maxHp) { const m = c.pts[at(c, 0.4)], x = m.x * k, y = m.y * k - 50 * k, L = 120 * k, bh = Math.max(2, 5 / z); g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(x - L / 2, y, L, bh); g.fillStyle = '#f0645a'; g.fillRect(x - L / 2, y, L * Math.max(0, G.hp / G.maxHp), bh); }
+}
+const status = () => G && !G.laid ? { name: G.name, hp: G.hp / G.maxHp, mode: G.mode, x: G.c.pts[0].x * G.k, y: G.c.pts[0].y * G.k } : null;
+return { hurt: v => { if (G) G.hp -= v; }, reset, spawn, stepAll, draw, status, carcass: () => C, nextIn: () => Math.max(0, next - simStep) };
+
+})(P);
+// GIANTS-END
 function stepPlants(steps) {
   const target = plantTarget(), gr = growth();
   const minutes = Math.floor((simStep + steps) / MINUTE) - Math.floor(simStep / MINUTE);
@@ -7280,7 +7820,7 @@ function setup(newCap, opt = {}) {
   else if (opt.climate !== 'keep') { terrSeed = (Math.random() * 1e6) | 0; buildHeight(terrSeed); }
   if (opt.climate === 'flat' || opt.climate === 'keep') for (let i = 0; i < N; i++) height[i] = heightAt(clT[i] / 255, clH[i] / 255, clW[i] / 255, i % W, (i / W) | 0);
   if (opt.empty) placeNoStarts(); else placeStarts(opt.climate !== 'keep');
-  measureChunks(); pickHazards();
+  measureChunks(); pickHazards(); GIANT.reset();
   const tiles = new Uint32Array(N); for (let i = 0; i < N; i++) tiles[i] = packTile(i);
   setupBuffers(tiles, !opt.empty);
 }
@@ -7337,7 +7877,7 @@ function setupBuffers(tiles, withPlants) {
   const dbg = p => device.createBindGroup({ layout: drawLayout, entries: [
     { binding: 0, resource: { buffer: bufs.cam } }, { binding: 1, resource: { buffer: bufs.tiles } },
     { binding: 2, resource: { buffer: bufs.tsum } }, { binding: 3, resource: { buffer: p } },
-    { binding: 4, resource: { buffer: bufs.ants } }, { binding: 5, resource: { buffer: bufs.food } }, { binding: 6, resource: { buffer: bufs.climate } }, { binding: 7, resource: { buffer: bufs.base } }, { binding: 8, resource: { buffer: bufs.look } }] });
+    { binding: 4, resource: { buffer: bufs.ants } }, { binding: 5, resource: { buffer: bufs.food } }, { binding: 6, resource: { buffer: bufs.climate } }, { binding: 7, resource: { buffer: bufs.base } }, { binding: 8, resource: { buffer: bufs.look } }, { binding: 9, resource: { buffer: bufs.decal } }] });
   drawBG = [dbg(bufs.posA), dbg(bufs.posB)];
   if (withPlants) for (let k = 0; k < plantTarget(); k++) spawnPlant();
   writeNests();
@@ -7397,7 +7937,7 @@ function simFrame(steps, o) {
   if (timed) { enc.resolveQuerySet(tsSet, 0, 2, tsBuf, 0); enc.copyBufferToBuffer(tsBuf, 0, rb.buf, TS_AT * 4, 16); }
   if (rb) { rb.tsSteps = timed ? steps : 0; const R0 = MAXCOL * CTRN; enc.copyBufferToBuffer(bufs.world, LO.CTR_OFF * 4, rb.buf, 0, R0 * 4); enc.copyBufferToBuffer(bufs.world, 0, rb.buf, R0 * 4, 16);
     enc.copyBufferToBuffer(bufs.world, LO.PICK_OFF * 4, rb.buf, (R0 + 272) * 4, 4);
-    enc.copyBufferToBuffer(bufs.world, LO.HARV_OFF * 4, rb.buf, HARV_AT * 4, NCH * 12); enc.copyBufferToBuffer(bufs.world, (LO.BEAST_OFF + 8) * 4, rb.buf, BEAST2_AT * 4, 8 * 4);
+    enc.copyBufferToBuffer(bufs.world, LO.HARV_OFF * 4, rb.buf, HARV_AT * 4, NCH * 12); enc.copyBufferToBuffer(bufs.world, (LO.BEAST_OFF + 8) * 4, rb.buf, BEAST2_AT * 4, 8 * 4); enc.copyBufferToBuffer(bufs.world, LO.GIANT_OFF * 4, rb.buf, GIANT_AT * 4, 8);
     enc.copyBufferToBuffer(bufs.world, LO.BEAST_OFF * 4, rb.buf, (R0 + 4) * 4, 8 * 4); enc.copyBufferToBuffer(bufs.world, LO.FOUND_OFF * 4, rb.buf, (R0 + 12) * 4, (4 + 256) * 4); }
   // the ant being followed: its data comes back every frame
   const fidx = o.follow, fb = fidx !== undefined && fidx !== null ? followBufs.find(f => !f.busy) : null;
@@ -7428,7 +7968,7 @@ function simFrame(steps, o) {
       readApplied = seq;
       const u = new Uint32Array(rb.buf.getMappedRange());
       const R0 = MAXCOL * CTRN; counts = u.slice(0, R0); freeAnts = u[R0 + 2]; trailFree = u[R0 + 1];
-      beastWords = new Uint32Array(16); beastWords.set(u.subarray(R0 + 4, R0 + 12)); beastWords.set(u.subarray(BEAST2_AT, BEAST2_AT + 8), 8); preyWords = u.slice(HARV_AT + 2 * NCH, HARV_AT + 3 * NCH); foundRing = u.slice(R0 + 12, R0 + 12 + 260); harvWords = u.slice(HARV_AT, HARV_AT + NCH); rotWords = u.slice(HARV_AT + NCH, HARV_AT + 2 * NCH);
+      beastWords = new Uint32Array(16); beastWords.set(u.subarray(R0 + 4, R0 + 12)); beastWords.set(u.subarray(BEAST2_AT, BEAST2_AT + 8), 8); preyWords = u.slice(HARV_AT + 2 * NCH, HARV_AT + 3 * NCH); giantWords[0] = u[GIANT_AT]; giantWords[1] = u[GIANT_AT + 1]; foundRing = u.slice(R0 + 12, R0 + 12 + 260); harvWords = u.slice(HARV_AT, HARV_AT + NCH); rotWords = u.slice(HARV_AT + NCH, HARV_AT + 2 * NCH);
       if (rb.tsSteps) { const ns = (u[TS_AT + 3] - u[TS_AT + 1]) * 4294967296 + (u[TS_AT + 2] - u[TS_AT]); if (ns > 0 && ns < 5e9) { gpuTsMs = ns / 1e6; gpuTsSteps = rb.tsSteps; } }
       // a tap's nearest ant: only from readbacks made after that tap
       if (seq >= pickFrom && pickWanted) {
@@ -7694,6 +8234,9 @@ chk('likesOn', v => { P.likes = v; genesDirty = true; });
 chk('preyCycleOn', v => { P.preyCycle = v; });
 chk('startAdaptOn', v => { P.startAdapt = v; });
 chk('hazardsOn', v => { P.hazards = v; });
+chk('giantsOn', v => { P.giants = v; });
+knob('giantEvery', v => { P.giantEvery = v; }, v => `${v} h`);
+for (const k of ['lizard', 'anteater', 'bird']) $('giantNow-' + k).addEventListener('click', () => { GIANT.spawn(k); }); // does nothing while another giant is on the map
 $('hazardPick').addEventListener('change', e => { P.hazardPick = e.target.value; });
 chk('chambersOn', v => { P.chambers = v; });
 knob('regrow', v => { P.regrow = v; }, v => v <= 0 ? 'never' : `${v}% every 15 min`);
@@ -8215,10 +8758,10 @@ if (/(^#|,)dev(,|$)/.test(location.hash)) $('devTools').hidden = false;
 document.addEventListener('keydown', e => { if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) { e.preventDefault(); $('devTools').hidden = !$('devTools').hidden; } });
 const settingInputs = () => [...document.querySelectorAll('.settings input[type=range], .settings input[type=checkbox]')].filter(el => el.id && !el.closest('.nopreset'));
 // version: big release . stable build . test build (see CHANGELOG.md on GitHub)
-const GAME_VERSION = '2.1.0';
+const GAME_VERSION = '2.1.1';
 if ($('verNum')) $('verNum').textContent = GAME_VERSION;
 // the changelog, built into the page from CHANGELOG.md, shown in a window over the game
-const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.1.0 (stable build)\n\nThe balance from the 2.0 test builds is locked in: the food web, careful colonies, world events, adapted starting nests and uncapped colours from 2.0.14 and 2.0.15 are now the stable base. Same game as 2.0.15.\n\n## 2.0.15 (test build)\n\n- No more cap on colours: up to 61 colours can live at once (was 21), plus gold, silver and bronze from the casino. The \"Most colours\" slider in Limits now goes all the way to \"no limit\", which is the default. Colours past the first 24 also vary in lightness so they are easier to tell apart, and each gets its own name.\n- The four world choices at the start each have a small icon.\n\n## 2.0.14 (test build)\n\nA big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.\n\n**Prey that can run out (the fox and rabbit cycle)**\n- Live prey now breeds where plants grow and gets scarce where hunters catch most of it. A hunter colony that takes everything around it empties its own hunting ground, goes hungry and shrinks, and the prey comes back once the pressure is off.\n- Prey also grazes a little on wild plants where it is plentiful, so gatherers that strip the land bare also starve the prey that hunters live on.\n- The overview shows how much prey the land holds on average.\n\n**Careful colonies**\n- A new taste next to the other likes: care. Careful colonies leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out, so the land can recover.\n- Care grows over generations in colonies whose own food is running out, and fades where food is plentiful. Shows up as \"careful\" on a nest's page.\n\n**Starting nests fit their home**\n- The first colonies of a world lean toward the food that grows around them, cope with a wider range of temperatures, get extra food on poor land, and get small gene nudges for cold or hot homes. Fewer early collapses, and different realms start out different.\n- When the ground gets warmer or colder than a nest likes (seasons, droughts, the temperature setting), its liked temperature now follows much faster, so species re-adapt to a changed climate.\n\n**World events: one or two per world**\nEach new world picks one or two of these at random. Each one exists to push evolution somewhere:\n- \ud83d\udd77 Spiders spin webs near food. Brave, strong-biting colonies tear them down and eat the spider; ants with good eyes walk around them; careless ones get caught.\n- \u23f3 Antlions hide pits in sand, desert and beaches. Only ants with good eyes see them in time.\n- \ud83d\udc26 Birds hunt ants on open ground and can't be fought. Rough ground and rock give cover.\n- \ud83d\udc1f Fish get stranded on the shore: rich food for hunters that settle near water.\n- \ud83c\udf0a Floods in some springs hit nests close to water, then leave the shore extra fertile.\n- \ud83d\udd25 Wildfires sweep across hot, dry land in summer. The ash makes the soil rich afterwards.\n- \ud83e\udda0 Disease spreads between big, crowded nests of the same colour. Health resists it, so no single species can fill the map.\n- \ud83e\udd97 Locust swarms cross the map, stripping plants and leaving a feast of dead locusts for hunters and scavengers.\n- \ud83d\udc1e Ladybugs eat aphids. Unguarded aphid trees dry up; herders with strong Bite and Courage chase them off.\n- \u2600 Drought years: green plants and fruit wilt while seeds, cactus and lichen hold on, and the ground feels hotter.\n- The new \"World\" section of the overview lists this world's events, what each one is for, what is happening right now, and how many ants live each way of life.\n- Settings, under Food skills: switches for prey that can run out, adapted starting nests and world events, plus \"Always include\" to make sure the next world has a certain event.\n- The map can now hold eight beasts, webs, pits and birds at once (was four).\n\n**Four realms test map**\n- \"Four realms\" is now a choice when you pick a new world: a mountain cross splits the map into cold and dry, hot and dry, cold and damp, and hot and damp land, with six passes between them.\n- The balance test (Ctrl+Shift+L) now runs the four realms first, then two random worlds, and reports the world events, the prey, and which ways of living each quarter of the map ended up with.\n\n## 2.0.13.1 (fix)\n\n- Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.\n\n## 2.0.13 (test build)\n\n- No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.\n- Ground grows back faster: 5% of the way every 15 minutes by default (it was 1%, which brings back only about a third in 10 hours). The slider now goes up to 20%.\n- More visible evolution: mutations after births are half the founding size instead of a third, and come every 150 births instead of 200. Body parts start to show from 105% (were 112%), are fully grown at 135% (were 160%), and reach their extreme form near 200% (were 250%), so drifting colours look different much sooner.\n\n## 2.0.12 (test build)\n\nAphid herders won almost every run, and every colony ended up with the same long nectar straw.\n- Aphid herding is weaker: a nest looks after at most three trees (one, plus one per 80 ants) instead of every aphid tree in reach, plants new ones half as often, and a tended tree drips 35% more instead of 70% and lasts a third longer instead of twice as long.\n- The nectar straw is shorter and thinner, starts later (at 36% sweet food skill instead of 28%) and is only full length for real sweet specialists. The weevil snout comes later too.\n\n## 2.0.11 (test build)\n\n- The family tree has its own \"Family tree\" section in the overview, and a \"full screen\" button that opens it in a big window (Esc or a click outside closes it).\n- The tree stays readable as it grows: a colour that died out, along with its whole line, is folded away. Sister colours that all died out share one small \"+N died out\" chip under their parent; click it to show them, and \"fold\" to hide them again. A dead colour that still has living descendants stays visible, as a smaller card.\n- New colours appear even less often: 10% of new nests start a new colour, down from 20%.\n\n## 2.0.10 (test build)\n\n- Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.\n- The History section is now a real family tree: each colour is a card with a picture of its ant (as it looked at its biggest), joined by lines to the colour it came from and the colours that came from it. Hover a card for its details; dead colours are faded with a dashed border, metal ones glow. Wide trees scroll sideways.\n\n## 2.0.9 (test build)\n\n- Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: \"Ground grows back\".\n- From the 2.0.8 balance test, where all three worlds shrank to 2 or 3 nests: ground roughness is back near its natural level (the 1/4 slowdown stays, so tunnels still pay off), since the rougher ground of 2.0.5 slowed every trip by about a third.\n- Queens are less picky about mountains and water: they give up on their taste sooner and settle, instead of walking far and dying on the way.\n\n## 2.0.8 (test build)\n\n- New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.\n- Metal colonies (gold, silver, bronze) keep their colour when they spread. They only become a new colour by drifting too far from their family, and then they keep their metal shine in the new colour, and so do their descendants.\n- History: a new section in the overview with a family tree of every colour that ever lived, under the colour it came from. Each shows when it lived, its biggest size and way of living, and how it began (first colours, a queen on new ground, breaking away, or the casino). Colours that died out are crossed out; clicking a living one opens its biggest nest.\n\n## 2.0.7 (test build)\n\nFrom the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.\n- Plants only wither on really worn-out soil now (below 70% fertility instead of 90%), so lightly grazed ground near a nest keeps its plants. Below 80%, plants still use themselves up faster.\n- Grazing wears the soil a bit more slowly.\n\n## 2.0.6 (test build)\n\nFixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.\n- Crowded niches are measured against the map's own mix. Before, when nearly every nest lived the same way, every nest lost a third of its food at once. Now the average nest keeps 100%, and only ways of living more common than usual lose out (down to 70%), while rarer ones gain (up to 125%).\n- Rough ground is a bit easier: 1/4 speed at its worst instead of 1/6, and a little less rough overall. Tunnels still pay off clearly.\n- A new nest starts in a small dug-out hollow, so it isn't stuck in rough ground before its tunnels exist.\n\n## 2.0.5.1 (fix)\n\n- Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.\n\n## 2.0.5 (test build)\n\n### Tunnels and chambers\n- Rough ground is rougher and slows ants much more (1/6 speed at its worst instead of 1/3), so a tunnel makes a real difference.\n- Ants dig twice as much per scrape and dig most on their runs between nest and food, so their routes sink into tunnels that speed up gathering. The earth is piled up beside the tunnel.\n- Tunnels are drawn as dark sunken channels with soft, lit walls, and the dug-out earth shows as pale heaps.\n- Chambers: nests with enough ants dig rooms over time, in a ring around the nest and joined to it by corridors, plus a store room beside their best food (a farm, tended tree or food tree). Bigger and higher-level nests dig more. Each finished chamber holds 10% more food.\n- New setting: \"Chambers\". \"Ants dig roads\" is now \"Ants dig tunnels\".\n\n### Worn-out soil\n- Plants on worn-out soil wither within a few minutes, and use themselves up faster while they last. Farmers have to keep planting or spread their farms onto fresh ground.\n\n### Experimental\n- Tap tools in the Experimental tab: place a casino, or a metal nest, where you tap.\n\n### Likes and dislikes\n- Every nest has its own tastes, passed on to its new nests with a little change (a new colour changes them more):\n- Mountains: some settle close to rock and lean their scouting toward it, others prefer open ground.\n- Water: some settle near water, others keep away from it.\n- Gambling: some spot the casino from much further away, others never go in or follow its gold trail.\n- Company: some queens settle closer to other nests and sooner, others walk further and keep their distance.\n- Each colour has one friend it never lays siege to, and one foe it attacks sooner.\n- The nest panel lists a nest's strong likes and dislikes, its friend and its foe. New setting: \"Likes and dislikes\".\n\n## 2.0.4 (test build)\n\n### More ways of living, and none can take over\n- Three new ways of living: **Raiders** (take food from rival nests: strong Courage and Bite, or a habit of plundering), **Scavengers** (live off the dead and what others leave behind) and **Gatherers** (live off wild plants without farming). They join Runners, Thrifty, Hunters, the three kinds of farmers and Generalists.\n- Crowded niches: a way of living that many ants share gets less out of its food (down to 65%), and a rare one gets more (up to 125%). So when farmers spread everywhere, every farmer nest feels it, and hunters, raiders or scavengers nearby get their chance. Worked out once a minute from all the ants on the map.\n- The nest panel shows when a nest lives a crowded or a rare way of life, and how much its food is worth because of it.\n- New setting: \"Crowded niches\", next to \"Niches\".\n\n## 2.0.3.1 (fix)\n\n### Casino: metal colonies get a fair start\n- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.\n- The casino explosion reaches further (340 tiles instead of 260).\n- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.\n- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.\n\n### Overview\n- The average ants of the three biggest colours have their own \"Ants\" section.\n- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
+const CHANGELOG_MD = "# Changelog\n\nVersion numbers are **big release . stable build . test build**:\n\n- **Big release** (first number): a large change to how the game works, like the GPU and gene update (2.0).\n- **Stable build** (second number): a tested, balanced build. The next one is 2.1.0, once the new balance is locked in.\n- **Test build** (third number): goes up with every update while things are still being tested and tuned.\n- **Fix** (optional fourth number): a small fix to a test build's features, like 2.0.3.1.\n\nThe version you're playing is shown at the bottom of the settings panel, where \"What's new\" opens this list.\n\n## 2.1.1 (test build)\n\nGiant creatures, the first test of what will become 2.2.0.\n- Very rarely, a giant walks onto the map: a monitor lizard, an anteater or a bird, each about a tenth of the map long, in one of three colourings (olive, teal or yellow lizards; grey, golden-vest or russet anteaters; hornbills, vultures or eagles). On average one comes every 10 sim hours, anywhere from 5 to 15.\n- It walks on from the edge nearest a big nest, crosses anything except water, and prowls from nest to nest eating ants. It bites whatever ants it reaches and attacks now and then: the lizard whips its tail, the anteater lashes out its tongue, the bird pecks.\n- Ants can fight back. It takes a lot of ants a long time to bring one down, and a health bar shows how it is going.\n- It leaves when the ants on the map have dropped to half of what they were when it came, walking off the nearest edge.\n- When it dies it falls over and its body becomes the ground: every tile of it is carcass food, skin on top and muscle underneath, which scavengers carry off one bite at a time, and its weight presses a hollow into the ground the shape of its body. What nobody eats rots slowly.\n- Once it is picked clean (or after 8 sim hours) the bones stay as part of the ground for 20 sim hours. They pale to grey, crumble outward and sink into the soil, which grows richer under the carcass the whole time.\n- Settings, under Food skills: switch giants on or off, set how often they come, and summon a lizard, anteater or bird right away to try it.\n\n## 2.1.0 (stable build)\n\nThe balance from the 2.0 test builds is locked in: the food web, careful colonies, world events, adapted starting nests and uncapped colours from 2.0.14 and 2.0.15 are now the stable base. Same game as 2.0.15.\n\n## 2.0.15 (test build)\n\n- No more cap on colours: up to 61 colours can live at once (was 21), plus gold, silver and bronze from the casino. The \"Most colours\" slider in Limits now goes all the way to \"no limit\", which is the default. Colours past the first 24 also vary in lightness so they are easier to tell apart, and each gets its own name.\n- The four world choices at the start each have a small icon.\n\n## 2.0.14 (test build)\n\nA big ecosystem pass: food now flows from plants to plant eaters to hunters and back into the soil, and every world gets its own threats.\n\n**Prey that can run out (the fox and rabbit cycle)**\n- Live prey now breeds where plants grow and gets scarce where hunters catch most of it. A hunter colony that takes everything around it empties its own hunting ground, goes hungry and shrinks, and the prey comes back once the pressure is off.\n- Prey also grazes a little on wild plants where it is plentiful, so gatherers that strip the land bare also starve the prey that hunters live on.\n- The overview shows how much prey the land holds on average.\n\n**Careful colonies**\n- A new taste next to the other likes: care. Careful colonies leave prey alone where it has grown scarce, and wild plants alone where the soil is worn out, so the land can recover.\n- Care grows over generations in colonies whose own food is running out, and fades where food is plentiful. Shows up as \"careful\" on a nest's page.\n\n**Starting nests fit their home**\n- The first colonies of a world lean toward the food that grows around them, cope with a wider range of temperatures, get extra food on poor land, and get small gene nudges for cold or hot homes. Fewer early collapses, and different realms start out different.\n- When the ground gets warmer or colder than a nest likes (seasons, droughts, the temperature setting), its liked temperature now follows much faster, so species re-adapt to a changed climate.\n\n**World events: one or two per world**\nEach new world picks one or two of these at random. Each one exists to push evolution somewhere:\n- \ud83d\udd77 Spiders spin webs near food. Brave, strong-biting colonies tear them down and eat the spider; ants with good eyes walk around them; careless ones get caught.\n- \u23f3 Antlions hide pits in sand, desert and beaches. Only ants with good eyes see them in time.\n- \ud83d\udc26 Birds hunt ants on open ground and can't be fought. Rough ground and rock give cover.\n- \ud83d\udc1f Fish get stranded on the shore: rich food for hunters that settle near water.\n- \ud83c\udf0a Floods in some springs hit nests close to water, then leave the shore extra fertile.\n- \ud83d\udd25 Wildfires sweep across hot, dry land in summer. The ash makes the soil rich afterwards.\n- \ud83e\udda0 Disease spreads between big, crowded nests of the same colour. Health resists it, so no single species can fill the map.\n- \ud83e\udd97 Locust swarms cross the map, stripping plants and leaving a feast of dead locusts for hunters and scavengers.\n- \ud83d\udc1e Ladybugs eat aphids. Unguarded aphid trees dry up; herders with strong Bite and Courage chase them off.\n- \u2600 Drought years: green plants and fruit wilt while seeds, cactus and lichen hold on, and the ground feels hotter.\n- The new \"World\" section of the overview lists this world's events, what each one is for, what is happening right now, and how many ants live each way of life.\n- Settings, under Food skills: switches for prey that can run out, adapted starting nests and world events, plus \"Always include\" to make sure the next world has a certain event.\n- The map can now hold eight beasts, webs, pits and birds at once (was four).\n\n**Four realms test map**\n- \"Four realms\" is now a choice when you pick a new world: a mountain cross splits the map into cold and dry, hot and dry, cold and damp, and hot and damp land, with six passes between them.\n- The balance test (Ctrl+Shift+L) now runs the four realms first, then two random worlds, and reports the world events, the prey, and which ways of living each quarter of the map ended up with.\n\n## 2.0.13.1 (fix)\n\n- Abandoned tunnels are gone within about 3 hours: dug ground grows back 25% of the way every 15 minutes (was 5%). Tunnels in daily use are still dug faster than they grow back. The slider goes up to 50%.\n\n## 2.0.13 (test build)\n\n- No more X-shaped tunnels: queens walking to a new home and war parties marching on a rival no longer dig on the way. Their long, straight walks between nests were carving lines across the whole map.\n- Ground grows back faster: 5% of the way every 15 minutes by default (it was 1%, which brings back only about a third in 10 hours). The slider now goes up to 20%.\n- More visible evolution: mutations after births are half the founding size instead of a third, and come every 150 births instead of 200. Body parts start to show from 105% (were 112%), are fully grown at 135% (were 160%), and reach their extreme form near 200% (were 250%), so drifting colours look different much sooner.\n\n## 2.0.12 (test build)\n\nAphid herders won almost every run, and every colony ended up with the same long nectar straw.\n- Aphid herding is weaker: a nest looks after at most three trees (one, plus one per 80 ants) instead of every aphid tree in reach, plants new ones half as often, and a tended tree drips 35% more instead of 70% and lasts a third longer instead of twice as long.\n- The nectar straw is shorter and thinner, starts later (at 36% sweet food skill instead of 28%) and is only full length for real sweet specialists. The weevil snout comes later too.\n\n## 2.0.11 (test build)\n\n- The family tree has its own \"Family tree\" section in the overview, and a \"full screen\" button that opens it in a big window (Esc or a click outside closes it).\n- The tree stays readable as it grows: a colour that died out, along with its whole line, is folded away. Sister colours that all died out share one small \"+N died out\" chip under their parent; click it to show them, and \"fold\" to hide them again. A dead colour that still has living descendants stays visible, as a smaller card.\n- New colours appear even less often: 10% of new nests start a new colour, down from 20%.\n\n## 2.0.10 (test build)\n\n- Ants still died early, so the ground is back to how it was before 2.0.5: the original roughness and slowdown (1/3 speed at its worst). The new tunnel look, the faster digging on busy routes, chambers and ground growing back all stay.\n- The History section is now a real family tree: each colour is a card with a picture of its ant (as it looked at its biggest), joined by lines to the colour it came from and the colours that came from it. Hover a card for its details; dead colours are faded with a dashed border, metal ones glow. Wide trees scroll sideways.\n\n## 2.0.9 (test build)\n\n- Dug ground grows back: 1% of the way to its natural state every 15 minutes, and spoil heaps settle the same way. Tunnels in use are dug faster than they grow back, but those of a dead nest slowly fade. New setting: \"Ground grows back\".\n- From the 2.0.8 balance test, where all three worlds shrank to 2 or 3 nests: ground roughness is back near its natural level (the 1/4 slowdown stays, so tunnels still pay off), since the rougher ground of 2.0.5 slowed every trip by about a third.\n- Queens are less picky about mountains and water: they give up on their taste sooner and settle, instead of walking far and dying on the way.\n\n## 2.0.8 (test build)\n\n- New colours appear less often: the chance a queen starts a new colour is 20% instead of 35%, and even on very different ground it tops out at 60% instead of 90%.\n- Metal colonies (gold, silver, bronze) keep their colour when they spread. They only become a new colour by drifting too far from their family, and then they keep their metal shine in the new colour, and so do their descendants.\n- History: a new section in the overview with a family tree of every colour that ever lived, under the colour it came from. Each shows when it lived, its biggest size and way of living, and how it began (first colours, a queen on new ground, breaking away, or the casino). Colours that died out are crossed out; clicking a living one opens its biggest nest.\n\n## 2.0.7 (test build)\n\nFrom the 2.0.6 balance test: one world did well (16 nests, raiders appeared), but another fell to 2 nests, and food stayed scarce around nests.\n- Plants only wither on really worn-out soil now (below 70% fertility instead of 90%), so lightly grazed ground near a nest keeps its plants. Below 80%, plants still use themselves up faster.\n- Grazing wears the soil a bit more slowly.\n\n## 2.0.6 (test build)\n\nFixes from the 2.0.5 balance test, where worlds starved badly (one fell to 2 nests and 90 ants) and only 2 or 3 ways of living showed up.\n- Crowded niches are measured against the map's own mix. Before, when nearly every nest lived the same way, every nest lost a third of its food at once. Now the average nest keeps 100%, and only ways of living more common than usual lose out (down to 70%), while rarer ones gain (up to 125%).\n- Rough ground is a bit easier: 1/4 speed at its worst instead of 1/6, and a little less rough overall. Tunnels still pay off clearly.\n- A new nest starts in a small dug-out hollow, so it isn't stuck in rough ground before its tunnels exist.\n\n## 2.0.5.1 (fix)\n\n- Metal nests were too strong. Their 3 to 5 strong genes are now 150% instead of 200% or more, the smaller lucky changes are gone, and they get half as many weak genes (rounded down) at 50%: for example 4 strong and 2 weak, or 3 strong and 1 weak.\n\n## 2.0.5 (test build)\n\n### Tunnels and chambers\n- Rough ground is rougher and slows ants much more (1/6 speed at its worst instead of 1/3), so a tunnel makes a real difference.\n- Ants dig twice as much per scrape and dig most on their runs between nest and food, so their routes sink into tunnels that speed up gathering. The earth is piled up beside the tunnel.\n- Tunnels are drawn as dark sunken channels with soft, lit walls, and the dug-out earth shows as pale heaps.\n- Chambers: nests with enough ants dig rooms over time, in a ring around the nest and joined to it by corridors, plus a store room beside their best food (a farm, tended tree or food tree). Bigger and higher-level nests dig more. Each finished chamber holds 10% more food.\n- New setting: \"Chambers\". \"Ants dig roads\" is now \"Ants dig tunnels\".\n\n### Worn-out soil\n- Plants on worn-out soil wither within a few minutes, and use themselves up faster while they last. Farmers have to keep planting or spread their farms onto fresh ground.\n\n### Experimental\n- Tap tools in the Experimental tab: place a casino, or a metal nest, where you tap.\n\n### Likes and dislikes\n- Every nest has its own tastes, passed on to its new nests with a little change (a new colour changes them more):\n- Mountains: some settle close to rock and lean their scouting toward it, others prefer open ground.\n- Water: some settle near water, others keep away from it.\n- Gambling: some spot the casino from much further away, others never go in or follow its gold trail.\n- Company: some queens settle closer to other nests and sooner, others walk further and keep their distance.\n- Each colour has one friend it never lays siege to, and one foe it attacks sooner.\n- The nest panel lists a nest's strong likes and dislikes, its friend and its foe. New setting: \"Likes and dislikes\".\n\n## 2.0.4 (test build)\n\n### More ways of living, and none can take over\n- Three new ways of living: **Raiders** (take food from rival nests: strong Courage and Bite, or a habit of plundering), **Scavengers** (live off the dead and what others leave behind) and **Gatherers** (live off wild plants without farming). They join Runners, Thrifty, Hunters, the three kinds of farmers and Generalists.\n- Crowded niches: a way of living that many ants share gets less out of its food (down to 65%), and a rare one gets more (up to 125%). So when farmers spread everywhere, every farmer nest feels it, and hunters, raiders or scavengers nearby get their chance. Worked out once a minute from all the ants on the map.\n- The nest panel shows when a nest lives a crowded or a rare way of life, and how much its food is worth because of it.\n- New setting: \"Crowded niches\", next to \"Niches\".\n\n## 2.0.3.1 (fix)\n\n### Casino: metal colonies get a fair start\n- When the house wins, the casino now blows up first, and the metal colony moves into the empty land the blast leaves behind.\n- The casino explosion reaches further (340 tiles instead of 260).\n- A metal colony is made for its spot: it likes the exact local temperature, copes with a wider range, and is skilled at the food that grows there.\n- It also starts with 3 to 5 very strong genes at 200% or more (from Speed, Defense, Steadiness, View distance, Courage, Health, Carry, Energy and Bite), plus smaller lucky changes, 30 ants and 300 food.\n\n### Overview\n- The average ants of the three biggest colours have their own \"Ants\" section.\n- The colour names under the gene chart are gone. On the chart, each colour is drawn as solid as its size: big colours stand out, small ones are faint.\n\n## 2.0.3 (test build)\n\n- Loaded map images draw their mountains exactly where the image puts them (blue near 43 or 213 is a peak, 128 is flat), so a map can have solid mountain walls with gaps as tunnels.\n\n## 2.0.2 (test build)\n\n- The changelog can be read in the game: \"What's new\" at the bottom of the settings panel.\n- The ant pictures in the panels are drawn in the background, so they can't hold up the simulation.\n\n## 2.0.1 (test build)\n\n### Ants look the way they've evolved\n- Every nest's ants are drawn from one body that grows and blends with the nest's genes, so colours look clearly different from each other.\n- A mild gene change adds a part: crab pincers, an extra body segment, a stinger, wings, feathered antennae, a third antenna, padded feet, a double abdomen, a shovel head and more.\n- Pushed much further, the whole body shifts. Bite and Defense close the body into a beetle with wing cases and stag antlers. Health and Steadiness stretch it into a centipede, or a pill bug with heavy armour. Other extremes: scorpion tail, earwig forceps, wasp waist, dragonfly wings, dome eyes and eye stalks, queen belly, firefly lantern. Hunters grow trap jaws and mantis arms; sweet eaters grow a nectar straw and then a weevil snout.\n- Changes are smooth: after a mutation the ants grow into their new shape over a couple of seconds. A new nest starts out looking like its parent.\n- Casino colours get a metal finish: banded tones, a sharp glint, a warm edge light and the odd sparkle.\n- The overview's gene tab shows the average ant of the three biggest colours.\n\n### Nests\n- No fixed limit on the number of nests by default.\n- A queen that settles close to a nest of her own colour joins the oldest one instead of starting a new nest. That nest goes up a level (up to 5): each level holds half again as many ants and as much food, and needs more ants before it sends out queens.\n- Small, younger same-colour neighbours move into the older nest over time, ants, food and farms included.\n- Colours with many nests send out queens less often.\n- An area can hold only so many nests of any colour (6 by default). A queen that finds it full goes home.\n- Each nest's food store has a limit that grows with its level.\n- Nests show one extra ring per level on the map. New settings: \"Nests merge\" and \"Nests in one area\".\n\n### A living world with niches\n- Seasons: a year every 40 minutes. Plants grow fast in summer and slowly in winter, and the ground feels warmer or colder.\n- Soil fertility: grazing wears the ground out, and food that rots on the ground makes it richer, mostly in quiet places nobody grazes. Plants on rich soil grow bigger and spread. Nests barely enrich their own ground.\n- Food that lies around rots: seeds and food left by a dead nest now rot too, just more slowly.\n- Farming: strong seed eaters plant grass patches, strong sweet eaters tend aphid trees, and fungus farmers keep a garden that feeds them through winter. Farms go to the best soil in reach, so they move outward as the ground near the nest wears out. A farm whose nest is gone, or that nobody harvests, withers away.\n- Ways of living: fast, far-ranging ants eat more; slow, steady, energy-efficient ants last longer on less.\n- Niches: specialists gain more from their food, nests with the same diet fight sooner while different diets live side by side, and new colours are more likely where the ground differs from home.\n\n### Other\n- Hyperspeed keeps running at full speed when the game is in a background window.\n- Developer balance test: Ctrl+Shift+L runs three worlds and shows the results on top of the map, including nest levels, merges and soil.\n\n## 2.0.0\n\nThe GPU and gene update. The whole simulation moved onto the graphics card, and colonies started to evolve.\n\n### Runs on the graphics card\n- The simulation runs through WebGPU, so far more ants and much bigger maps run smoothly. Browsers without WebGPU get the 1.0 version as a fallback.\n- Hyperspeed runs as fast as the graphics card allows.\n\n### Genes and evolution\n- Every nest has 16 genes, such as Speed, Defense, Bite, Carry, Energy, View distance and Digging. They mutate when a nest is founded and every few hundred births.\n- Raising one gene lowers another, so nests have to trade one strength for another.\n- At 160% a gene unlocks an ability, like Crushing jaws, Raiders, Twins or Midday foragers.\n- Nests that drift far enough from their colour break away as a new colour.\n\n### Climate and food\n- Worlds have climates and biomes: hot and cold ground, deserts, jungles, tundra, swamps, lakes and mountains.\n- Each nest likes its own temperature, and ants burn more energy on ground that's too hot or too cold.\n- Many kinds of food: seeds, greens, leaves, fruit, nectar, honeydew from aphids, cactus, insects and prey. Each colour learns its own diet, from seed harvesters and fungus farmers to hunters and scavengers.\n\n### Colonies and the world\n- Queens walk out with a few workers to found new nests, and colours go to war and lay siege to each other's nests.\n- Choose your world: a random map, a map loaded from an image, or one you paint yourself.\n- A tutorial for the first time you play.\n- Nest panels with genes, climate and food, abilities, mutation history and activity, plus an overview of every colour's genes, climate and size.\n- An event log with the big moments: new colours, wars, deaths and abilities.\n- An Experimental tab, with features chosen from Instagram comments, starting with the casino.\n\n## 1.0.0\n\nThe first version, then called Ant Colony Grid. It ran on the processor, in any browser, on desktop and phone.\n\n- Ants lay scent trails: blue home trails, orange food trails and red battle markers. Busy routes light up, and trails that lead nowhere fade away.\n- Plants drop food pellets, food trees appear now and then, and big red beasts wander in that bite back but leave a pile of meat when killed.\n- Rival colour families start in the corners, raid each other's nests, fight, and share spare food with allies.\n- Nests breed while they have food saved up, and send out founders to start new nests when they grow big or full.\n- Random terrain from layered noise: rock ants can't cross, and rough ground that slows them down and wears into roads on busy routes.\n- Draw and erase walls to see the ants find a new way.\n- Follow a single ant, or tap a nest to see its stats.\n- Hyperspeed that stops on chosen events, an event log, map screenshots, and presets to save and load every setting.\n- Almost every rule of the world can be changed in the settings.\n";
 function mdHTML(md) {
   const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const inl = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
@@ -8301,8 +8844,8 @@ $('pFactory').addEventListener('click', () => applyWithConfirm(FACTORY, 'Back to
 
 // ---------- event log and hyperspeed ----------
 const EVENTS = []; let eventsDirty = true;
-const EVENT_KINDS = { nest: 'New nest', death: 'Nest died out', colour: 'New colour founded', ability: 'Ability unlocked', split: 'Colour split off', mutation: 'Mutation', war: 'Siege started', beast: 'Beast appeared', slain: 'Beast slain', tree: 'Food tree grew', carcass: 'Frozen carcass found', casino: 'Casino', hazard: 'World event' };
-const AUTOSTOP = { nest: false, death: false, colour: false, ability: false, split: false, mutation: false, war: false, beast: false, slain: false, tree: false, casino: false, hazard: false };
+const EVENT_KINDS = { nest: 'New nest', death: 'Nest died out', colour: 'New colour founded', ability: 'Ability unlocked', split: 'Colour split off', mutation: 'Mutation', war: 'Siege started', beast: 'Beast appeared', slain: 'Beast slain', tree: 'Food tree grew', carcass: 'Frozen carcass found', casino: 'Casino', hazard: 'World event', giant: 'Giant creature' };
+const AUTOSTOP = { nest: false, death: false, colour: false, ability: false, split: false, mutation: false, war: false, beast: false, slain: false, tree: false, casino: false, hazard: false, giant: false };
 const HYPER_MAX = 1024, hyper = { on: false, until: 0, stopAny: false, stopNow: false, rate: 0, start: 0, steps: 32 };
 window.antEvent = (kind, text, x, y, who = []) => {
   EVENTS.push({ step: simStep, kind, text, x, y, who });
@@ -8442,7 +8985,8 @@ function drawThings(g, z) {
     }
   }
   drawHazards(g, z);
-  for (const b of beasts) drawBeast(g, b, z);
+  GIANT.draw(g, z);
+  for (const b of beasts) if (b.kind !== 4) drawBeast(g, b, z);
   if (casino) drawCasino(g, z);
   const nr = Math.max(4, 8 / z);
   for (const c of colonies) {
@@ -8843,7 +9387,7 @@ function updateGenes(sh) {
 }
 
 // ---------- overview in the stats column while no colony is open: genes of every colour, and important events ----------
-const OV_KINDS = new Set(['colour', 'death', 'war', 'split', 'ability', 'hazard']); // the overview keeps to the big news; the full log is under Settings
+const OV_KINDS = new Set(['colour', 'death', 'war', 'split', 'ability', 'hazard', 'giant']); // the overview keeps to the big news; the full log is under Settings
 const ovHL = new Set();
 sideEmpty.className = 'side-empty ov';
 sideEmpty.innerHTML = `<div class="ovtabs" role="group" aria-label="Show or hide sections">
@@ -9023,7 +9567,8 @@ function ovWorld() {
   const life = {}; let all = 0; for (const c of colonies) { const l = c.life || lifestyle(c), n = c.inside + c.out; life[l] = (life[l] || 0) + n; all += n; }
   const rows = Object.entries(life).sort((a, b) => b[1] - a[1]);
   let ps = 0, pn = 0; for (let i = 0; i < NCH; i++) if (landN[i] > 0.3) { ps += preyS[i]; pn++; }
-  const now = [hz.drought ? 'drought year' : '', hz.swarm ? 'locusts on the move' : '', hz.fire && hz.fire.size ? 'wildfire burning' : '', colonies.some(c => c.sick) ? `${colonies.filter(c => c.sick).length} sick nest${colonies.filter(c => c.sick).length > 1 ? 's' : ''}` : ''].filter(Boolean);
+  const gs = GIANT.status();
+  const now = [gs ? `${gs.name} on the map (${Math.round(gs.hp * 100)}% health${gs.mode === 'leave' ? ', leaving' : ''})` : '', GIANT.carcass() ? 'a giant carcass is being eaten' : '', hz.drought ? 'drought year' : '', hz.swarm ? 'locusts on the move' : '', hz.fire && hz.fire.size ? 'wildfire burning' : '', colonies.some(c => c.sick) ? `${colonies.filter(c => c.sick).length} sick nest${colonies.filter(c => c.sick).length > 1 ? 's' : ''}` : ''].filter(Boolean);
   const html = `${hs.length ? hs.map(h => `<div class="wev"><span class="wi">${h.icon}</span><span><b>${h.name}</b><br><span class="hint">${h.goal}</span></span></div>`).join('') : '<div class="hint">No world events on this world.</div>'}
     ${now.length ? `<div class="wnow">Right now: ${now.join(' · ')}</div>` : ''}
     <div class="wlife">${rows.map(([l, n]) => `<div class="wl"><span>${LIFESTYLES[l]}</span><i style="width:${Math.max(2, Math.round(n / Math.max(1, all) * 100))}%"></i><b>${Math.round(n / Math.max(1, all) * 100)}%</b></div>`).join('')}</div>
@@ -9238,8 +9783,8 @@ function runTests(set) {
   if (testMap && !testMap.done) { finishTests(true); return; }
   if (lab) return;
   TESTS = set === 'food' ? FOOD_TESTS : TESTS_MAIN;
-  testKeep = { hazards: P.hazards, plantSpawn: P.plantSpawn, treeChance: P.treeChance, beastChance: P.beastChance, maxColours: P.maxColours, maxNests: P.maxNests, startColours: P.startColours };
-  Object.assign(P, { hazards: false, plantSpawn: 0, treeChance: 0, beastChance: 0, maxColours: MAXFAM, maxNests: 65, startColours: 0 });
+  testKeep = { giants: P.giants, hazards: P.hazards, plantSpawn: P.plantSpawn, treeChance: P.treeChance, beastChance: P.beastChance, maxColours: P.maxColours, maxNests: P.maxNests, startColours: P.startColours };
+  Object.assign(P, { giants: false, hazards: false, plantSpawn: 0, treeChance: 0, beastChance: 0, maxColours: MAXFAM, maxNests: 65, startColours: 0 });
   doReset(Math.max(20000, capFromSlider(+$('maxAnts').value))); // room for every test nest to grow
   plants = []; beasts = [];
   clT.fill(128); clH.fill(128); clW.fill(128); for (let i = 0; i < N; i++) height[i] = heightAt(0.5, 0.5, 0.5, i % W, (i / W) | 0); classify(false); terr.fill(0); uploadClimate();
@@ -9356,7 +9901,7 @@ $('logCopy').addEventListener('click', async () => {
 // and the normal rules come back when the tutorial ends.
 const TUT_KEY = 'antsim.tutorialDone';
 const SC = { x: 100, y: 100, w: 300, h: 200 }; // the scene box on the map
-const TUT_RULES = { hazards: false, plantSpawn: 0, treeChance: 0, beastChance: 0, startColours: 0, prey: 0, insects: 0, carcass: 0, newFamily: 0, splitDrift: 300,
+const TUT_RULES = { giants: false, hazards: false, plantSpawn: 0, treeChance: 0, beastChance: 0, startColours: 0, prey: 0, insects: 0, carcass: 0, newFamily: 0, splitDrift: 300,
   starveKill: 0, starveDmg: 0, splitAt: 1e9, climate: false, skills: false, mutStrength: 0, mutEvery: 1e9, nestMax: 30, maxColours: MAXFAM, maxNests: 65, merge: false,
   founderWalk: 110, nestGap: 55, settleTol: 0.3, tempPull: 0.1, shieldMin: 10, firstFounder: 0, foundersOn: false, founderFrom: -1, siegeRatio: 1e9, dig: false, rate: 1, sharing: false, clearTrails: false,
   fade: 4, scouts: 0.18, wander: 600, jitter: 0.08, wobble: 0.12, trailInc: 0.15, exploreInc: 0.03, deadFade: 0.6 }; // tuned in a maze whose walls change: clean routes that re-form quickly // tidier trails: old scent fades faster and ants walk straighter, so paths settle into clean lines
@@ -9970,7 +10515,7 @@ function frameBody(now) {
   }
 }
 requestAnimationFrame(frame);
-window.__antGpu = { quad: () => quadWorld(), reset: () => doReset(), haz: l => { worldHaz = l; }, eco2: () => { let s = 0, n = 0, lo = 9, hi = 0; for (let i = 0; i < NCH; i++) if (landN[i] > 0.3) { s += preyS[i]; n++; lo = Math.min(lo, preyS[i]); hi = Math.max(hi, preyS[i]); }
+window.__antGpu = { giant: k => GIANT.spawn(k), giantHurt: v => GIANT.hurt(v), giantStatus: () => ({ s: GIANT.status(), c: GIANT.carcass() && { flesh: GIANT.carcass().flesh, boneAt: GIANT.carcass().boneAt }, words: [...giantWords], beasts: beasts.map(b => [b.kind, Math.round(b.fx), Math.round(b.fy), +(b.size || 1).toFixed(1)]) }), quad: () => quadWorld(), reset: () => doReset(), haz: l => { worldHaz = l; }, eco2: () => { let s = 0, n = 0, lo = 9, hi = 0; for (let i = 0; i < NCH; i++) if (landN[i] > 0.3) { s += preyS[i]; n++; lo = Math.min(lo, preyS[i]); hi = Math.max(hi, preyS[i]); }
   const life = {}; for (const c of colonies) { const l = lifestyle(c); life[l] = (life[l] || 0) + c.inside + c.out; }
   return { t: Math.floor(simStep / MINUTE), haz: worldHaz.join('+'), prey: [s / Math.max(1, n), lo, hi].map(v => +v.toFixed(2)), beasts: beasts.map(b => b.kind || 0).join(''), life, quads: labQuads(), ants: colonies.reduce((a, c) => a + c.inside + c.out, 0), nests: colonies.length, colours: new Set(colonies.map(c => c.ci)).size, sick: colonies.filter(c => c.sick).length, careful: colonies.filter(c => likesOf(c)[4] > 0.3).length, plants: plants.length, ev: EVENTS.filter(e => e.kind === 'hazard' || e.kind === 'slain' || e.kind === 'death').slice(-6).map(e => Math.round(e.step / MINUTE) + ' ' + e.text) }; }, eco: () => { let lo = 9, hi = 0, sum = 0; for (const v of fert) { lo = Math.min(lo, v); hi = Math.max(hi, v); sum += v; } return { t: Math.floor(simStep / MINUTE), season: seasonName(), growth: +growth().toFixed(2), fert: [lo, hi, sum / NCH].map(v => +v.toFixed(2)), harvested: harv.reduce((a, b) => a + b, 0) | 0, dripped: drip.reduce((a, b) => a + b, 0) | 0, plants: plants.length, farms: plants.filter(p => p.farm !== undefined).length, tended: plants.filter(p => p.tended !== undefined).length, nests: colonies.map(c => [c.name.split(' ')[0], c.inside + c.out, lifestyleTag(c), +paceMul(c).toFixed(2), Math.round(c.temp * 50 - 10), +bandOf(c).toFixed(2)]) }; }, dbg: () => ({ inflight, running, loaded, frames, gpuLost, editing, ft, stepCap, acc, skippedDt, readSeq, readApplied, simStep, cap, busy: bufs.read.map(r => r.busy).join(''), wd: wdCount }), casinoNear: (d = 60) => { const c = colonies[0]; P.xCasino = true; casino = { x: Math.min(W - 5, c.x + d), y: c.y, open: true, at: simStep, paid: new Map(), spin: null }; return [casino.x, casino.y]; }, casinoSpin: k => { const c = colonies[0]; startSpin(c); casino.spin.out = CASINO_OUT[k]; }, casinoState: () => casino && { open: casino.open, paid: [...casino.paid], spin: casino.spin && { done: casino.spin.done, msg: casino.spin.msg } }, nests: () => colonies.map(c => [c.name, c.inside + c.out, c.ci]), P, setHyper, tutGo: i => tutGo(i), tutState: () => tut ? { step: tut.step, nests: colonies.map(c => [c.name, c.inside + c.out, Math.round(c.temp * 50 - 10)]) } : null, tempMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; const g = c.getContext('2d'), im = g.createImageData(400, 400); for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) { const t = tEff[(y * W / 400 | 0) * W + (x * W / 400 | 0)], o = (y * 400 + x) * 4; im.data[o] = t; im.data[o + 1] = 70; im.data[o + 2] = 255 - t; im.data[o + 3] = 255; } g.putImageData(im, 0, 0); return c.toDataURL(); }, iconSheet: () => { const keys = Object.keys(ICONS), cv2 = document.createElement('canvas'); cv2.width = keys.length * 60; cv2.height = 60; const g2 = cv2.getContext('2d'); g2.fillStyle = '#2a211a'; g2.fillRect(0, 0, cv2.width, 60); keys.forEach((k, i) => { g2.fillStyle = '#17120e'; g2.beginPath(); g2.arc(i * 60 + 30, 30, 26, 0, 7); g2.fill(); g2.lineWidth = 4; g2.strokeStyle = 'rgb(255,80,200)'; g2.stroke(); drawIcon(g2, k, i * 60 + 30, 30, 16, 'rgb(255,80,200)'); }); return cv2.toDataURL(); }, ovTest: () => { colonies.forEach((c, i) => { c.temp = [0.2, 0.45, 0.7, 0.85][i % 4]; c.skills = [[0.6, 0.1, 0.1, 0.1, 0.1], [0.1, 0.5, 0.2, 0.1, 0.1], [0.1, 0.1, 0.1, 0.6, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2]][i % 4]; }); updateOverview(); }, openNth: (i, tab) => { openSheet(colonies[i]); const sh = sheets[sheets.length - 1]; const b = sh.el.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const s2 of sheets) updateSheet(s2); }, openFirst: tab => { const c = colonies[0]; c.temp = 0.8; c.cab = 1 << 16; openSheet(c); const b = document.querySelector(`[data-st="${tab}"]`); if (b) b.click(); for (const sh of sheets) updateSheet(sh); return document.querySelector('.sheet') ? document.querySelector('.sheet').innerText.slice(0, 1500) : 'no sheet'; }, takeShot, view, TERRAIN, rebuild: () => { terrSeed = (Math.random() * 1e6) | 0; rebuildTerrain(); },
   async pngRoundTrip() { // test hook: export, read back, compare
