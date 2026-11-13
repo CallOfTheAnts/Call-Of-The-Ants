@@ -9,6 +9,12 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.1.13 (test build)
+
+- **Bones sink into the ground.** As they wear away, the edges of the bones break up in patches and get covered by soil, so the outline no longer stays a clean cut-out. The bones also pick up the light and shade of the ground they lie on.
+- **Rich soil around the bones.** A dark stain of rich soil spreads out around a skeleton as it breaks down, greener where the ground is damp.
+- **Bones freeze in the cold.** In snowy places like mountains and frozen biomes, bones frost over straight away. Snow then piles up on the sides facing the light, fills the gaps, and drifts around the skeleton until it is half buried. Rotting meat gets a light frost too.
+
 ## 2.1.12 (test build)
 
 - **Giants raid nests.** Now and then a giant stops at a nest and digs its head into it. Each bite swallows some of the ants inside and some of the stored food.
