@@ -4815,11 +4815,12 @@ fn antStep(i: u32) {
       // No trail: everyone explores. One trail: about half go fetch and half explore; each extra trail sends more to fetch.
       // Some always keep exploring (at least the nest's floor, more when it is hungry, fewer for farmers)
       let nx = i32(nest.x); let ny = i32(nest.y);
+      // fetchers favour the strongest trail (weighted by its scent squared), so busy routes draw more ants and become highways
       var trails = 0u; var pick = -1; var seen = 0.0;
       for (var k = 0; k < 8; k++) {
-        var hit = -1;
-        for (var rr = 0; rr < 3; rr++) { let rad = 4.0 + f32(rr) * 4.0; let px = nx + i32(round(cos(f32(k) * 0.785) * rad)); let py = ny + i32(round(sin(f32(k) * 0.785) * rad)); if (pdist(a.col, 1u, px, py) < INF) { hit = rr; break; } }
-        if (hit >= 0) { trails += 1u; seen += 1.0; if (rnd() < 1.0 / seen) { pick = k; } }
+        var hit = 0.0;
+        for (var rr = 0; rr < 3; rr++) { let rad = 4.0 + f32(rr) * 4.0; let px = nx + i32(round(cos(f32(k) * 0.785) * rad)); let py = ny + i32(round(sin(f32(k) * 0.785) * rad)); if (pdist(a.col, 1u, px, py) < INF) { hit = max(hit, pget(a.col, 1u, px, py)); } }
+        if (hit > 0.03) { trails += 1u; let w = hit * hit; seen += w; if (rnd() < w / seen) { pick = k; } }
       }
       let floorE = bitcast<f32>(atomicLoad(&world[EXP_OFF + a.col * 2u])); let wE = bitcast<f32>(atomicLoad(&world[EXP_OFF + a.col * 2u + 1u]));
       let shareE = select(clamp(wE / (f32(min(trails, 6u)) + 1.0), floorE, 1.0), 1.0, trails == 0u);
