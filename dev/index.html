@@ -7915,7 +7915,7 @@ function spawn(kind, at) {
   const h = Math.atan2(tgt.y - best.ey, tgt.x - best.ex), hx = best.ex / k - Math.cos(h) * 30, hy = best.ey / k - Math.sin(h) * 30;
   c.pts.forEach((q, i) => { q.x = hx - Math.cos(h) * i * S.seg; q.y = hy - Math.sin(h) * i * S.seg; });
   c.h = c.th = h; layoutLegs(c, true);
-  G = { S, c, k, id, name: nameOf(id, c.V), mode: 'enter', home: tgt, nest: n0, goal: { ...tgt }, linger: 0, lingerMax: 30, hp: PR.giantHp * hpScale(), maxHp: PR.giantHp * hpScale(), spawnAnts: Math.max(1, antsTotal()), parts: [], atkCd: 5, tok: [0, 0, 0], side: 1, fade: 1 };
+  G = { S, c, k, id, name: nameOf(id, c.V), mode: 'enter', home: tgt, nest: n0, goal: { ...tgt }, linger: 0, lingerMax: 30, hp: PR.giantHp * hpScale(), maxHp: PR.giantHp * hpScale(), spawnAnts: Math.max(1, antsTotal()), at: simStep, stay: (5 + rnd() * 4) * 60 * MINUTE, raids: 0, raidGoal: 1 + (rnd() < 0.4 ? 1 : 0), parts: [], atkCd: 5, tok: [0, 0, 0], side: 1, fade: 1 };
   makeParts(); arrivals++;
   emit('giant', `A ${G.name} is coming onto the map. Ants that fight it together can bring it down`, best.ex, best.ey);
   return true;
@@ -7995,7 +7995,8 @@ function steer(hx, hy, want) {
 function think(dt) {
   const c = G.c, k = G.k; if (c.state !== 'alive') return;
   const hx = c.pts[0].x * k, hy = c.pts[0].y * k;
-  if (G.mode !== 'leave' && G.mode !== 'raid' && antsTotal() <= G.spawnAnts * 0.5) { // it has eaten enough: off it goes, out the nearest edge
+  // it has eaten enough (the ants are down to half, or it has dug out a nest or two) or stayed long enough: off it goes, out the nearest edge
+  if (G.mode !== 'leave' && G.mode !== 'raid' && (antsTotal() <= G.spawnAnts * 0.5 || G.raids >= G.raidGoal || simStep - G.at > G.stay)) {
     G.mode = 'leave'; const ex = [[-600, hy], [W + 600, hy], [hx, -600], [hx, H + 600]].sort((a, b) => Math.hypot(a[0] - hx, a[1] - hy) - Math.hypot(b[0] - hx, b[1] - hy))[0];
     G.goal = { x: ex[0], y: ex[1] }; emit('giant', `The ${G.name} has eaten its fill and is leaving`, hx, hy);
   }
@@ -8045,7 +8046,7 @@ function endRaid() { if (G && G.raid) { G.raid.raidBy = false; G.raid = null; } 
 function raidStep(dt, hx, hy) {
   const c = G.c, N = G.raid, k = G.k;
   if (!N || !colonies.includes(N)) { // the nest is gone: back to roaming
-    if (N) emit('giant', `The ${G.name} wiped out ${N.name}`, N.x, N.y, [N]);
+    if (N) { emit('giant', `The ${G.name} wiped out ${N.name}`, N.x, N.y, [N]); G.raids++; }
     endRaid(); G.mode = 'hunt'; G.nest = pickNest(N); G.home = toMid(G.nest ? { x: G.nest.x, y: G.nest.y } : { x: W / 2, y: H / 2 }); G.goal = { ...G.home }; G.linger = 0; G.tried = true; G.planGoal = null; return false;
   }
   // call every ant inside out to fight, again and again as more come home
