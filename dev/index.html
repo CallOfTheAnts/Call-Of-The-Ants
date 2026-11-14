@@ -6002,7 +6002,7 @@ fn underView(x: i32, y: i32, wf: vec2f, cin: vec3f, wl: u32) -> vec3f {
     let o1 = tsum[ti * 4u + 1u]; let gold = (o1 >> 31u) != 0u;
     var s = vec4f(f32(tsum[ti * 4u]), f32(o1 & 0x7FFFFFFFu), f32(tsum[ti * 4u + 2u]), f32(tsum[ti * 4u + 3u])) / 65535.0;
     s = min(s, vec4f(1.0));
-    if (s.x > 0.0) { let al = sqrt(s.x) * 0.6; c += (ramp(s.x, vec3f(22.0, 36.0, 110.0), vec3f(52.0, 110.0, 232.0), vec3f(170.0, 225.0, 255.0)) - c) * al; }
+    if (s.x > 0.0) { let al = sqrt(s.x) * 0.4; c += (ramp(s.x, vec3f(22.0, 36.0, 110.0), vec3f(52.0, 110.0, 232.0), vec3f(170.0, 225.0, 255.0)) - c) * al; }
     if (s.w > 0.0) { let al = min(1.0, 0.25 + s.w * 0.8); c += (ramp(s.w, vec3f(14.0, 80.0, 46.0), vec3f(52.0, 204.0, 112.0), vec3f(190.0, 255.0, 210.0)) - c) * al; }
     if (s.y > 0.0 && gold) {
       // the casino's gold trail: bright gold that sparkles
@@ -6026,7 +6026,7 @@ fn underView(x: i32, y: i32, wf: vec2f, cin: vec3f, wl: u32) -> vec3f {
     let v = vec4u(tsum[ti * 4u], tsum[ti * 4u + 1u], tsum[ti * 4u + 2u], tsum[ti * 4u + 3u]);
     let s = min(vec4f(v >> vec4u(8u)) / 65535.0, vec4f(1.0));
     let white = vec3f(255.0);
-    if (s.x > 0.0) { let fc = cam.fam[v.x & 255u].rgb * 255.0; let al = sqrt(s.x) * 0.45; c += (ramp(s.x, fc * 0.18, fc * 0.45, fc * 0.7) - c) * al; }
+    if (s.x > 0.0) { let fc = cam.fam[v.x & 255u].rgb * 255.0; let al = s.x * 0.5; // home trails stay faint, so the food routes stand out c += (ramp(s.x, fc * 0.18, fc * 0.45, fc * 0.7) - c) * al; }
     if (s.w > 0.0) { let fc = mix(cam.fam[v.w & 255u].rgb * 255.0, white, 0.55); let al = min(1.0, 0.25 + s.w * 0.8); c += (ramp(s.w, fc * 0.35, fc * 0.8, fc) - c) * al; }
     if (s.y > 0.0) { let fc = cam.fam[v.y & 255u].rgb * 255.0; let al = min(1.0, 0.3 + s.y * 0.8); c += (ramp(s.y, fc * 0.4, fc, mix(fc, white, 0.4)) - c) * al; }
     if (s.z > 0.0) {
