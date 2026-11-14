@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.4 (test build)
+
+- **Dust when a giant falls.** When a giant dies and hits the ground, a cloud of dust billows out from all along its body and from under its feet, then settles over a couple of seconds. It shows in the Giant Creature Lab too.
+
 ## 2.2.3 (test build)
 
 Balance pass, tested on long runs at full speed on a real graphics card.
