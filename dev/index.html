@@ -6924,6 +6924,7 @@ function trySpread(p) {
   if (!P.fert || p.tree || p.giant) return;
   const i = chunkOf(p.x, p.y);
   if (pressureAt(i) > 0.55 || rnd() > 0.7 * fert[i] * growth() || plants.length >= plantTarget() * 2) return;
+  if (p.farm !== undefined) { const c = colonies.find(o => o.slot === p.farm); if (!c || plants.filter(q => q.farm === p.farm).length >= farmCap(c)) return; } // a farm only grows as big as its nest can look after
   const K = PLANT_KINDS[p.kind] || PLANT_KINDS.herb;
   for (let k = 0; k < 12; k++) {
     const a = rnd() * 6.283, d = 12 + rnd() * 30, x = Math.round(p.x + Math.cos(a) * d), y = Math.round(p.y + Math.sin(a) * d);
@@ -6933,7 +6934,8 @@ function trySpread(p) {
     return;
   }
 }
-// farms: seed planters grow grass patches around their nest, aphid herders tend aphid trees
+// farms: seed planters grow grass patches around their nest, aphid herders tend aphid trees. A nest can look after one patch, plus one per 90 ants, at most five
+const farmCap = c => Math.min(5, 1 + Math.floor((c.inside + c.out) / 90));
 function farmPlant(c, kind, r0, r1, size) {
   let best = null, bs = -1;
   for (let k = 0; k < 24; k++) {
@@ -6961,7 +6963,7 @@ function stepFarms() {
     const n = c.inside + c.out; if (n < 8) continue;
     if (hasAbil(c, 20)) {
       const mine = plants.filter(p => p.farm === c.slot).length; c.farming = mine > 0;
-      if (mine < 1 + Math.floor(n / 50) && rnd() < 0.25 * gr) farmPlant(c, 'grass', 22, 55, 0.35);
+      if (mine < farmCap(c) && rnd() < 0.25 * gr) farmPlant(c, 'grass', 22, 55, 0.35);
     }
     if (hasAbil(c, 21)) {
       // a nest can only look after a few trees: one, plus one per 80 ants, at most three. It keeps the ones it has, then claims the nearest free ones
@@ -7034,7 +7036,7 @@ function updateNicheCrowd() {
     else if (F.end === null) F.end = simStep;
   }
   for (const c of colonies) {
-    const share = all > 0 ? tot[c.life] / all : 0, target = P.crowdNiche && colonies.length > 3 ? Math.min(1.25, Math.max(0.7, 1 - 0.9 * (share - S))) : 1;
+    const share = all > 0 ? tot[c.life] / all : 0, target = P.crowdNiche && colonies.length > 3 ? Math.min(1.3, Math.max(0.5, 1 - 1.1 * (share - S))) : 1;
     c.nicheMul = (c.nicheMul ?? 1) + (target - (c.nicheMul ?? 1)) * 0.25;
     c.plunderRate = (c.plunderRate || 0) * 0.7 + ((c.plundered || 0) - (c.plunderSeen || 0)) * 0.3; c.plunderSeen = c.plundered || 0;
   }
@@ -7888,6 +7890,8 @@ const blocked = (x, y) => isWater(x, y) || (G && G.mode === 'hunt' && !inMid(x, 
 const isWater = (x, y) => { x = Math.floor(x); y = Math.floor(y); return inMap(x, y) && wall[y * W + x] === 3; };
 // which nest to go for: a big one is a good meal, but it is wary of nests that bite back hard (Bite, Defense, Courage) and that sit deep underground
 const nestRisk = c => Math.max(0, (gmul(c, 14) - 1) + (gmul(c, 1) - 1) + 0.5 * (gmul(c, 8) - 1)) + 0.5 * nestShelter(c);
+// a giant that walks into a busy world is a bigger, older one: tougher the more ants there are to fight it
+const hpScale = () => Math.min(3, Math.max(0.6, Math.sqrt(antsTotal() / 2000)));
 function pickNest(not) {
   const list = colonies.filter(c => c !== not && inMid(c.x, c.y)).map(c => [c, (c.inside + c.out) / (1 + 2.5 * nestRisk(c))]).sort((a, b) => b[1] - a[1]).slice(0, 4);
   return list.length ? list[(rnd() * list.length) | 0][0] : null;
@@ -7910,7 +7914,7 @@ function spawn(kind, at) {
   const h = Math.atan2(tgt.y - best.ey, tgt.x - best.ex), hx = best.ex / k - Math.cos(h) * 30, hy = best.ey / k - Math.sin(h) * 30;
   c.pts.forEach((q, i) => { q.x = hx - Math.cos(h) * i * S.seg; q.y = hy - Math.sin(h) * i * S.seg; });
   c.h = c.th = h; layoutLegs(c, true);
-  G = { S, c, k, id, name: nameOf(id, c.V), mode: 'enter', home: tgt, nest: n0, goal: { ...tgt }, linger: 0, lingerMax: 30, hp: PR.giantHp, maxHp: PR.giantHp, spawnAnts: Math.max(1, antsTotal()), parts: [], atkCd: 5, tok: [0, 0, 0], side: 1, fade: 1 };
+  G = { S, c, k, id, name: nameOf(id, c.V), mode: 'enter', home: tgt, nest: n0, goal: { ...tgt }, linger: 0, lingerMax: 30, hp: PR.giantHp * hpScale(), maxHp: PR.giantHp * hpScale(), spawnAnts: Math.max(1, antsTotal()), parts: [], atkCd: 5, tok: [0, 0, 0], side: 1, fade: 1 };
   makeParts(); arrivals++;
   emit('giant', `A ${G.name} is coming onto the map. Ants that fight it together can bring it down`, best.ex, best.ey);
   return true;
