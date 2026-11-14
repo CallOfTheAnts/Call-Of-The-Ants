@@ -9,6 +9,24 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.3 (test build)
+
+Balance pass, tested on long runs at full speed on a real graphics card.
+
+- **Nests fight giants.** Before, nests near a giant ran from it and never hurt it. Now every nest the giant prowls near drops its calm and sends out defenders. Brave, hard-biting nests (high Courage and Bite) send many; timid ones send a few. Giants now get killed now and then.
+- **Defense counts against giants.** A giant's bite no longer always kills. Thick armour (Defense) gives an ant a real chance to live through it.
+- **Deep nests are safer.** A raiding giant digs out a nest more slowly if it has a deep royal chamber, a winter room, or strong diggers (Digging gene).
+- **Giants choose their meals.** A giant goes for big nests, but avoids nests that bite back hard or sit deep underground.
+- **Giants scale with the world.** A giant that walks into a busy world is tougher, up to three times as tough with many ants around.
+- **Giants leave sooner.** A giant now leaves once it has dug out a nest or two, or after 5 to 9 hours, as well as when the ants are down to half. Before, one could stay forever in a growing world.
+- **No more one-species worlds.** One way of living (often seed farmers) could take 85 to 97% of all ants. Now:
+  - A nest can only keep a few farm patches (one, plus one per 120 ants, at most four), and its farm stops spreading past that.
+  - Farming costs a little more food (tending the crop takes work).
+  - A way of living that takes far more than its share of the land gets less from its food (pests and rivals follow it). This only bites once there are many ants, so a young world can't starve itself out.
+- **Clearer trails.** Fetchers now favour the strongest food trail leaving the nest, so busy routes draw more ants and turn into highways. Home trails are drawn fainter, so the food routes stand out.
+
+What the test runs showed: in the four-climate world each climate ended up with its own way of living (aphid herders in the cold damp, gatherers in the dry, fungus or seed farmers in the hot damp). In a full-size random world, after 30 hours there were 33 families and no family had more than a quarter of the ants. Under giant pressure, Courage, Bite and Defense rose steadily.
+
 ## 2.2.2 (test build)
 
 - **Nests are built like the Raspberry Pi ant farm.** Each nest now digs a side-on grid of soil, cell by cell, the same way the Pi version does. Rooms are flat-bottomed and sit at the depths real ants use. The queen starts in a small room near the top and moves down to a deep royal chamber once the nest is big enough, and her first room becomes a nursery. Each new room is joined to the nearest tunnel by a winding passage, and small hubs form where tunnels meet. Buried stones (and the rock and water above) make the tunnels go around them.
