@@ -9,6 +9,15 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.5 (test build)
+
+Runs better on phones, handhelds and older computers.
+
+- **The game tests your device when it starts.** A short test of the graphics card (under a second, only the first time) picks one of four levels: High, Medium, Low or Very low. Each level sets the map size (from 3200 down to 1024 tiles across), the ant limit (from about 41,000 down to 6,000), the trail memory and how sharp the map is drawn. Phones start at Medium at most.
+- **It keeps watching while you play.** If frames come too slowly, the map is drawn at a lower resolution, down to half, and gets sharper again when there's room. If that isn't enough, the frame rate is held at 30. If the game still runs behind, or the ants alone are too much work, a note offers to restart with lighter settings, and those are used from then on.
+- **Fast screens don't waste work.** On 120 Hz phones the game draws at most 60 frames a second, except on the High level.
+- **New setting: Device performance** (World tab). Auto is the default. Pick a level by hand to override it; this restarts the game. The hint under it says what Auto picked and the test score.
+
 ## 2.2.4 (test build)
 
 - **Dust when a giant falls.** When a giant dies and hits the ground, a cloud of dust billows out from all along its body and from under its feet, then settles over a couple of seconds. It shows in the Giant Creature Lab too.
