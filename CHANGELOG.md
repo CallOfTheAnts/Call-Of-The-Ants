@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.8 (test build)
+
+- **Young worlds aren't held back by overcrowding rules.** Crowded ways of living, worn soil, prey being eaten out and plants that can't regrow under heavy use now only switch on once a world has grown up. They ease in between minute 60 and 120, and only once there are more than 6 nests (fully at 12).
+- **No penalty before the first rooms.** A nest that hasn't dug its first store or nursery yet now stores and breeds at the normal rate instead of less.
+
 ## 2.2.7 (test build)
 
 Big underground nests that join up, get taken over and cave in.
