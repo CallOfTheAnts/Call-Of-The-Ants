@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.9 (test build)
+
+- **One switch for all anti-crowding rules.** The "Crowded niches" setting is now "Anti-crowding rules" and covers every rule that holds back popular strategies: less food value for a common way of living, soil wearing out, prey eaten out, plants not regrowing under heavy use, the extra food farming costs, and a colour with many nests splitting more slowly. Turn it off and none of them apply.
+
 ## 2.2.8 (test build)
 
 - **Young worlds aren't held back by overcrowding rules.** Crowded ways of living, worn soil, prey being eaten out and plants that can't regrow under heavy use now only switch on once a world has grown up. They ease in between minute 60 and 120, and only once there are more than 6 nests (fully at 12).
