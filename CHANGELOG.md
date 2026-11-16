@@ -9,6 +9,16 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.7 (test build)
+
+Big underground nests that join up, get taken over and cave in.
+
+- **Bigger, more spread-out nests.** Each nest's soil is twice as wide. Rooms keep more soil between them and sit at the end of longer, winding tunnels. Nests keep digging as they grow, up to about 70 rooms, so a big nest becomes a large network instead of a small clump.
+- **Nests of one colour join up underground.** When two nests of the same colour live near each other, they dig a long tunnel between them. Once it's through, they share their rooms: stores, nurseries, farm rooms, waste and winter rooms all count for both. A nest's panel shows who it's joined to.
+- **Old nests can be taken over.** When a nest dies, its tunnels stay. A nest of its colour that was joined to it takes them over at once. Otherwise any nest nearby can find them, dig a tunnel in and make them its own, rooms and all.
+- **Rooms nobody looks after cave in.** A nest can keep about 6 rooms plus one per 10 ants. If it shrinks below that, its least needed rooms slowly fill back up with soil. Empty old tunnels start caving in after half an hour and are gone a few hours later.
+- **Farms moved underground.** Farming now happens in farm rooms under the nest instead of patches on the surface. Seed farmers sow part of the seeds they bring home in seed gardens, where they sprout into about twice the food. Aphid herders keep root aphids in pens, which give honeydew while ants at home tend them. Fungus farmers keep their fungus gardens. You can see each kind in the Underground view and the Nest tab. With underground nests switched off, farming works up top like before.
+
 ## 2.2.6 (test build)
 
 Young nests get through hard times instead of dying out in the first hour.
