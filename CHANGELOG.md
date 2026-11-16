@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.5.1 (fix)
+
+- **Worlds no longer starve out when one way of living takes over.** Crowding makes food worth less to a way of living that most ants share, and more to a rare one. When nearly every nest lived the same way, all of them got food worth only 45%, so the whole world slowly starved. Now crowding only shifts food value between ways of living: the average ant never drops below 85%, so a world where everyone farms seeds sits near 85% instead of 45%. The extra push against big numbers also eases off while there are few ants, the same as before for every case.
+
 ## 2.2.5 (test build)
 
 Runs better on phones, handhelds and older computers.
