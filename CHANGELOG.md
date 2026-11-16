@@ -9,6 +9,14 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.6 (test build)
+
+Young nests get through hard times instead of dying out in the first hour.
+
+- **Hunger kills more slowly.** Before, every bit of food a nest was short killed an ant, so a nest with an empty store could lose nearly all its ants within a minute, before its foragers came back. Now it takes twice the shortfall to kill an ant, so a nest has time to refill its store.
+- **Nests keep a bigger reserve before breeding.** A nest now only breeds while it has 3 minutes of food in store (was 2). It grows a little slower but no longer breeds right up to the edge and then starves the young it just raised.
+- **New nests start with more food** (120, was 80), so the first nests survive while they look for their first food.
+
 ## 2.2.5.2 (fix)
 
 - **Computers start on High again.** The graphics card test was too strict and put strong desktop cards on Medium (a smaller map and half the ants). Computers now start on High unless the test shows a clearly weak card. Phones and tablets still step down sooner. Everyone gets tested again once, so a device that picked the wrong level before gets a fresh start.
