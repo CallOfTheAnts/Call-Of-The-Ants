@@ -6106,11 +6106,14 @@ fn underView(x: i32, y: i32, wf: vec2f, cin: vec3f, wl: u32) -> vec3f {
   // the underground as an overlay on the normal map: just the outlines of each nest's tunnels and rooms (opacity from the settings slider)
   let ovA = f32(cam.cap & 255u) / 255.0;
   if (vm == 0u && ovA > 0.0) {
+    // the outline is about a screen pixel wide at any zoom: zoomed out, neighbours are looked for a few tiles away; the inside gets a faint wash
+    let st = max(1, i32(ceil(1.0 / cam.scale)));
     let u0 = underAt(x, y);
-    if (u0 != 0u && (underAt(x + 1, y) == 0u || underAt(x - 1, y) == 0u || underAt(x, y + 1) == 0u || underAt(x, y - 1) == 0u)) {
+    if (u0 != 0u) {
+      let edge = underAt(x + st, y) == 0u || underAt(x - st, y) == 0u || underAt(x, y + st) == 0u || underAt(x, y - st) == 0u;
       let ow = u0 & 2047u; var oc = vec3f(214.0, 186.0, 140.0);
       if (((cam.cap >> 8u) & 1u) == 1u) { oc = select(vec3f(150.0, 140.0, 128.0), cam.colors[min(ow - 1u, ${MAXCOL - 1}u)].rgb * 255.0, ow != 2047u); }
-      c = mix(c, oc, ovA);
+      c = mix(c, oc, ovA * select(0.22, 1.0, edge));
     }
   }
   return vec4f(clamp(c, vec3f(0.0), vec3f(255.0)) / 255.0, 1.0);
