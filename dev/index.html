@@ -834,7 +834,7 @@ body.tut-on .hud,body.tut-on .mapctl,body.tut-on #gear,body.tut-on #statsBtn{dis
             <div class="sec-body">
             <div class="ctl" data-tip="How much food each ant costs its colony. Higher makes food scarcer and colonies smaller.">
               <div class="row"><label for="eat">Food eaten per ant</label><output id="eatV">0.90</output></div>
-              <input type="range" id="eat" min="0.1" max="3" step="0.05" value="0.9">
+              <input type="range" id="eat" min="0.1" max="3" step="0.05" value="0.6">
             </div>
             <div class="ctl" data-tip="How long an ant can stay out before it gets hungry. A hungry ant carrying food eats some of it; one without food slowly gets weaker.">
               <div class="row"><label for="stamina">Energy</label><output id="staminaV">4000 steps</output></div>
@@ -3887,7 +3887,7 @@ const P = { trailView: 3, deadFade: 0.6, scouts: 0.1, wander: 600, vision: 4, wo
   fade: 1, space: 2.2, slow: 3, nestEnter: 3.5, restMin: 20, restVar: 120, stamina: 4000, hungryAt: 0.2, starveDmg: 0.04, hp: 30,
   dmg: 1.5, raidTake: 4, peaceBelow: 12, inset: Math.max(120, Math.round(300 * W / 3200)), shareAbove: 3, allyTake: 3, splitAt: 70, founderWalk: 1000, founderFood: 25, newFamily: 0.1, maxColours: 64, capFounderEvery: 3, firstFounder: 900, crowdNiche: true, regrow: 25, soilWilt: 0.25, rotFeed: 0.002, grazeWear: 0.00025, farmWear: 0.02, farmWither: 0.25, maxNests: 65, merge: true, mergeGap: 2.5, maxTier: 5, crowdR: 4, crowdMax: 6, storeMax: 1500, famThrottle: 12, xCasino: false, casinoEvery: 15, siegeRatio: 1.3, siegeShare: 0.25, redFade: 0.012, clearTrails: false, clearRadius: 6, startColours: 4,
   treeChance: 0.2, treeMax: 2, treeFood: 20000, treeRadius: 10, treeScent: 140, treeDrop: 1.2,
-  beastChance: 0.25, beastMax: 3, beastHp: 300, beastDmg: 4, beastBiteEvery: 6, beastFood: 400, beastSpeed: 0.35, beastReach: 2.6, beastLife: 6, dig: true, digRate: 0.4, chambers: true, likes: true, rate: 1, eat: 0.9, birthBuffer: 3, birthCost: 1, birthBurst: 3, starveKill: 0.5, startAnts: 10, startFood: 120, nestMax: 150,
+  beastChance: 0.25, beastMax: 3, beastHp: 300, beastDmg: 4, beastBiteEvery: 6, beastFood: 400, beastSpeed: 0.35, beastReach: 2.6, beastLife: 6, dig: true, digRate: 0.4, chambers: true, likes: true, rate: 1, eat: 0.6, birthBuffer: 3, birthCost: 1, birthBurst: 3, starveKill: 0.5, startAnts: 10, startFood: 120, nestMax: 150,
   foodLife: 8, graceMin: 8, shieldMin: 10, founderStock: 4, abilityAt: 1.6, mutStrength: 12, mutEvery: 150, mutLean: false, splitDrift: 120, plantMin: 1500, plantVar: 1500, plantDensity: 0.85, plantDecay: 1, plantSpawn: 1, dropDiv: 4, plantNestGap: 70, fert: true, seasons: true, yearMin: 40, seasonAmp: 1, paceCost: true, farming: true, adaptive: true, niche: true,
   giants: true, giantEvery: 10, giantHp: 600000, giantTough: 5, giantBite: 1, giantRaid: 0.35, hazards: true, hazardPick: '', preyCycle: true, startAdapt: true, comfort: 0.12, climCost: 4, skills: true, tempPull: 0.1, minSkill: 0.06, skillPower: 3.5, prey: 1, settleTol: 0.03, nestGap: 90, climate: true, spine: 3, insects: 1, carcass: 1, fungusMin: 1, biomeFood: true };
 
@@ -8587,7 +8587,7 @@ function colonyUpdate() {
     let n = c.inside + c.out;
     // food coming in per minute, over the last 2 minutes. A nest whose income doesn't cover the ants it already has only breeds
     // from a big store (twice the usual reserve): it stops raising young it can't feed, instead of booming and then starving
-    const hs = c.hist.slice(-12), inc = hs.length ? hs.reduce((a, h) => a + h.inc, 0) / hs.length : 1e9, lean = hs.length >= 2 && inc < n * eatOf(c) * 0.95;
+    const hs = c.hist.slice(-12), inc = hs.length ? hs.reduce((a, h) => a + h.inc, 0) / hs.length : 1e9, lean = hs.length >= 6 && simStep - c.foundedAt > 5 * MINUTE && inc < n * eatOf(c) * 0.95;
     for (let bi = 0; bi < Math.min(batches, 50); bi++) {
       // breed while the store covers the buffer; a rich nest breeds a few at once
       for (let k = 0, kb = Math.max(1, Math.round(P.birthBurst * nurseryMul(c))); k < kb; k++) { // more nurseries, more young at once
