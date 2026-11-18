@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.13 (test build)
+
+- **Many more large nests.** How many rooms a nest digs now grows with its ants (one more room per 6 ants, was per 18) and with its age (one more room every 30 minutes it lives), up to 70. Diggers also work faster, and ants out foraging help a little. In a test, a nest of 100 ants reached 57 rooms after 1,000 minutes, where before it stopped at 13.
+- **Rooms no longer cave in on healthy nests.** A nest now looks after a few more rooms than it would dig. Before, a nest could dig more rooms than it could keep, so some caved in again.
+
 ## 2.2.12 (test build)
 
 - **Giants stay until they've done real damage.** A giant now only leaves once half the nests that were on the map when it arrived are gone (or after a very long stay of 5 to 9 hours). Before, it left as soon as the total number of ants halved or after one or two raids, which often came too early.
