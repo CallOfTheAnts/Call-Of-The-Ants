@@ -9,6 +9,14 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.15 (test build)
+
+A cleaner overview when zoomed out.
+
+- **Smaller ants far out.** Zoomed out, ants were drawn about five times their real size. They're now specks of a pixel or two, and flying queens are small ringed dots instead of big ones.
+- **Underground outlines over the map.** The outlines of every nest's tunnels and rooms are drawn over the normal map, so you can see where nests are and how far they reach. A new **Underground outlines** slider sets how strongly they show (50% to start, all the way left to hide them). **Outlines in colony colours** draws each nest in its colony's colour; turn it off for one soft earth tone.
+- **Nest markers are off to start.** The coloured nest rings and farm rings now start hidden. Turn on **Nest and farm markers** to bring them back.
+
 ## 2.2.14 (test build)
 
 - **Rooms are spaced out on the map.** Seen from above, rooms at different depths used to land on the same spot. A new room now keeps at least 8 tiles clear of other rooms in the Underground view as well as in the soil, and nests spread wider across the map to make room.
