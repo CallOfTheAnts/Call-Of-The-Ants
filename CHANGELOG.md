@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.14 (test build)
+
+- **Rooms are spaced out on the map.** Seen from above, rooms at different depths used to land on the same spot. A new room now keeps at least 8 tiles clear of other rooms in the Underground view as well as in the soil, and nests spread wider across the map to make room.
+- **Overlapping rooms of one kind become one joint room.** A room can still be dug right into another room of the same kind; the two then count as one bigger room with one name in the middle.
+
 ## 2.2.13 (test build)
 
 - **Many more large nests.** How many rooms a nest digs now grows with its ants (one more room per 6 ants, was per 18) and with its age (one more room every 30 minutes it lives), up to 70. Diggers also work faster, and ants out foraging help a little. In a test, a nest of 100 ants reached 57 rooms after 1,000 minutes, where before it stopped at 13.
