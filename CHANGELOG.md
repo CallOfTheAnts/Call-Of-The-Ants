@@ -9,6 +9,11 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.12 (test build)
+
+- **Giants stay until they've done real damage.** A giant now only leaves once half the nests that were on the map when it arrived are gone (or after a very long stay of 5 to 9 hours). Before, it left as soon as the total number of ants halved or after one or two raids, which often came too early.
+- **Wars stop when a giant shows up.** While a giant is on the map, no colony starts or keeps up a siege against another. The nests' fighters go for the giant instead, and the wars pick up again once it has gone.
+
 ## 2.2.11 (test build)
 
 Balance pass, tested with the Balance test on a real graphics card. All three test worlds now end with 2,000 to 4,500 ants, 17 to 40 nests and 5 to 11 colours, where before most of them died out.
