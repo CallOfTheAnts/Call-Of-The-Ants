@@ -9,6 +9,13 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.11 (test build)
+
+Balance pass, tested with the Balance test on a real graphics card. All three test worlds now end with 2,000 to 4,500 ants, 17 to 40 nests and 5 to 11 colours, where before most of them died out.
+
+- **Ants slow down in the cold.** They eat about half as much in deep winter as in summer. Before, nests ate the same all year while plants and prey nearly stopped growing in winter, so every winter starved them down, and small nests died out.
+- **Ants eat a little less overall** (0.7 food a minute in summer, was 0.9). Foragers in most worlds couldn't bring in enough to feed more than a couple of hundred ants, so populations stayed tiny and fragile.
+
 ## 2.2.10.1 (fix)
 
 - **No more false "running behind" notes.** The speed watch aimed for 60 frames a second even in browsers that never go past 30, so it kept lowering the map's sharpness and then offered lighter settings on fast computers. It now aims for the best frame rate the browser has shown. Saved levels are cleared once, so a device that was wrongly stepped down gets tested again.
