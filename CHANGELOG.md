@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.10.1 (fix)
+
+- **No more false "running behind" notes.** The speed watch aimed for 60 frames a second even in browsers that never go past 30, so it kept lowering the map's sharpness and then offered lighter settings on fast computers. It now aims for the best frame rate the browser has shown. Saved levels are cleared once, so a device that was wrongly stepped down gets tested again.
+
 ## 2.2.10 (test build)
 
 - **Nests stop raising young they can't feed.** A nest now watches how much food came in over the last 2 minutes. If that doesn't cover the ants it already has, it only breeds from a big store (twice the usual reserve). Before, nests bred as long as the store looked fine, boomed past what their foragers could bring in, and then starved back down, often to nothing.
