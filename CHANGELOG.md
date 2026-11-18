@@ -9,6 +9,10 @@ Version numbers are **big release . stable build . test build**:
 
 The version you're playing is shown at the bottom of the settings panel, where "What's new" opens this list.
 
+## 2.2.10 (test build)
+
+- **Nests stop raising young they can't feed.** A nest now watches how much food came in over the last 2 minutes. If that doesn't cover the ants it already has, it only breeds from a big store (twice the usual reserve). Before, nests bred as long as the store looked fine, boomed past what their foragers could bring in, and then starved back down, often to nothing.
+
 ## 2.2.9 (test build)
 
 - **One switch for all anti-crowding rules.** The "Crowded niches" setting is now "Anti-crowding rules" and covers every rule that holds back popular strategies: less food value for a common way of living, soil wearing out, prey eaten out, plants not regrowing under heavy use, the extra food farming costs, and a colour with many nests splitting more slowly. Turn it off and none of them apply.
